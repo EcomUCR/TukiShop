@@ -1,13 +1,12 @@
-// 📄 src/modules/stores/pages/SearchedStores.tsx
 import { useEffect, useState } from "react";
 import axios from "axios";
 import NavBar from "../../../components/layout/NavBar";
 import Footer from "../../../components/layout/Footer";
-import StoreInfoCard from "./StoreInfoCard";
+import StoreListCard from "./StoreListCard";
 import { SkeletonStoreBanner } from "../../../components/ui/AllSkeletons";
 
 export default function SearchedStores() {
-  const [stores, setStores] = useState<any[] | null>(null); // 👈 null = sin cargar
+  const [stores, setStores] = useState<any[] | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -22,9 +21,8 @@ export default function SearchedStores() {
         setStores(verifiedStores);
       } catch (error) {
         console.error("Error al obtener tiendas:", error);
-        setStores([]); // asegúrate de que haya algo para renderizar
+        setStores([]);
       } finally {
-        // 👇 Espera un pequeño delay para que React pinte las tiendas antes de quitar el loading
         setTimeout(() => setLoading(false), 300);
       }
     };
@@ -67,7 +65,7 @@ export default function SearchedStores() {
       <div className="max-w-6xl mx-auto my-10 flex flex-col  px-6">
         {stores.map((store) => (
           <div className="">
-            <StoreInfoCard key={store.id} store={store} />
+            <StoreListCard key={store.id} store={store} />
             <div className="relative bottom-0 left-0 w-full my-10 h-[2px] bg-gradient-to-r from-main via-contrast-secondary to-contrast-main"></div>
           </div>
         ))}

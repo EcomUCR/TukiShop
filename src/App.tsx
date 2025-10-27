@@ -12,8 +12,8 @@ import LoginRegisterPage from "./modules/auth/ui/LoginRegisterPage";
 import ResetPasswordPage from "./modules/auth/ui/ResetPasswordPage";
 
 //Search product
-import SearchedProductPage from "./modules/search/ui/SearchedProductPage";
-import SearchedStores from "./modules/search/ui/SearchedStores";
+import SearchPage from "./modules/search/ui/SearchPage";
+import StoresListPage from "./modules/search/ui/StoresListPage";
 
 //home
 import HomePage from "./modules/home/ui/HomePage";
@@ -58,7 +58,7 @@ function App() {
                   path="/wishlist/public/:slug"
                   element={<WishListPage />}
                 />
-                <Route path="/product/:id" element={<ProductPage />} />
+                <Route path="/p/:id" element={<ProductPage />} />
                 <Route path="/resetPassword" element={<ResetPasswordPage />} />
                 <Route
                   path="/forgotPassword"
@@ -66,11 +66,11 @@ function App() {
                 />
                 <Route path="/crudProduct" element={<CrudProductPage />} />
                 <Route
-                  path="/search/:categoryId"
-                  element={<SearchedProductPage />}
+                  path="/s/:categoryId"
+                  element={<SearchPage />}
                 />
-                <Route path="/search" element={<SearchedProductPage />} />
-                <Route path="/search/stores" element={<SearchedStores />} />
+                <Route path="/s" element={<SearchPage />} />
+                <Route path="/s/st" element={<StoresListPage />} />
                 <Route path="/about" element={<AboutUsPage />} />
                 <Route path="/help" element={<HelpPage />} />
                 <Route path="/editProduct/:id" element={<CrudProductPage />} />

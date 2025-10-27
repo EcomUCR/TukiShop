@@ -26,9 +26,9 @@ export function useCheckout() {
       street?: string;
       city?: string;
       state?: string;
-      zip_code?: string; // 👈 agregado
+      zip_code?: string;
       country?: string;
-      phone_number?: string; // opcional también
+      phone_number?: string;
     }
   ) => {
 
@@ -74,8 +74,8 @@ export function useCheckout() {
           city: addressData?.city,
           state: addressData?.state,
           country: addressData?.country || "Costa Rica",
-          zip_code: addressData?.zip_code || null, // ✅ ahora se manda real
-          phone_number: addressData?.phone_number || null, // opcional
+          zip_code: addressData?.zip_code || null,
+          phone_number: addressData?.phone_number || null,
         },
         { headers: { Authorization: `Bearer ${token}` } }
       );

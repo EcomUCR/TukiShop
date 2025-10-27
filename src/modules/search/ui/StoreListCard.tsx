@@ -10,7 +10,7 @@ interface StoreProps {
   };
 }
 
-export default function StoreInfoCard({ store }: StoreProps) {
+export default function StoreListCard({ store }: StoreProps) {
   return (
     <>
       {/* 🌐 Versión PC */}
