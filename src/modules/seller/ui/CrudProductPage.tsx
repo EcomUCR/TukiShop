@@ -8,7 +8,7 @@ import NavBar from "../../../components/layout/NavBar";
 import ProductCard from "../../../components/data-display/ProductCard";
 import { IconArrowBackUp, IconWand } from "@tabler/icons-react";
 import FeaturedProductCard from "../../../components/data-display/FeaturedProductCard";
-import CategorySelector from "../../../components/ui/CategorySelector";
+import CategorySelector from "../../../components/data-display/CategorySelector";
 import { useAuth } from "../../../hooks/context/AuthContext";
 import { useParams } from "react-router-dom";
 

@@ -1,5 +1,3 @@
-// Componente hecho con IA para dropdown de categorías
-
 import { useState } from "react";
 import { IconPlus, IconX } from "@tabler/icons-react";
 import type { Category } from "../../modules/seller/infrastructure/useProducts";

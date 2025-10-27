@@ -1,12 +1,12 @@
 import { IconStar, IconStarFilled } from "@tabler/icons-react";
 import { useState } from "react";
 import { useAuth } from "../../hooks/context/AuthContext";
-import { useRatings } from "../../modules/seller/infrastructure/useRatings"; // ⬅️ usa el hook
-import { SkeletonRatingSummary } from "../../components/ui/AllSkeletons";
-import { useAlert } from "../../hooks/context/AlertContext"; // 👈 agregado
-import { useNavigate } from "react-router-dom"; // 👈 agregado
+import { useRatings } from "../../modules/seller/infrastructure/useRatings";
+import { SkeletonRatingSummary } from "./AllSkeletons";
+import { useAlert } from "../../hooks/context/AlertContext";
+import { useNavigate } from "react-router-dom";
 
-interface InteractiveRatingSummaryProps {
+interface RatingSummaryProps {
   onSaveReview: (review: {
     name: string;
     comment: string;
@@ -16,11 +16,11 @@ interface InteractiveRatingSummaryProps {
   barColor?: string;
 }
 
-export default function InteractiveRatingSummary({
+export default function RatingSummary({
   onSaveReview,
   storeId,
   barColor = "#ff7e47",
-}: InteractiveRatingSummaryProps) {
+}: RatingSummaryProps) {
   const { user } = useAuth();
   const { summary, loading, refreshSummary, createReview } =
     useRatings(storeId);

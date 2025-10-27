@@ -1,16 +1,3 @@
-/*
-Componente creado con GPT, PROMPT:
-Crea un componente llamado Rating.tsx en React + TypeScript usando Tailwind CSS y Tabler Icons (@tabler/icons-react) que muestre calificaciones en estrellas.
-Requisitos:
--Recibe un value numérico (ej. 3.5) que representa la calificación.
--Permite configurar el número máximo de estrellas (max, default 5).
--Permite configurar el tamaño de las estrellas (size, default 20).
--Debe mostrar estrellas completas, medias y vacías según el value.
--Estrellas vacías: IconStar con clase text-gray-300.
--Estrellas llenas: IconStarFilled con clase text-yellow-400.
--Para las medias estrellas, usa overflow-hidden recortando la estrella llena.
--El componente es solo visualización, no interactivo.
-*/
 import { IconStar, IconStarFilled } from "@tabler/icons-react";
 
 interface RatingProps {

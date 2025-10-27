@@ -1,11 +1,11 @@
 import { useEffect, useState, useCallback } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import InteractiveRatingSummary from "../../../../components/ui/InteractiveRatingSummary";
 import ReviewCard from "../../../../components/data-display/ReviewCard";
 import { useRatings } from "../../infrastructure/useRatings";
 import { SkeletonSellerReviews } from "../../../../components/ui/AllSkeletons";
 import { useAuth } from "../../../../hooks/context/AuthContext";
 import { useAlert } from "../../../../hooks/context/AlertContext";
+import RatingSummary from "../../../../components/ui/RatingSummary";
 
 interface Review {
   id?: number;
@@ -95,7 +95,7 @@ export default function SellerReviewsComponent() {
       <div className="flex flex-col sm:flex-row w-full items-start gap-8 sm:gap-0">
         {/* 🔹 Columna izquierda: resumen y formulario */}
         <div className="w-full sm:w-[35%] border border-main rounded-2xl p-4 h-fit self-start">
-          <InteractiveRatingSummary
+          <RatingSummary
             onSaveReview={handleSaveReview}
             storeId={Number(storeId)}
             barColor="#ff7e47"
