@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { IconEye, IconEyeClosed } from "@tabler/icons-react"; // 👁️ Importados aquí
+import { IconEye, IconEyeClosed } from "@tabler/icons-react";
 import logo from "../../../../img/TukiLogo.png";
 import { useAuth } from "../../../../hooks/context/AuthContext";
 
@@ -8,15 +8,15 @@ export default function LoginForm() {
   const { login, loading } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false); // 👁️ Nuevo estado
+  const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
-const [error, setError] = useState(""); // 👈 agrega esto
+const [error, setError] = useState("");
 
 
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError(""); // Limpia error previo
+    setError("");
 
     const emailLower = email.toLowerCase();
 
