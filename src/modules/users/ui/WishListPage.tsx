@@ -7,7 +7,7 @@ import ShareComponent from "../../../components/data-display/ShareComponent";
 import { useWishlist } from "../infrastructure/useWishList";
 
 export default function WishListPage() {
-  const { slug } = useParams(); // Si viene slug => modo público
+  const { slug } = useParams();
   const {
     wishlist,
     fetchWishlist,

@@ -1,8 +1,8 @@
 import axios from "axios";
-import { useAuth } from "../../hooks/context/AuthContext";
-import { useAlert } from "../../hooks/context/AlertContext";
-import { useCart } from "../../hooks/context/CartContext";
-import { useCartTotals } from "../../components/forms/useCartTotals";
+import { useAuth } from "../../../hooks/context/AuthContext";
+import { useAlert } from "../../../hooks/context/AlertContext";
+import { useCart } from "../../../hooks/context/CartContext";
+import { useCartTotals } from "../../../components/forms/useCartTotals";
 
 axios.defaults.baseURL = import.meta.env.VITE_API_URL;
 

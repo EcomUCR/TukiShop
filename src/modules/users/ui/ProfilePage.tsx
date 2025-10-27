@@ -4,9 +4,9 @@ import NavBar from "../../../components/layout/NavBar";
 import StoreProductsList from "../../store/ui/components/StoreProductsList";
 import SideBar from "../../../components/layout/SideBar";
 import TransactionHistory from "./TransactionHistory";
-import UserProfile from "./UserProfile";
+import AccountInformation from "./AccountInformation";
 import { useAuth } from "../../../hooks/context/AuthContext";
-import OrderStatus from "./OrderStatus";
+import OrderStatusList from "./OrderStatusList";
 import { AnimatePresence, motion } from "framer-motion";
 import AdminUsersList from "../../admin/ui/components/AdminUsersList";
 import AdminBannerList from "../../admin/ui/components/AdminBannerList";
@@ -131,7 +131,7 @@ export default function UserPage() {
               exit={{ opacity: 0, y: -15 }}
               transition={{ duration: 0.3, ease: "easeInOut" }}
             >
-              {selected === "profile" && <UserProfile type={user.role} />}
+              {selected === "profile" && <AccountInformation type={user.role} />}
               {selected === "transactions" && <TransactionHistory />}
 
               {/* pedidos según rol */}
@@ -146,7 +146,7 @@ export default function UserPage() {
                 <StoreProductsList />
               )}
               {selected === "orderStatus" && user.role === "SELLER" && (
-                <OrderStatus />
+                <OrderStatusList />
               )}
               {selected === "users" && user.role === "ADMIN" && (
                 <AdminUsersList />

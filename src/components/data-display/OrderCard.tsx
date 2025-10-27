@@ -9,8 +9,8 @@ import {
   IconUser,
 } from "@tabler/icons-react";
 import { motion, AnimatePresence } from "framer-motion";
-import ButtonComponent from "../../../../components/ui/ButtonComponent";
-import { useAuth } from "../../../../hooks/context/AuthContext";
+import ButtonComponent from "../ui/ButtonComponent";
+import { useAuth } from "../../hooks/context/AuthContext";
 
 interface OrderCardProps {
   order: {

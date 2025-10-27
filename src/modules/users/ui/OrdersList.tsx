@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import OrderCard from "./components/OrderCard";
+import OrderCard from "../../../components/data-display/OrderCard";
 import OrderModal from "./components/OrderModal";
 import { useOrder } from "../infrastructure/useOrder";
 

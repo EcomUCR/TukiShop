@@ -1,7 +1,7 @@
 import { IconShoppingBag } from "@tabler/icons-react";
 import { Link } from "react-router-dom";
 
-interface ProductOrderItemProps {
+interface OrderModalProductCardProps {
     item: {
         id: number;
         name: string;
@@ -12,7 +12,7 @@ interface ProductOrderItemProps {
     };
 }
 
-export default function ProductOrderItem({ item }: ProductOrderItemProps) {
+export default function OrderModalProductCard({ item }: OrderModalProductCardProps) {
     const formatCurrency = (num: number) =>
         num.toLocaleString("es-CR", { style: "currency", currency: "CRC" });
 

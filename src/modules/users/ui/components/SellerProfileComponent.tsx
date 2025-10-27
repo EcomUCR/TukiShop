@@ -48,7 +48,7 @@ const iconMap = {
   link: <IconLink />,
 };
 
-interface SellerProfileProps {
+interface SellerProfileComponentProps {
   alert: any;
   setAlert: React.Dispatch<React.SetStateAction<{
     show: boolean;
@@ -58,7 +58,7 @@ interface SellerProfileProps {
   }>>;
 }
 
-export default function SellerProfile({ setAlert }: SellerProfileProps) {
+export default function SellerProfileComponent({ setAlert }: SellerProfileComponentProps) {
   const { user, refreshUser, token } = useAuth();
   const [editableStore, setEditableStore] = useState<Store | null>(null);
   const [socialLinks, setSocialLinks] = useState<SocialLink[]>([]);

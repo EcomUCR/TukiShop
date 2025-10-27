@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { useCartTotals } from "./useCartTotals";
-import { useVisa } from "../../modules/payments/useVisa";
-import { useCheckout } from "../../modules/payments/useCheckout";
+import { useVisa } from "../../modules/cart/infraestructure/useVisa";
+import { useCheckout } from "../../modules/cart/infraestructure/useCheckout";
 import visa from "../../img/resources/logo_visa.png";
 import mastercard from "../../img/resources/logo_mastercard.png";
 import paypal from "../../img/resources/logo_paypal.png";

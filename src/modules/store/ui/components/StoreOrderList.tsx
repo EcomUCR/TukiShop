@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "../../../../hooks/context/AuthContext";
 import { useOrder } from "../../../users/infrastructure/useOrder";
-import OrderCard from "../../../users/ui/components/OrderCard";
+import OrderCard from "../../../../components/data-display/OrderCard";
 import OrderModal from "../../../users/ui/components/OrderModal";
 
 export default function StoreOrderList() {

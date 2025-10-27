@@ -1,14 +1,14 @@
 import { useState, type JSX } from "react";
 import { useAuth } from "../../../hooks/context/AuthContext";
 import AlertComponent from "../../../components/data-display/AlertComponent";
-import SellerProfile from "./components/SellerProfile";
-import CustomerProfile from "./components/CustomerProfile";
+import SellerProfileComponent from "./components/SellerProfileComponent";
+import CustomerProfileComponent from "./components/CustomerProfileComponent";
 
-interface UserProfileProps {
+interface AccountInformationProps {
   type: "CUSTOMER" | "SELLER" | "ADMIN" | null | undefined;
 }
 
-export default function UserProfile({ type }: UserProfileProps): JSX.Element {
+export default function AccountInformation({ type }: AccountInformationProps): JSX.Element {
   const { user, loading } = useAuth();
   const [alert, setAlert] = useState({
     show: false,
@@ -29,10 +29,10 @@ export default function UserProfile({ type }: UserProfileProps): JSX.Element {
       </div>
 
       {type === "CUSTOMER" && (
-        <CustomerProfile alert={alert} setAlert={setAlert} />
+        <CustomerProfileComponent alert={alert} setAlert={setAlert} />
       )}
       {type === "SELLER" && (
-        <SellerProfile alert={alert} setAlert={setAlert} />
+        <SellerProfileComponent alert={alert} setAlert={setAlert} />
       )}
 
       <AlertComponent

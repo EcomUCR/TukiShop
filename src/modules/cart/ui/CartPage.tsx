@@ -6,10 +6,10 @@ import { IconBrandWhatsapp } from "@tabler/icons-react";
 import { useEffect } from "react";
 import BannerComponent from "../../../components/data-display/BannerComponent";
 import { useBanner } from "../../admin/infrastructure/useBanner";
-import { useCart } from "../../../hooks/context/CartContext"; // 👈 nuevo import
+import { useCart } from "../../../hooks/context/CartContext";
 
-export default function ShoppingCartPage() {
-  const { cart, loading, refreshCart } = useCart(); // 👈 usar el contexto centralizado
+export default function CartPage() {
+  const { cart, loading, refreshCart } = useCart();
 
   // ✅ Hook para banners
   const { banners, fetchBanners, loading: loadingBanners } = useBanner();

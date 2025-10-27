@@ -22,12 +22,12 @@ import HomePage from "./modules/home/ui/HomePage";
 import BeSellerPage from "./modules/home/ui/BeSellerPage";
 import StoreProductCRUDPage from "./modules/store/ui/StoreProductCRUDPage";
 import ProductPage from "./modules/store/ui/ProductPage";
-import RegisterSellerPage from "./modules/store/ui/RegisterSellerPage";
+import RegisterSellerPage from "./modules/auth/ui/RegisterSellerPage";
 import StorePage from "./modules/store/ui/StorePage";
 
 //users
 import ProfilePage from "./modules/users/ui/ProfilePage";
-import ShoppingCartPage from "./modules/users/ui/ShoppingCartPage";
+import CartPage from "./modules/cart/ui/CartPage";
 import { AlertProvider } from "./hooks/context/AlertContext";
 import AboutUsPage from "./modules/home/ui/AboutUsPage";
 import HelpPage from "./modules/home/ui/HelpPage";
@@ -52,7 +52,7 @@ function App() {
                 <Route path="/beSellerPage" element={<BeSellerPage />} />
                 <Route path="/store/:id" element={<StorePage />} />
                 <Route path="/profile" element={<ProfilePage />} />
-                <Route path="/shoppingCart" element={<ShoppingCartPage />} />
+                <Route path="/shoppingCart" element={<CartPage />} />
                 <Route path="/wishlist" element={<WishListPage />} />
                 <Route
                   path="/wishlist/public/:slug"

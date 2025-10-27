@@ -5,12 +5,12 @@ import axios from "axios";
 import { uploadImage } from "../../infrastructure/imageService";
 import { IconEdit } from "@tabler/icons-react";
 
-interface CustomerProfileProps {
+interface CustomerProfileComponentProps {
   alert: any;
   setAlert: React.Dispatch<React.SetStateAction<any>>;
 }
 
-export default function CustomerProfile({ setAlert }: CustomerProfileProps) {
+export default function CustomerProfileComponent({ setAlert }: CustomerProfileComponentProps) {
   const { user, refreshUser, token } = useAuth();
   const [newProfileFile, setNewProfileFile] = useState<File | null>(null);
   const [profilePreview, setProfilePreview] = useState<string | null>(null);

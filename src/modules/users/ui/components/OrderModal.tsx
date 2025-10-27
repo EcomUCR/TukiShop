@@ -2,7 +2,7 @@ import { IconX, IconPackage } from "@tabler/icons-react";
 import { motion, AnimatePresence } from "framer-motion";
 import ButtonComponent from "../../../../components/ui/ButtonComponent";
 import { useEffect, useMemo } from "react";
-import ProductOrderItem from "./ProductOrderItem";
+import OrderModalProductCard from "../../../../components/data-display/OrderModalProductCard";
 import { useAuth } from "../../../../hooks/context/AuthContext";
 
 interface OrderModalProps {
@@ -106,7 +106,7 @@ export default function OrderModal({ order, onClose }: OrderModalProps) {
           <div className="flex-1 p-4 sm:p-6 space-y-4 overflow-y-auto">
             {products.length > 0 ? (
               products.map((item) => (
-                <ProductOrderItem key={item.id} item={item} />
+                <OrderModalProductCard key={item.id} item={item} />
               ))
             ) : (
               <p className="text-gray-500 text-sm text-center py-10">
