@@ -19,11 +19,11 @@ import StoresListPage from "./modules/search/ui/StoresListPage";
 import HomePage from "./modules/home/ui/HomePage";
 
 //seller
-import BeSellerPage from "./modules/seller/ui/BeSellerPage";
-import CrudProductPage from "./modules/seller/ui/CrudProductPage";
-import ProductPage from "./modules/seller/ui/ProductPage";
-import RegisterSellerPage from "./modules/seller/ui/RegisterSellerPage";
-import SellerPage from "./modules/seller/ui/SellerPage";
+import BeSellerPage from "./modules/home/ui/BeSellerPage";
+import StoreProductCRUDPage from "./modules/store/ui/StoreProductCRUDPage";
+import ProductPage from "./modules/store/ui/ProductPage";
+import RegisterSellerPage from "./modules/store/ui/RegisterSellerPage";
+import StorePage from "./modules/store/ui/StorePage";
 
 //users
 import ProfilePage from "./modules/users/ui/ProfilePage";
@@ -50,7 +50,7 @@ function App() {
                   element={<RegisterSellerPage />}
                 />
                 <Route path="/beSellerPage" element={<BeSellerPage />} />
-                <Route path="/store/:id" element={<SellerPage />} />
+                <Route path="/store/:id" element={<StorePage />} />
                 <Route path="/profile" element={<ProfilePage />} />
                 <Route path="/shoppingCart" element={<ShoppingCartPage />} />
                 <Route path="/wishlist" element={<WishListPage />} />
@@ -64,7 +64,7 @@ function App() {
                   path="/forgotPassword"
                   element={<ForgotPasswordPage />}
                 />
-                <Route path="/crudProduct" element={<CrudProductPage />} />
+                <Route path="/crudProduct" element={<StoreProductCRUDPage />} />
                 <Route
                   path="/s/:categoryId"
                   element={<SearchPage />}
@@ -73,8 +73,8 @@ function App() {
                 <Route path="/s/st" element={<StoresListPage />} />
                 <Route path="/about" element={<AboutUsPage />} />
                 <Route path="/help" element={<HelpPage />} />
-                <Route path="/editProduct/:id" element={<CrudProductPage />} />
-                <Route path="/store/:id/search" element={<SellerPage />} />
+                <Route path="/editProduct/:id" element={<StoreProductCRUDPage />} />
+                <Route path="/store/:id/search" element={<StorePage />} />
                 <Route path="*" element={<NotFoundPage />} />
               </Routes>
             </NotificationProvider>

@@ -28,7 +28,7 @@ type ProductPayload = Omit<ProductForm, "images"> & {
   image_3?: File | string | null;
 };
 
-export default function CrudProductPage() {
+export default function StoreProductCRUDPage() {
   const {
     createProduct,
     updateProduct,

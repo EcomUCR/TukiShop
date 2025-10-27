@@ -34,7 +34,7 @@ interface Store {
   status?: "ACTIVE" | "SUSPENDED" | "CLOSED" | null | string;
 }
 
-export default function SellerProductsList() {
+export default function StoreProductsList() {
   const { user } = useAuth();
   const { getProductsByStore, loading, error } = useProducts();
   const [store, setStore] = useState<Store | null>(null);

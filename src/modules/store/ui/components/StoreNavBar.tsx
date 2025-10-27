@@ -5,17 +5,17 @@ import { getStore } from "../../infrastructure/storeService";
 import { Skeleton } from "../../../../components/ui/skeleton";
 import { useNavigate, useLocation } from "react-router-dom";
 
-interface NavBarSellerProps {
+interface StoreNavBarProps {
   setView: (view: "home" | "offers" | "contact" | "reviews") => void;
   currentView: "home" | "offers" | "contact" | "reviews";
   id?: string | undefined;
 }
 
-export default function NavBarSeller({
+export default function StoreNavBar({
   setView,
   currentView,
   id,
-}: NavBarSellerProps) {
+}: StoreNavBarProps) {
   const [store, setStore] = useState<Store | null>(null);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");

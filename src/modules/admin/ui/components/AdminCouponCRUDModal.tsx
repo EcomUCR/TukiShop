@@ -5,7 +5,7 @@ import { useCoupons } from "../../infrastructure/useCoupons";
 import {
   useProducts,
   type Category,
-} from "../../../seller/infrastructure/useProducts";
+} from "../../../store/infrastructure/useProducts";
 
 interface AdminCouponCRUDModalProps {
   coupon?: any;

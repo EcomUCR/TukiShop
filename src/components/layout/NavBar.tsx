@@ -12,7 +12,7 @@ import {
 import logo from "../../img/TukiLogo.png";
 import ButtonComponent from "../ui/ButtonComponent";
 import { useAuth } from "../../hooks/context/AuthContext";
-import { useProducts } from "../../modules/seller/infrastructure/useProducts";
+import { useProducts } from "../../modules/store/infrastructure/useProducts";
 import { useWishlist } from "../../modules/users/infrastructure/useWishList";
 import NotificationDropdown from "../data-display/NotificationDropDown";
 import { useEffect, useState } from "react";

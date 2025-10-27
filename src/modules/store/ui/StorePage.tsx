@@ -2,17 +2,17 @@ import { useEffect, useState } from "react";
 import { useParams, useLocation } from "react-router-dom";
 import Footer from "../../../components/layout/Footer";
 import NavBar from "../../../components/layout/NavBar";
-import NavBarSeller from "./components/NavBarSeller";
-import HomeSeller from "./components/SellerHomeComponent";
-import SellerOffers from "./components/SellerOffersComponent";
-import SellerContactComponent from "./components/SellerContactComponent";
-import SellerReviewsComponent from "./components/SellerReviewsComponent";
-import SellerSearchPage from "./SellerSearchResults";
+import StoreNavBar from "./components/StoreNavBar";
+import StoreHomeComponent from "./components/StoreHomeComponent";
+import StoreOffersComponent from "./components/StoreOffersComponent";
+import StoreContactComponent from "./components/StoreContactComponent";
+import StoreReviewsComponent from "./components/StoreReviewsComponent";
+import StoreSearchComponent from "./StoreSearchComponent";
 import { getStore } from "../infrastructure/storeService";
 import type { Store } from "../../users/infrastructure/useUser";
 import { SkeletonStoreHeader } from "../../../components/ui/AllSkeletons";
 
-export default function SellerPage() {
+export default function StorePage() {
   const { id } = useParams();
   const location = useLocation();
   const [store, setStore] = useState<Store | null>(null);
@@ -51,22 +51,22 @@ export default function SellerPage() {
 
           {/* 🔹 Navbar del vendedor (mantiene diseño desktop, adaptado a mobile) */}
           <div className="overflow-x-auto sm:overflow-visible">
-            <NavBarSeller setView={setView} currentView={view} id={id} />
+            <StoreNavBar setView={setView} currentView={view} id={id} />
           </div>
         </header>
 
         {/* 🔹 Contenido dinámico */}
         <div className="mt-2 sm:mt-4">
           {isSearchMode ? (
-            <SellerSearchPage />
+            <StoreSearchComponent />
           ) : view === "home" ? (
-            <HomeSeller />
+            <StoreHomeComponent />
           ) : view === "offers" ? (
-            <SellerOffers />
+            <StoreOffersComponent />
           ) : view === "contact" ? (
-            <SellerContactComponent />
+            <StoreContactComponent />
           ) : view === "reviews" ? (
-            <SellerReviewsComponent />
+            <StoreReviewsComponent />
           ) : null}
         </div>
       </div>

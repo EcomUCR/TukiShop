@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { IconPlus, IconX } from "@tabler/icons-react";
-import type { Category } from "../../modules/seller/infrastructure/useProducts";
+import type { Category } from "../../modules/store/infrastructure/useProducts";
 
 interface CategorySelectorProps {
     categories: Category[];

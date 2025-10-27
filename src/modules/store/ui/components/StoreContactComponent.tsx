@@ -10,7 +10,7 @@ import type { Store } from "../../../users/infrastructure/useUser";
 import logoFallback from "../../../../img/resources/Group 50.png";
 import { SkeletonSellerContact } from "../../../../components/ui/AllSkeletons";
 
-export default function SellerContactComponent() {
+export default function StoreContactComponent() {
   const { id } = useParams();
   const [store, setStore] = useState<Store | null>(null);
   const [loading, setLoading] = useState(true);

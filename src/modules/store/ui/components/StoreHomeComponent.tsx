@@ -12,7 +12,7 @@ import {
   SkeletonFeatured,
 } from "../../../../components/ui/AllSkeletons";
 
-export default function HomeSeller() {
+export default function StoreHomeComponent() {
   const { id } = useParams();
   const { getProductsByStore, getFeaturedProductsByStore, getOffersByStore } =
     useProducts();

@@ -9,8 +9,8 @@ import {
 import audifonos from "../../../img/resources/audifonos.jpg";
 import FeaturedProductsSlider from "../../../components/data-display/FeaturedProductsSlider";
 import { useEffect, useState } from "react";
-import { useProducts } from "../../seller/infrastructure/useProducts";
-import type { Product } from "../../seller/infrastructure/useProducts";
+import { useProducts } from "../../store/infrastructure/useProducts";
+import type { Product } from "../../store/infrastructure/useProducts";
 import CategorySlider from "../../../components/data-display/CategorySlider";
 import ProductCard from "../../../components/data-display/ProductCard";
 import { IconChevronRight } from "@tabler/icons-react";

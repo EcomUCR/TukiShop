@@ -14,7 +14,7 @@ import {
   IconExclamationCircle,
 } from "@tabler/icons-react";
 import { uploadImage } from "../../infrastructure/imageService";
-import { updateStore } from "../../../seller/infrastructure/storeService";
+import { updateStore } from "../../../store/infrastructure/storeService";
 import { useAuth } from "../../../../hooks/context/AuthContext";
 
 interface Store {

@@ -4,7 +4,7 @@ import { useOrder } from "../../../users/infrastructure/useOrder";
 import OrderCard from "../../../users/ui/components/OrderCard";
 import OrderModal from "../../../users/ui/components/OrderModal";
 
-export default function SellerOrderStatus() {
+export default function StoreOrderList() {
   const { user } = useAuth();
   const { orders, loading, fetchOrdersByStore } = useOrder();
   const [selectedOrder, setSelectedOrder] = useState<any | null>(null);

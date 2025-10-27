@@ -33,7 +33,7 @@ import bg from "../../img/Home.png";
 import {
   useProducts,
   type Category,
-} from "../../modules/seller/infrastructure/useProducts";
+} from "../../modules/store/infrastructure/useProducts";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 

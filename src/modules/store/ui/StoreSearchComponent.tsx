@@ -6,7 +6,7 @@ import type { Product } from "../infrastructure/useProducts";
 import audifonos from "../../../img/audifonos.png";
 import { SkeletonProduct } from "../../../components/ui/AllSkeletons";
 
-export default function SellerSearchResults() {
+export default function StoreSearchComponent() {
   const { id } = useParams();
   const [searchParams] = useSearchParams();
   const query = searchParams.get("q") || "";

@@ -3,8 +3,8 @@ import { useParams, useLocation } from "react-router-dom";
 import NavBar from "../../../components/layout/NavBar";
 import Footer from "../../../components/layout/Footer";
 import ProductCard from "../../../components/data-display/ProductCard";
-import { useProducts } from "../../seller/infrastructure/useProducts";
-import type { Product } from "../../seller/infrastructure/useProducts";
+import { useProducts } from "../../store/infrastructure/useProducts";
+import type { Product } from "../../store/infrastructure/useProducts";
 import { SkeletonProduct } from "../../../components/ui/AllSkeletons";
 import {
   Pagination,

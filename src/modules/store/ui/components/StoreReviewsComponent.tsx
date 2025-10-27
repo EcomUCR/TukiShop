@@ -16,7 +16,7 @@ interface Review {
   image?: string;
 }
 
-export default function SellerReviewsComponent() {
+export default function StoreReviewsComponent() {
   const { id: storeId } = useParams();
   const [reviews, setReviews] = useState<Review[]>([]);
   const { token } = useAuth();

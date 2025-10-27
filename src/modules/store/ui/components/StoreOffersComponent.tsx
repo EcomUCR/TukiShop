@@ -6,7 +6,7 @@ import { SkeletonProduct } from "../../../../components/ui/AllSkeletons";
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 
-export default function SellerOffersPage() {
+export default function StoreOffersComponent() {
   const { id } = useParams();
   const { getOffersByStore } = useProducts();
 

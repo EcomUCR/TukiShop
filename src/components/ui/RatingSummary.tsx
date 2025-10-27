@@ -1,7 +1,7 @@
 import { IconStar, IconStarFilled } from "@tabler/icons-react";
 import { useState } from "react";
 import { useAuth } from "../../hooks/context/AuthContext";
-import { useRatings } from "../../modules/seller/infrastructure/useRatings";
+import { useRatings } from "../../modules/store/infrastructure/useRatings";
 import { SkeletonRatingSummary } from "./AllSkeletons";
 import { useAlert } from "../../hooks/context/AlertContext";
 import { useNavigate } from "react-router-dom";

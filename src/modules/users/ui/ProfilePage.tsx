@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import Footer from "../../../components/layout/Footer";
 import NavBar from "../../../components/layout/NavBar";
-import SellerProductsList from "../../seller/ui/components/SellerProductsList";
+import StoreProductsList from "../../store/ui/components/StoreProductsList";
 import SideBar from "../../../components/layout/SideBar";
 import TransactionHistory from "./TransactionHistory";
 import UserProfile from "./UserProfile";
@@ -15,7 +15,7 @@ import OrdersList from "./OrdersList";
 import { useNotificationContext } from "../../../hooks/context/NotificationContext";
 import { IconMenu2, IconX } from "@tabler/icons-react";
 import AdminMailboxList from "../../admin/ui/components/AdminMailboxList";
-import SellerOrderStatus from "../../seller/ui/components/SellerOrderStatus";
+import StoreOrderList from "../../store/ui/components/StoreOrderList";
 
 export default function UserPage() {
   const [selected, setSelected] = useState("profile");
@@ -137,13 +137,13 @@ export default function UserPage() {
               {/* pedidos según rol */}
               {selected === "orders" &&
                 (user.role === "SELLER" ? (
-                  <SellerOrderStatus />
+                  <StoreOrderList />
                 ) : (
                   <OrdersList />
                 ))}
 
               {selected === "products" && user.role === "SELLER" && (
-                <SellerProductsList />
+                <StoreProductsList />
               )}
               {selected === "orderStatus" && user.role === "SELLER" && (
                 <OrderStatus />
