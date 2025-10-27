@@ -17,7 +17,7 @@ import { useWishlist } from "../../modules/users/infrastructure/useWishList";
 
 import { useEffect, useState } from "react";
 import CategoryDropdown from "../data-display/CategoryDropdown";
-import NotificationDropdown from "../data-display/NotificationDropDown";
+import NotificationDropdown from "../data-display/NotificationDropdown";
 import { motion, AnimatePresence } from "framer-motion";
 import { useCart } from "../../hooks/context/CartContext";
 type Category = { id: number; name: string };

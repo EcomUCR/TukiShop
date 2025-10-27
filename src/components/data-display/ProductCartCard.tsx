@@ -1,6 +1,6 @@
 import { IconHeart, IconTrash } from "@tabler/icons-react";
 import StarRatingComponent from "../ui/StarRatingComponent";
-import { useCart } from "../../hooks/context/CartContext"; // ✅ Nuevo contexto centralizado
+import { useCart } from "../../hooks/context/CartContext";
 import { Link } from "react-router-dom";
 import { useAlert } from "../../hooks/context/AlertContext";
 import { useState } from "react";
@@ -26,7 +26,7 @@ interface Props {
   };
 }
 
-export default function ProductCardShopping({ item }: Props) {
+export default function ProductCartCard({ item }: Props) {
   const { product } = item;
   const { updateQuantity, removeItem } = useCart(); // ✅ Usamos funciones del CartContext
   const { showAlert } = useAlert();

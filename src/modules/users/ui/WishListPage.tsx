@@ -2,8 +2,8 @@ import { useEffect } from "react";
 import { useParams } from "react-router-dom";
 import Footer from "../../../components/layout/Footer";
 import NavBar from "../../../components/layout/NavBar";
-import ProductCardWishList from "../../../components/data-display/ProductCardWishList";
-import ShareBubbles from "../../../components/data-display/ShareBubbles";
+import ProductWishlistCard from "../../../components/data-display/ProductWishlistCard";
+import ShareComponent from "../../../components/data-display/ShareComponent";
 import { useWishlist } from "../infrastructure/useWishList";
 
 export default function WishListPage() {
@@ -62,7 +62,7 @@ export default function WishListPage() {
         <section className="mt-6 flex flex-col gap-4">
           {wishlist?.items?.length ? (
             wishlist.items.map((item) => (
-              <ProductCardWishList
+              <ProductWishlistCard
                 key={item.id}
                 product={{
                   id: item.product.id,
@@ -81,7 +81,7 @@ export default function WishListPage() {
                     ? undefined
                     : (p) => console.log("Agregar al carrito:", p)
                 }
-                isPublicMode={isPublicMode} // ✅ agregado
+                isPublicMode={isPublicMode}
               />
             ))
           ) : (
@@ -105,9 +105,9 @@ export default function WishListPage() {
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 mt-2 w-full sm:w-auto items-center justify-center border-contrast-secondary border-2 py-2 px-10 sm:py-3 rounded-full">
-              <ShareBubbles
+              <ShareComponent
                 positionClass="absolute right-3 top-25"
-                shareUrl={`${window.location.origin}/wishlist/public/${wishlist.slug}`} // ✅ ruta corregida
+                shareUrl={`${window.location.origin}/wishlist/public/${wishlist.slug}`}
               />
             </div>
           </section>

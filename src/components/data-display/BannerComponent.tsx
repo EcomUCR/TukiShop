@@ -1,8 +1,7 @@
-//import { Link } from "react-router-dom";
 import ButtonComponent from "../ui/ButtonComponent";
 
 interface BannerComponentProps {
-  id?: number; // <-- cambia aquí
+  id?: number;
   title?: string;
   subtitle?: string;
   image: string;

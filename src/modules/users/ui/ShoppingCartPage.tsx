@@ -1,7 +1,7 @@
 import Footer from "../../../components/layout/Footer";
 import FormShopping from "../../../components/forms/FormShopping";
 import NavBar from "../../../components/layout/NavBar";
-import ProductCardShopping from "../../../components/data-display/ProductCardShopping";
+import ProductCartCard from "../../../components/data-display/ProductCartCard";
 import { IconBrandWhatsapp } from "@tabler/icons-react";
 import { useEffect } from "react";
 import BannerComponent from "../../../components/data-display/BannerComponent";
@@ -44,7 +44,7 @@ export default function ShoppingCartPage() {
           <div className="my-5 w-full sm:w-2/3 sm:border-r-2 sm:pr-5 border-main flex flex-col">
             {hasItems ? (
               cart.items.map((item) => (
-                <ProductCardShopping key={item.id} item={item} />
+                <ProductCartCard key={item.id} item={item} />
               ))
             ) : (
               <p className="text-center font-semibold text-main text-lg py-10">

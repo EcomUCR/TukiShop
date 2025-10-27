@@ -7,7 +7,7 @@ import {
 } from "@tabler/icons-react";
 import { useNotifications } from "../../hooks/useNotifications";
 import { useNavigate } from "react-router-dom";
-import { useNotificationContext } from "../../hooks/context/NotificationContext"; // 👈 nuevo import
+import { useNotificationContext } from "../../hooks/context/NotificationContext";
 
 export default function NotificationDropdown() {
   const [open, setOpen] = useState(false);
@@ -16,9 +16,8 @@ export default function NotificationDropdown() {
   const navigate = useNavigate();
 
   const { notifications, loading } = useNotifications();
-  const { setStoreToOpen } = useNotificationContext(); // 👈 acceso al contexto
+  const { setStoreToOpen } = useNotificationContext();
 
-  // Cierra al hacer clic fuera
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (

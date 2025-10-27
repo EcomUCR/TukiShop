@@ -22,7 +22,7 @@ import { useAlert } from "../../../hooks/context/AlertContext";
 import { useNavigate } from "react-router-dom";
 import AnimatedHeartButton from "../../../components/data-display/HeartButton";
 import { AnimatePresence, motion } from "framer-motion";
-import ShareBubbles from "../../../components/data-display/ShareBubbles";
+import ShareComponent from "../../../components/data-display/ShareComponent";
 import { useCart } from "../../../hooks/context/CartContext";
 
 type BorderColors = {
@@ -314,7 +314,7 @@ export default function ProductPage() {
                         </div>
 
                         <div className="relative">
-                          <ShareBubbles positionClass="absolute right-30 top-25" shareUrl={""} />
+                          <ShareComponent positionClass="absolute right-30 top-25" shareUrl={""} />
                         </div>
                       </div>
                     </div>
@@ -361,7 +361,7 @@ export default function ProductPage() {
                           </div>
 
                           <div className="relative">
-                            <ShareBubbles positionClass="absolute right-30 top-25" shareUrl={""} />
+                            <ShareComponent positionClass="absolute right-30 top-25" shareUrl={""} />
                           </div>
                         </div>
                       </div>

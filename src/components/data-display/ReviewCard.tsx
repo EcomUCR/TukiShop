@@ -1,6 +1,6 @@
 import StarRatingComponent from "../ui/StarRatingComponent";
 
-interface LargeReviewProps {
+interface ReviewProps {
   name: string;
   rating: number;
   comment: string;
@@ -8,16 +8,15 @@ interface LargeReviewProps {
   image?: string | null;
 }
 
-export default function LargeReviewComponent({
+export default function ReviewCard({
   name,
   rating,
   comment,
   date,
   image,
-}: LargeReviewProps) {
+}: ReviewProps) {
   return (
     <figure className="flex flex-col gap-5 font-quicksand mt-5">
-      {/* Encabezado del usuario */}
       <div className="flex items-center gap-4">
         {image ? (
           <img
@@ -37,10 +36,8 @@ export default function LargeReviewComponent({
         </div>
       </div>
 
-      {/* Comentario */}
       <p className="font-medium text-gray-800 leading-relaxed">{comment}</p>
 
-      {/* Fecha y decorador */}
       <div className="flex justify-between items-center">
         <p className="text-sm text-gray-500">{date}</p>
       </div>

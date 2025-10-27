@@ -2,7 +2,7 @@ import { IconTrash, IconShoppingBag } from "@tabler/icons-react";
 import StarRatingComponent from "../ui/StarRatingComponent";
 import { Link } from "react-router-dom";
 
-interface ProductCardWishListProps {
+interface ProductWishlistCardProps {
   product: {
     id: number;
     name: string;
@@ -15,15 +15,15 @@ interface ProductCardWishListProps {
   };
   onDelete?: (id: number) => void;
   onAddToCart?: (product: any) => void;
-  isPublicMode?: boolean; // ✅ Nueva prop
+  isPublicMode?: boolean;
 }
 
-export default function ProductCardWishList({
+export default function ProductWishlistCard({
   product,
   onDelete,
   onAddToCart,
-  isPublicMode = false, // valor por defecto
-}: ProductCardWishListProps) {
+  isPublicMode = false,
+}: ProductWishlistCardProps) {
   const formatCRC = (n: number) =>
     n?.toLocaleString("es-CR", { style: "currency", currency: "CRC" });
 

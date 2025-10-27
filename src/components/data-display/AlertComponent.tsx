@@ -9,10 +9,8 @@ interface AlertComponentProps {
     cancelText?: string;
     onConfirm?: () => void;
     onCancel?: () => void;
-    type?: "info" | "success" | "warning" | "error"; // opcional por compatibilidad hola
+    type?: "info" | "success" | "warning" | "error";
 }
-
-console.log("Hola");
 
 export default function AlertComponent({
     show,

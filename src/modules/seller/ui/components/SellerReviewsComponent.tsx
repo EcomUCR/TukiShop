@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import InteractiveRatingSummary from "../../../../components/ui/InteractiveRatingSummary";
-import LargeReviewComponent from "../../../../components/data-display/LargeReviewComponent";
+import ReviewCard from "../../../../components/data-display/ReviewCard";
 import { useRatings } from "../../infrastructure/useRatings";
 import { SkeletonSellerReviews } from "../../../../components/ui/AllSkeletons";
 import { useAuth } from "../../../../hooks/context/AuthContext";
@@ -114,7 +114,7 @@ export default function SellerReviewsComponent() {
           {reviews.length > 0 ? (
             <div className="mt-5 sm:mt-8 flex flex-col gap-4">
               {reviews.map((r) => (
-                <LargeReviewComponent
+                <ReviewCard
                   key={r.id}
                   name={r.name}
                   rating={r.rating}

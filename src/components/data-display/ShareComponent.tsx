@@ -10,15 +10,15 @@ import {
 } from "@tabler/icons-react";
 import ButtonComponent from "../ui/ButtonComponent";
 
-interface ShareBubblesProps {
+interface ShareComponentProps {
   positionClass?: string;
-  shareUrl: string; // ✅ añadimos solo esta prop
+  shareUrl: string;
 }
 
-export default function ShareBubbles({
+export default function ShareComponent({
   positionClass = "absolute right-3 top-25",
   shareUrl,
-}: ShareBubblesProps) {
+}: ShareComponentProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleShare = (platform: string) => {
