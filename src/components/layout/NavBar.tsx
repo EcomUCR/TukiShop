@@ -14,12 +14,13 @@ import ButtonComponent from "../ui/ButtonComponent";
 import { useAuth } from "../../hooks/context/AuthContext";
 import { useProducts } from "../../modules/seller/infrastructure/useProducts";
 import { useWishlist } from "../../modules/users/infrastructure/useWishList";
-
+import NotificationDropdown from "../data-display/NotificationDropDown";
 import { useEffect, useState } from "react";
 import CategoryDropdown from "../data-display/CategoryDropdown";
-import NotificationDropdown from "../data-display/NotificationDropdown";
+
 import { motion, AnimatePresence } from "framer-motion";
 import { useCart } from "../../hooks/context/CartContext";
+
 type Category = { id: number; name: string };
 
 export default function NavBar() {

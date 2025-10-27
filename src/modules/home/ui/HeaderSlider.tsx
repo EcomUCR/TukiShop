@@ -4,11 +4,11 @@ import {
   CarouselItem,
   CarouselNext,
   CarouselPrevious,
-} from "./carousel";
-import BannerComponent from "../data-display/BannerComponent";
-import { useBanner } from "../../modules/admin/infrastructure/useBanner";
+} from "../../../components/ui/carousel";
+import BannerComponent from "../../../components/data-display/BannerComponent";
+import { useBanner } from "../../admin/infrastructure/useBanner";
 import { useEffect } from "react";
-import { SkeletonHeaderSlider } from "../ui/AllSkeletons";
+import { SkeletonHeaderSlider } from "../../../components/ui/AllSkeletons";
 
 export default function HeaderSlider() {
   const { banners, fetchBanners, loading } = useBanner();

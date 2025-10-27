@@ -1,5 +1,5 @@
 import Footer from "../../../components/layout/Footer";
-import FormShopping from "../../../components/forms/FormShopping";
+import ShoppingForm from "../../../components/forms/ShoppingForm";
 import NavBar from "../../../components/layout/NavBar";
 import ProductCartCard from "../../../components/data-display/ProductCartCard";
 import { IconBrandWhatsapp } from "@tabler/icons-react";
@@ -78,7 +78,7 @@ export default function ShoppingCartPage() {
 
           {/* 💳 Formulario de pago */}
           <div className="my-5 sm:my-10 sm:pl-10 w-full sm:w-1/3">
-            <FormShopping />
+            <ShoppingForm />
           </div>
         </section>
 

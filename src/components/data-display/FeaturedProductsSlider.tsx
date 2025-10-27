@@ -4,7 +4,7 @@ import {
     CarouselItem,
     CarouselNext,
     CarouselPrevious,
-} from "../navigation/carousel";
+} from "../ui/carousel";
 import FeaturedProductCard from "./FeaturedProductCard";
 
 interface FeaturedProductsSliderProps {

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import Footer from "../../../components/layout/Footer";
 import NavBar from "../../../components/layout/NavBar";
 import SellerProductsList from "../../seller/ui/components/SellerProductsList";
-import SideBar from "../../../components/navigation/SideBar";
+import SideBar from "../../../components/layout/SideBar";
 import TransactionHistory from "./TransactionHistory";
 import UserProfile from "./UserProfile";
 import { useAuth } from "../../../hooks/context/AuthContext";

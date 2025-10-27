@@ -13,22 +13,21 @@ import { useAlert } from "../../hooks/context/AlertContext";
 
 import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
-import StripePaymentForm from "../../components/ui/StripePaymentForm";
+import StripePaymentForm from "../ui/StripePaymentForm";
 
-// ⚙️ Stripe (solo una instancia)
 const stripePromise = loadStripe(
   "pk_test_51SJQBqLl2yLxOyLIFdLhdGoXjNKpBn2WFxWjMhInw72TUbRe7DVmYLa17tBOfswYlYqe0E3J3bqYWFyuJaEFYMLI00aJOZAoJY"
 );
 
-interface FormShoppingProps {
+interface ShoppingFormProps {
   variant?: "checkout" | "product";
   onAddToCart?: () => void;
 }
 
-export default function FormShopping({
+export default function ShoppingForm({
   variant = "checkout",
   onAddToCart,
-}: FormShoppingProps) {
+}: ShoppingFormProps) {
   const {
     getForexRate,
     rate,

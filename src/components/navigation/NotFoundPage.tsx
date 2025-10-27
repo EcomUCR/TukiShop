@@ -1,7 +1,7 @@
 import Footer from "../layout/Footer";
 import NavBar from "../layout/NavBar";
 
-export default function NotFound() {
+export default function NotFoundPage() {
   return (
     <div className="flex flex-col min-h-screen bg-white">
       <NavBar />

@@ -32,7 +32,7 @@ import { AlertProvider } from "./hooks/context/AlertContext";
 import AboutUsPage from "./modules/home/ui/AboutUsPage";
 import HelpPage from "./modules/home/ui/HelpPage";
 import WishListPage from "./modules/users/ui/WishListPage";
-import NotFound from "./components/navigation/NotFound";
+import NotFoundPage from "./components/navigation/NotFoundPage";
 import { NotificationProvider } from "./hooks/context/NotificationContext";
 
 function App() {
@@ -75,7 +75,7 @@ function App() {
                 <Route path="/help" element={<HelpPage />} />
                 <Route path="/editProduct/:id" element={<CrudProductPage />} />
                 <Route path="/store/:id/search" element={<SellerPage />} />
-                <Route path="*" element={<NotFound />} />
+                <Route path="*" element={<NotFoundPage />} />
               </Routes>
             </NotificationProvider>
           </CartProvider>

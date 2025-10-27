@@ -371,7 +371,7 @@ export const SkeletonProductPageMain = ({
         </div>
       </div>
 
-      {/* 🔹 Columna de compra (FormShopping) */}
+      {/* 🔹 Columna de compra (ShoppingForm) */}
       <div className="w-3/12 flex flex-col gap-4">
         <Skeleton className="w-full h-[260px] rounded-2xl bg-gray-300/70" />
         <Skeleton className="w-full h-[50px] rounded-full bg-gray-300/70" />

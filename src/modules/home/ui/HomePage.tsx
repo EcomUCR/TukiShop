@@ -1,4 +1,4 @@
-import HeaderSlider from "../../../components/navigation/HeaderSlider";
+import HeaderSlider from "./HeaderSlider";
 import NavBar from "../../../components/layout/NavBar";
 import {
   SkeletonProduct,

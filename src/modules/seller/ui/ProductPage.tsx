@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import Footer from "../../../components/layout/Footer";
 import NavBar from "../../../components/layout/NavBar";
 import audifonos from "../../../img/resources/audifonos.jpg";
-import FormShopping from "../../../components/forms/FormShopping";
+import ShoppingForm from "../../../components/forms/ShoppingForm";
 import StarRatingComponent from "../../../components/ui/StarRatingComponent";
 import ButtonComponent from "../../../components/ui/ButtonComponent";
 import FeaturedProductsSlider from "../../../components/data-display/FeaturedProductsSlider";
@@ -319,9 +319,9 @@ export default function ProductPage() {
                       </div>
                     </div>
 
-                    {/* 🛒 FormShopping (mobile debajo de wishlist, desktop al lado) */}
+                    {/* Mobile */}
                     <div className="order-6 mt-6 sm:pt-0 pt-15 lg:hidden">
-                      <FormShopping variant="product" onAddToCart={() => handleAddToCart(product.id!)} />
+                      <ShoppingForm variant="product" onAddToCart={() => handleAddToCart(product.id!)} />
                     </div>
                   </div>
 
@@ -368,9 +368,9 @@ export default function ProductPage() {
                     </div>
                   </div>
 
-                  {/* 🛒 FormShopping original desktop */}
+                  {/* Desktop */}
                   <div className="hidden lg:block w-3/12 order-3">
-                    <FormShopping variant="product" onAddToCart={() => handleAddToCart(product.id!)} />
+                    <ShoppingForm variant="product" onAddToCart={() => handleAddToCart(product.id!)} />
                   </div>
                 </section>
 

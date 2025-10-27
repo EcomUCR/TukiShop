@@ -4,7 +4,7 @@ import {
   CarouselItem,
   CarouselNext,
   CarouselPrevious,
-} from "../navigation/carousel";
+} from "../ui/carousel";
 import CategoryCard from "./CategoryCard";
 import {
   IconBrush,
