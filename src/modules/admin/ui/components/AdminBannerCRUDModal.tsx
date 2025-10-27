@@ -5,19 +5,19 @@ import { useBanner } from "../../infrastructure/useBanner";
 import { useState } from "react";
 import { uploadImage } from "../../../users/infrastructure/imageService";
 
-interface BannerModalProps {
+interface AdminBannerCRUDModalProps {
   newBanner: any;
   setNewBanner: (value: any) => void;
   onClose: () => void;
   onSaveSuccess?: () => void;
 }
 
-export default function BannerModal({
+export default function AdminBannerCRUDModal({
   newBanner,
   setNewBanner,
   onClose,
   onSaveSuccess,
-}: BannerModalProps) {
+}: AdminBannerCRUDModalProps) {
   const { saveBanner, loading } = useBanner();
   const [uploading, setUploading] = useState(false);
 

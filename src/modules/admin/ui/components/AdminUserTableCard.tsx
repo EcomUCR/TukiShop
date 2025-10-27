@@ -2,7 +2,7 @@ import { IconSettings, IconUser, IconCash } from "@tabler/icons-react";
 import { Switch } from "../../../../components/ui/switch";
 import ButtonComponent from "../../../../components/ui/ButtonComponent";
 
-interface AdminProfileCardProps {
+interface AdminUserTableCardProps {
   id: string | number;
   username: string;
   email: string;
@@ -12,7 +12,7 @@ interface AdminProfileCardProps {
   onEdit?: () => void;
 }
 
-export default function AdminProfileCard({
+export default function AdminUserTableCard({
   id,
   username,
   email,
@@ -20,7 +20,7 @@ export default function AdminProfileCard({
   status,
   onStatusChange,
   onEdit,
-}: AdminProfileCardProps) {
+}: AdminUserTableCardProps) {
   const getRoleIcon = () => {
     switch (role) {
       case "CUSTOMER":

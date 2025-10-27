@@ -8,14 +8,14 @@ import UserProfile from "./UserProfile";
 import { useAuth } from "../../../hooks/context/AuthContext";
 import OrderStatus from "./OrderStatus";
 import { AnimatePresence, motion } from "framer-motion";
-import AdminUsersTable from "../../admin/ui/components/AdminUsersTable";
-import CrudBanners from "../../admin/ui/components/CrudBanners";
-import AdminCoupons from "../../admin/ui/components/AdminCoupons";
+import AdminUsersList from "../../admin/ui/components/AdminUsersList";
+import AdminBannerList from "../../admin/ui/components/AdminBannerList";
+import AdminCouponsList from "../../admin/ui/components/AdminCouponsList";
 import OrdersList from "./OrdersList";
 import { useNotificationContext } from "../../../hooks/context/NotificationContext";
 import { IconMenu2, IconX } from "@tabler/icons-react";
-import AdminMailBox from "../../admin/ui/components/AdminMailBox";
-import SellerOrderStatus from "../../seller/ui/components/SellerOrderStatus"; // ✅ Import agregado
+import AdminMailboxList from "../../admin/ui/components/AdminMailboxList";
+import SellerOrderStatus from "../../seller/ui/components/SellerOrderStatus";
 
 export default function UserPage() {
   const [selected, setSelected] = useState("profile");
@@ -149,16 +149,16 @@ export default function UserPage() {
                 <OrderStatus />
               )}
               {selected === "users" && user.role === "ADMIN" && (
-                <AdminUsersTable />
+                <AdminUsersList />
               )}
               {selected === "coupons" && user.role === "ADMIN" && (
-                <AdminCoupons />
+                <AdminCouponsList />
               )}
               {selected === "mailbox" && user.role === "ADMIN" && (
-                <AdminMailBox />
+                <AdminMailboxList />
               )}
               {selected === "banners" && user.role === "ADMIN" && (
-                <CrudBanners />
+                <AdminBannerList />
               )}
             </motion.div>
           </AnimatePresence>

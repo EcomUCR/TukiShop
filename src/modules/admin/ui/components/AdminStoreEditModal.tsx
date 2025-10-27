@@ -21,19 +21,19 @@ interface Store {
   user?: { username?: string };
 }
 
-interface StoreEditModalProps {
+interface AdminStoreEditModalProps {
   store: Store;
   onClose: () => void;
   onSave: (updatedStore: Store) => Promise<void>;
   onViewProducts: (storeId: number) => void;
 }
 
-export default function StoreEditModal({
+export default function AdminStoreEditModal({
   store,
   onClose,
   onSave,
   onViewProducts,
-}: StoreEditModalProps) {
+}: AdminStoreEditModalProps) {
   const [formData, setFormData] = useState<Store>({ ...store });
   const [logoFile, setLogoFile] = useState<File | null>(null);
   const [bannerFile, setBannerFile] = useState<File | null>(null);

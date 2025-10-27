@@ -7,7 +7,7 @@ interface CouponCardProps {
     onDelete: (id: number) => void;
 }
 
-export default function CouponCard({ coupon, onEdit, onDelete }: CouponCardProps) {
+export default function AdminCouponCard({ coupon, onEdit, onDelete }: CouponCardProps) {
     return (
         <div
             className="flex items-center justify-between w-full bg-main-dark/10 rounded-2xl px-6 py-4 hover:bg-main-dark/20 transition-all duration-200 shadow-sm cursor-pointer"

@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
 import ButtonComponent from "../../../../components/ui/ButtonComponent";
-import CouponCard from "./CouponCard";
-import CouponModal from "./CouponModal";
+import AdminCouponCard from "./AdminCouponCard";
+import AdminCouponCRUDModal from "./AdminCouponCRUDModal";
 import { useCoupons } from "../../infrastructure/useCoupons";
 
-export default function AdminCoupons() {
+export default function AdminCouponsList() {
   const {
     coupons,
     createCoupon,
@@ -83,7 +83,7 @@ export default function AdminCoupons() {
           ) : coupons.length > 0 ? (
             <div className="flex flex-col gap-4">
               {coupons.map((coupon) => (
-                <CouponCard
+                <AdminCouponCard
                   key={coupon.id}
                   coupon={coupon}
                   onEdit={(coupon) => {
@@ -99,7 +99,7 @@ export default function AdminCoupons() {
               <p className="text-gray-500 italic">
                 No hay cupones creados todavía.
               </p>
-              <CouponCard
+              <AdminCouponCard
                 coupon={{
                   id: 1,
                   code: "TUKI20",
@@ -122,7 +122,7 @@ export default function AdminCoupons() {
 
       {/* Modal CRUD */}
       {showModal && (
-        <CouponModal
+        <AdminCouponCRUDModal
           coupon={selectedCoupon}
           onClose={() => setShowModal(false)}
           onSave={handleSaveCoupon}

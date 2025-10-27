@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import { IconSearch } from "@tabler/icons-react";
 import ButtonComponent from "../../../../components/ui/ButtonComponent";
-import AdminProfileCard from "./AdminProfileCard";
-import useAdmin from "../../../admin/infrastructure/useAdmin";
-import UserEditModal from "../components/UserEditModal";
-import StoreEditModal from "../components/StoreEditModal";
+import AdminUserTableCard from "./AdminUserTableCard";
+import useAdmin from "../../infrastructure/useAdmin";
+import AdminUserEditModal from "./AdminUserEditModal";
+import AdminStoreEditModal from "./AdminStoreEditModal";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   Pagination,
@@ -15,16 +15,16 @@ import {
   PaginationPrevious,
 } from "../../../../components/ui/pagination";
 import { useNotificationContext } from "../../../../hooks/context/NotificationContext";
-import AddUserModal from "./AddUserModal";
+import AdminUserAddModal from "./AdminUserAddModal";
 
-export default function AdminUsersTable() {
+export default function AdminUsersList() {
   const {
     getUsers,
     updateUserStatus,
     updateUserData,
     getStoreByUserId,
     updateStoreData,
-    createUser, // ✅ agregado
+    createUser,
     loading,
     error,
   } = useAdmin();
@@ -227,7 +227,7 @@ export default function AdminUsersTable() {
             {/* Filas */}
             {paginatedUsers.length > 0 ? (
               paginatedUsers.map((user) => (
-                <AdminProfileCard
+                <AdminUserTableCard
                   key={user.id}
                   id={user.id}
                   username={user.username || `${user.first_name ?? ""} ${user.last_name ?? ""}`}
@@ -304,7 +304,7 @@ export default function AdminUsersTable() {
       <AnimatePresence>
         {showModal && selectedUser && (
           <motion.div className="fixed inset-0 z-50 flex items-center justify-center">
-            <UserEditModal
+            <AdminUserEditModal
               user={selectedUser}
               onClose={() => setShowModal(false)}
               onSave={handleSaveUser}
@@ -317,7 +317,7 @@ export default function AdminUsersTable() {
       <AnimatePresence>
         {showStoreModal && selectedStore && (
           <motion.div className="fixed inset-0 z-50 flex items-center justify-center">
-            <StoreEditModal
+            <AdminStoreEditModal
               store={selectedStore}
               onClose={() => setShowStoreModal(false)}
               onSave={handleSaveStore}
@@ -332,7 +332,7 @@ export default function AdminUsersTable() {
       <AnimatePresence>
         {showAddUserModal && (
           <motion.div className="fixed inset-0 z-50 flex items-center justify-center">
-            <AddUserModal
+            <AdminUserAddModal
               onClose={() => setShowAddUserModal(false)}
               onSave={async (userData) => {
                 const created = await createUser(userData);

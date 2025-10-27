@@ -7,7 +7,7 @@ import {
   type Category,
 } from "../../../seller/infrastructure/useProducts";
 
-interface CouponModalProps {
+interface AdminCouponCRUDModalProps {
   coupon?: any;
   onClose: () => void;
   onSave?: (couponData: any) => void;
@@ -30,11 +30,11 @@ interface CouponFormData {
   active: boolean;
 }
 
-export default function CouponModal({
+export default function AdminCouponCRUDModal({
   coupon,
   onClose,
   onSave,
-}: CouponModalProps) {
+}: AdminCouponCRUDModalProps) {
   const [formData, setFormData] = useState<CouponFormData>(
     coupon ?? {
       code: "",

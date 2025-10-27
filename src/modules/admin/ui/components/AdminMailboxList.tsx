@@ -1,35 +1,32 @@
-import MailboxCard from "./MailboxCard";
+import MailboxCard from "./AdminMailboxCard";
 import { useNotifications } from "../../../../hooks/useNotifications";
 import { useNotificationContext } from "../../../../hooks/context/NotificationContext";
 import { useNavigate } from "react-router-dom";
 
-export default function AdminMailBox() {
+export default function AdminMailboxList() {
   const { notifications, loading } = useNotifications();
   const { setStoreToOpen } = useNotificationContext();
   const navigate = useNavigate();
 
-  // 🔹 Normalizar datos de notificaciones al formato del MailboxCard
-  const formattedNotifications = notifications.map((n) => {
+    const formattedNotifications = notifications.map((n) => {
     const type: "STORE_PENDING_VERIFICATION" | "CONTACT_MESSAGE" =
       n.type === "STORE_PENDING_VERIFICATION" || n.related_type === "store"
         ? "STORE_PENDING_VERIFICATION"
         : "CONTACT_MESSAGE";
 
     return {
-      id: n.id,                 // <- id de la notificación
+      id: n.id,
       type,
       title: n.title,
       message: n.message,
       created_at: n.created_at,
       is_read: n.is_read,
-      // 👇 Enviamos también el ID REAL del contacto
       data: {
         store_id: n.data?.store_id ?? n.related_id ?? null,
         name: n.data?.name,
         subject: n.data?.subject,
         email: n.data?.email,
         message: n.data?.message,
-        // ✅ Prioriza data.contact_id; si no viene, usa related_id cuando es contact_message
         contact_id:
           n?.data?.contact_id ??
           (n.related_type === "contact_message" ? n.related_id : null),

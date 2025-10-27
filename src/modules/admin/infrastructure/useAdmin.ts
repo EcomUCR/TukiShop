@@ -22,7 +22,7 @@ export interface Store {
     support_phone?: string | null;
     is_verified?: boolean;
     verification_date?: string | null;
-    status?: string; // 👈 cambio importante
+    status?: string;
     store_socials?: any;
     user?: any;
 }

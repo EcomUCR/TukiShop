@@ -26,19 +26,19 @@ interface User {
   total_items?: number;
 }
 
-interface UserEditModalProps {
+interface AdminUserEditModalProps {
   user: User;
   onClose: () => void;
   onSave: (updatedUser: User) => Promise<void>;
   onEditStore?: (updatedStore: Store) => Promise<void>;
 }
 
-export default function UserEditModal({
+export default function AdminUserEditModal({
   user,
   onClose,
   onSave,
   onEditStore,
-}: UserEditModalProps) {
+}: AdminUserEditModalProps) {
   const [formData, setFormData] = useState<User>({ ...user, password: "" });
   const [profileFile, setProfileFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);

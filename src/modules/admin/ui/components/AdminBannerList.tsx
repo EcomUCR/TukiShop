@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import BannerComponent from "../../../../components/data-display/BannerComponent";
 import ButtonComponent from "../../../../components/ui/ButtonComponent";
-import BannerModal from "../components/BannerModal";
+import AdminBannerCRUDModal from "./AdminBannerCRUDModal";
 import { useBanner } from "../../infrastructure/useBanner";
 
 type Banner = {
@@ -19,7 +19,7 @@ type Banner = {
   is_active?: boolean;
 };
 
-export default function CrudBanners() {
+export default function AdminBannerList() {
   const { banners, fetchBanners, loading } = useBanner();
   const [showModal, setShowModal] = useState(false);
   const [, setSelectedBanner] = useState<Banner | null>(null);
@@ -85,7 +85,7 @@ export default function CrudBanners() {
 
         {/* Modal */}
         {showModal && (
-          <BannerModal
+          <AdminBannerCRUDModal
             newBanner={newBanner}
             setNewBanner={setNewBanner}
             onClose={() => {

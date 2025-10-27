@@ -14,7 +14,7 @@ import AlertComponent from "../../../../components/data-display/AlertComponent";
 import { useNotifications } from "../../../../hooks/useNotifications";
 import axios from "axios";
 
-interface MailboxCardProps {
+interface AdminMailboxCardProps {
   id: number;
   type: "STORE_PENDING_VERIFICATION" | "CONTACT_MESSAGE";
   title: string;
@@ -26,13 +26,13 @@ interface MailboxCardProps {
     subject?: string;
     email?: string;
     message?: string;
-    contact_id?: number; // ✅ agregado para capturar el ID del mensaje real
+    contact_id?: number;
   };
   is_read?: boolean;
   onViewStore?: () => void;
 }
 
-export default function MailboxCard({
+export default function AdminMailboxCard({
   id,
   type,
   title,
@@ -41,7 +41,7 @@ export default function MailboxCard({
   data,
   is_read = false,
   onViewStore,
-}: MailboxCardProps) {
+}: AdminMailboxCardProps) {
   const { setStoreToOpen } = useNotificationContext();
   const navigate = useNavigate();
   const { markAsRead } = useNotifications();
@@ -57,8 +57,7 @@ export default function MailboxCard({
     onConfirm: () => void;
   } | null>(null);
 
-  // 🔹 Reutilizable: abrir y cerrar alertas
-  const openAlert = (title: string, message: string, onConfirm: () => void) => {
+    const openAlert = (title: string, message: string, onConfirm: () => void) => {
     setAlertConfig({ title, message, onConfirm });
     setAlertVisible(true);
   };
@@ -68,7 +67,6 @@ export default function MailboxCard({
     setAlertConfig(null);
   };
 
-  // 🔹 Enviar respuesta
   const handleSendReply = async () => {
     if (!replyText.trim()) {
       openAlert(
@@ -80,7 +78,7 @@ export default function MailboxCard({
     }
 
     const token = localStorage.getItem("access_token");
-    const contactId = data?.contact_id ?? id; // ✅ usa el ID real del mensaje
+    const contactId = data?.contact_id ?? id;
 
     setSending(true);
     try {
@@ -108,7 +106,6 @@ export default function MailboxCard({
     }
   };
 
-  // 🔹 Marcar como revisado (actualiza backend)
   const handleMarkReviewed = () => {
     openAlert(
       "Confirmar acción",

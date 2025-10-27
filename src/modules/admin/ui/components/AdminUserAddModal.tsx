@@ -2,12 +2,12 @@ import { useState, useEffect } from "react";
 import { IconArrowLeft, IconEye, IconEyeClosed } from "@tabler/icons-react";
 import ButtonComponent from "../../../../components/ui/ButtonComponent";
 
-interface AddUserModalProps {
+interface AdminUserAddModalProps {
     onClose: () => void;
     onSave: (userData: any) => void;
 }
 
-export default function AddUserModal({ onClose, onSave }: AddUserModalProps) {
+export default function AdminUserAddModal({ onClose, onSave }: AdminUserAddModalProps) {
     const [role, setRole] = useState<"CUSTOMER" | "SELLER" | "ADMIN">("CUSTOMER");
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
