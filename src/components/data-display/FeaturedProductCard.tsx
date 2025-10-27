@@ -5,7 +5,7 @@ import RaitingComponent from "../ui/StarRatingComponent";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../hooks/context/AuthContext";
 import { useAlert } from "../../hooks/context/AlertContext";
-import AnimatedHeartButton from "./AnimatedHeartButton";
+import HeartButton from "./HeartButton";
 import { useCart } from "../../hooks/context/CartContext";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -47,12 +47,6 @@ export default function FeaturedProductCard(props: FeaturedProductCardProps) {
     try {
       await addToCart(props.id, 1);
       setAdded(true);
-      /* showAlert({
-         title: "Producto añadido",
-         message: "El producto fue añadido al carrito correctamente",
-         type: "success",
-       });*/
-
       setTimeout(() => setAdded(false), 2000);
     } catch (error) {
       console.error(error);
@@ -223,7 +217,7 @@ export default function FeaturedProductCard(props: FeaturedProductCardProps) {
               </motion.button>
 
 
-              <AnimatedHeartButton productId={props.id} variant="filled" />
+              <HeartButton productId={props.id} variant="filled" />
             </div>
           )}
         </div>
@@ -316,7 +310,7 @@ export default function FeaturedProductCard(props: FeaturedProductCardProps) {
                 </div>
               </motion.button>
 
-          <AnimatedHeartButton productId={props.id} variant="filled" />
+          <HeartButton productId={props.id} variant="filled" />
         </div>
       )}
     </figure>

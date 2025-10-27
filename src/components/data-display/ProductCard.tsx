@@ -3,7 +3,7 @@ import { IconEdit, IconShoppingBag, IconCheck } from "@tabler/icons-react";
 import ButtonComponent from "../ui/ButtonComponent";
 import { useAuth } from "../../hooks/context/AuthContext";
 import { useAlert } from "../../hooks/context/AlertContext";
-import AnimatedHeartButton from "./AnimatedHeartButton";
+import HeartButton from "./HeartButton";
 import { useCart } from "../../hooks/context/CartContext";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
@@ -31,12 +31,11 @@ export default function ProductCard(props: ProductCardProps) {
   };
 
   const handleAnimatedAdd = async () => {
-    await handleAddToCart(); // tu función original
+    await handleAddToCart();
     setAdded(true);
     setTimeout(() => setAdded(false), 2000);
   };
 
-  // 🛒 Añadir producto al carrito
   const handleAddToCart = async () => {
     if (!token) {
       showAlert({
@@ -53,12 +52,7 @@ export default function ProductCard(props: ProductCardProps) {
     }
 
     try {
-      await addToCart(props.id, 1); // 👈 usa el CartContext
-      /*  showAlert({
-          title: "Producto añadido",
-          message: "El producto fue añadido al carrito correctamente",
-          type: "success",
-        });*/
+      await addToCart(props.id, 1);
     } catch (error) {
       console.error(error);
       showAlert({
@@ -71,7 +65,7 @@ export default function ProductCard(props: ProductCardProps) {
 
   return (
     <figure className="relative flex flex-col w-44 sm:w-55 h-70 sm:h-90 p-3 bg-light-gray rounded-2xl shadow-md font-quicksand group transition-all duration-300">
-      {/* ✏️ Botón editar (modo admin/tienda) */}
+      {/* Edit Button */}
       {props.edit && (
         <Link
           to={`/editProduct/${props.id}`}
@@ -84,24 +78,24 @@ export default function ProductCard(props: ProductCardProps) {
         </Link>
       )}
 
-      {/* ❤️ Favorito (solo visible en hover escritorio y fijo en móvil) */}
+      {/* Favorite Button */}
       {!props.edit && (
         <>
-          {/* Escritorio */}
+          {/* Desktop */}
           <div className="hidden sm:block group-hover:opacity-100 opacity-0 transition-all duration-300 ease-in-out">
             <div className="absolute top-3 right-3">
-              <AnimatedHeartButton productId={props.id} variant="filled" />
+              <HeartButton productId={props.id} variant="filled" />
             </div>
           </div>
 
-          {/* Móvil (visible siempre) */}
+          {/* Mobile */}
           <div className="hidden sm:hidden absolute top-10 right-3">
-            <AnimatedHeartButton productId={props.id} variant="filled" />
+            <HeartButton productId={props.id} variant="filled" />
           </div>
         </>
       )}
 
-      {/* 🛍️ Botón carrito (solo visible en mobile) */}
+      {/* Cart Button */}
       {!props.edit && (
         <button onClick={handleAddToCart}
           className="sm:hidden absolute top-3 right-3 bg-gradient-to-br from-contrast-main to-contrast-secondary text-white p-2 rounded-xl hover:bg-gradient-to-br transition-all duration-300" >
@@ -110,7 +104,7 @@ export default function ProductCard(props: ProductCardProps) {
       )}
 
 
-      {/* 🖼️ Imagen del producto */}
+      {/* Product Image */}
       <Link
         to={`/product/${props.id}`}
         onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
@@ -126,7 +120,7 @@ export default function ProductCard(props: ProductCardProps) {
         />
       </Link>
 
-      {/* 📄 Detalles del producto */}
+      {/* Product Details */}
       <div className="flex flex-col gap-2 sm:gap-3 h-[45%]">
         <Link
           to={`/product/${props.id}`}
@@ -138,7 +132,6 @@ export default function ProductCard(props: ProductCardProps) {
           </p>
         </Link>
 
-        {/* Vista usuario */}
         {!props.edit && (
           <div className="relative w-full flex pt-2 h-[66%]">
             <div className="text-center flex flex-col relative w-full gap-2 sm:gap-3 sm:group-hover:-translate-x-14 transition-all duration-300 ease-in-out">
@@ -161,15 +154,15 @@ export default function ProductCard(props: ProductCardProps) {
               </div>
             </div>
 
-            {/* Hover botón añadir carrito (solo escritorio) */}
+            {/* Add to Cart Button Hover for Desktop */}
             <div
               className="hidden sm:flex absolute flex-col h-17 justify-between transform translate-x-23 opacity-0 group-hover:opacity-100 text-white font-semibold p-2 rounded-xl items-center transition-all duration-300 cursor-pointer"
               onClick={handleAnimatedAdd}
               style={{
                 background:
                   added
-                    ? "linear-gradient(90deg, var(--color-contrast-secondary), var(--color-main))" // Cambia el fondo al añadir
-                    : "linear-gradient(90deg, var(--color-contrast-main), var(--color-contrast-secondary))", // Fondo fijo antes
+                    ? "linear-gradient(90deg, var(--color-contrast-secondary), var(--color-main))"
+                    : "linear-gradient(90deg, var(--color-contrast-main), var(--color-contrast-secondary))",
               }}
             >
               <div className="relative flex flex-col items-center justify-center w-full h-full">
@@ -183,7 +176,6 @@ export default function ProductCard(props: ProductCardProps) {
                       transition={{ duration: 0.25, ease: "easeOut" }}
                       className="flex flex-col items-center w-[6rem]"
                     >
-                      {/* ✅ Check con rotación suave */}
                       <motion.div
                         initial={{ rotate: -90, scale: 0.6, opacity: 0 }}
                         animate={{
@@ -210,7 +202,6 @@ export default function ProductCard(props: ProductCardProps) {
                       transition={{ duration: 0.25, ease: "easeOut" }}
                       className="flex flex-col items-center w-[6rem]"
                     >
-                      {/* 🛍️ Bolsa con efecto “pop” */}
                       <motion.div
                         initial={{ scale: 0.5, opacity: 0 }}
                         animate={{
@@ -237,7 +228,7 @@ export default function ProductCard(props: ProductCardProps) {
           </div>
         )}
 
-        {/* Vista edición */}
+        {/* Edit View */}
         {props.edit && (
           <div className="text-center flex flex-col relative w-full gap-2 sm:gap-3">
             <p className="font-poiret text-xs sm:text-sm">{props.shop}</p>

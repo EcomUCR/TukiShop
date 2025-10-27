@@ -6,17 +6,17 @@ import { useAuth } from "../../hooks/context/AuthContext";
 import { useAlert } from "../../hooks/context/AlertContext";
 import { useNavigate } from "react-router-dom";
 
-interface AnimatedHeartButtonProps {
+interface HeartButtonProps {
   productId: number;
-  label?: string; // texto opcional
-  variant?: "filled" | "inline"; // tipo de botón
+  label?: string;
+  variant?: "filled" | "inline";
 }
 
-export default function AnimatedHeartButton({
+export default function HeartButton({
   productId,
   label,
   variant = "filled",
-}: AnimatedHeartButtonProps) {
+}: HeartButtonProps) {
   const { token } = useAuth();
   const navigate = useNavigate();
   const { showAlert } = useAlert();

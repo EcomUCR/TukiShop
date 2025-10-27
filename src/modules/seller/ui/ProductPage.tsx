@@ -20,7 +20,7 @@ import ProductCard from "../../../components/data-display/ProductCard";
 import { useAuth } from "../../../hooks/context/AuthContext";
 import { useAlert } from "../../../hooks/context/AlertContext";
 import { useNavigate } from "react-router-dom";
-import AnimatedHeartButton from "../../../components/data-display/AnimatedHeartButton";
+import AnimatedHeartButton from "../../../components/data-display/HeartButton";
 import { AnimatePresence, motion } from "framer-motion";
 import ShareBubbles from "../../../components/data-display/ShareBubbles";
 import { useCart } from "../../../hooks/context/CartContext";
