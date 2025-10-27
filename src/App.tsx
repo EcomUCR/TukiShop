@@ -58,7 +58,7 @@ function App() {
                   path="/wishlist/public/:slug"
                   element={<WishListPage />}
                 />
-                <Route path="/p/:id" element={<ProductPage />} />
+                <Route path="/product/:id" element={<ProductPage />} />
                 <Route path="/resetPassword" element={<ResetPasswordPage />} />
                 <Route
                   path="/forgotPassword"
@@ -66,11 +66,11 @@ function App() {
                 />
                 <Route path="/crudProduct" element={<StoreProductCRUDPage />} />
                 <Route
-                  path="/s/:categoryId"
+                  path="/search/:categoryId"
                   element={<SearchPage />}
                 />
-                <Route path="/s" element={<SearchPage />} />
-                <Route path="/s/st" element={<StoresListPage />} />
+                <Route path="/search" element={<SearchPage />} />
+                <Route path="/search/stores" element={<StoresListPage />} />
                 <Route path="/about" element={<AboutUsPage />} />
                 <Route path="/help" element={<HelpPage />} />
                 <Route path="/editProduct/:id" element={<StoreProductCRUDPage />} />
