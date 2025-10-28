@@ -65,7 +65,7 @@ export default function BannerComponent(props: BannerComponentProps) {
               <div>
                 <ButtonComponent
                   text={props.btn_text ?? "Ver Productos"}
-                  style={`px-2 truncate font-quicksand cursor-pointer text-sm sm:text-base text-white font-medium w-35 sm:w-45 py-2 rounded-b-lg rounded-t-3xl shadow-lg hover:scale-105 transition-transform duration-300 ${getButtonColor()}`}
+                  style={`px-2 truncate font-quicksand cursor-pointer text-sm sm:text-base text-white font-medium w-35 sm:w-45 py-2 rounded-full shadow-lg hover:scale-105 transition-transform duration-300 ${getButtonColor()}`}
                   onClick={() => {
                     if (props.link) {
                       if (props.link.startsWith("http")) {
@@ -124,7 +124,7 @@ export default function BannerComponent(props: BannerComponentProps) {
               <div>
                 <ButtonComponent
                   text={props.btn_text ?? "Ver Productos"}
-                  style={`px-2 truncate font-quicksand cursor-pointer text-sm sm:text-base text-white font-medium w-35 sm:w-45 py-2 rounded-b-lg rounded-t-3xl shadow-lg hover:scale-105 transition-transform duration-300 ${getButtonColor()}`}
+                  style={`px-2 truncate font-quicksand cursor-pointer text-sm sm:text-base text-white font-medium w-35 sm:w-45 py-2 rounded-full shadow-lg hover:scale-105 transition-transform duration-300 ${getButtonColor()}`}
                   onClick={() => {
                     if (props.link) {
                       if (props.link.startsWith("http")) {
