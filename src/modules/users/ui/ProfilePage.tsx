@@ -16,6 +16,7 @@ import { useNotificationContext } from "../../../hooks/context/NotificationConte
 import { IconMenu2, IconX } from "@tabler/icons-react";
 import AdminMailboxList from "../../admin/ui/components/AdminMailboxList";
 import StoreOrderList from "../../store/ui/components/StoreOrderList";
+import { SkeletonUserPage } from "../../../components/ui/AllSkeletons";
 
 export default function UserPage() {
   const [selected, setSelected] = useState("profile");
@@ -37,7 +38,14 @@ export default function UserPage() {
     }
   }, [storeToOpen, user]);
 
-  if (loading) return <div>Cargando...</div>;
+
+  if (loading) return (
+    <div>
+      <NavBar />
+      <SkeletonUserPage />
+      <Footer />
+    </div>
+  );
 
   if (
     !user ||

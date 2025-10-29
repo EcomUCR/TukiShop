@@ -5,6 +5,7 @@ import NavBar from "../../../components/layout/NavBar";
 import ProductWishlistCard from "../../../components/data-display/ProductWishlistCard";
 import ShareComponent from "../../../components/data-display/ShareComponent";
 import { useWishlist } from "../infrastructure/useWishList";
+import { SkeletonWishlistPage } from "../../../components/ui/AllSkeletons"; 
 
 export default function WishListPage() {
   const { slug } = useParams();
@@ -27,8 +28,15 @@ export default function WishListPage() {
     }
   }, [slug]);
 
+  
   if (loading)
-    return <p className="text-center py-10">Cargando wishlist...</p>;
+    return (
+      <div>
+        <NavBar />
+        <SkeletonWishlistPage />
+        <Footer />
+      </div>
+    );
 
   return (
     <div>
@@ -45,11 +53,10 @@ export default function WishListPage() {
           {!isPublicMode && wishlist && (
             <button
               onClick={toggleVisibility}
-              className={`text-sm px-4 py-2 rounded-full border font-semibold transition-all duration-300 ${
-                wishlist.is_public
+              className={`text-sm px-4 py-2 rounded-full border font-semibold transition-all duration-300 ${wishlist.is_public
                   ? "bg-green-100 border-green-400 text-green-700 hover:bg-green-200"
                   : "bg-red-100 border-red-400 text-red-700 hover:bg-red-200"
-              }`}
+                }`}
             >
               {wishlist.is_public
                 ? "Visible públicamente"

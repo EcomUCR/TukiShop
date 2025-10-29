@@ -7,24 +7,28 @@ import { useEffect } from "react";
 import BannerComponent from "../../../components/data-display/BannerComponent";
 import { useBanner } from "../../admin/infrastructure/useBanner";
 import { useCart } from "../../../hooks/context/CartContext";
+import { SkeletonCartPage } from "../../../components/ui/AllSkeletons";
 
 export default function CartPage() {
   const { cart, loading, refreshCart } = useCart();
-
-  // ✅ Hook para banners
   const { banners, fetchBanners, loading: loadingBanners } = useBanner();
 
-  // ✅ Cargar banners una vez
   useEffect(() => {
     fetchBanners();
   }, []);
 
-  // ✅ Refrescar carrito al montar (solo si aún no está cargado)
   useEffect(() => {
     refreshCart();
   }, []);
 
-  if (loading) return <p className="text-center py-10">Cargando carrito...</p>;
+  
+  if (loading || loadingBanners) return (
+    <div>
+      <NavBar />
+      <SkeletonCartPage />
+      <Footer />
+    </div>
+  );
 
   const hasItems = cart && cart.items && cart.items.length > 0;
 
@@ -52,7 +56,7 @@ export default function CartPage() {
               </p>
             )}
 
-            {/* 📞 Sección de ayuda */}
+       
             <section className="flex flex-col items-center justify-center text-center py-10 font-quicksand">
               <h2 className="text-base sm:text-lg font-semibold mb-2">
                 ¿Necesitas ayuda?
@@ -76,17 +80,15 @@ export default function CartPage() {
             </section>
           </div>
 
-          {/* 💳 Formulario de pago */}
+         
           <div className="my-5 sm:my-10 sm:pl-10 w-full sm:w-1/3">
             <ShoppingForm />
           </div>
         </section>
 
-        {/* 🖼️ Banners dinámicos */}
+      
         <section className="mx-4 sm:mx-10 sm:my-10 my-6">
-          {loadingBanners ? (
-            <p className="text-gray-500 text-center">Cargando banners...</p>
-          ) : banners.length > 0 ? (
+          {banners.length > 0 ? (
             (() => {
               const activeBanners = banners.filter(
                 (b) => b.type === "SHORT" && b.is_active
@@ -117,7 +119,7 @@ export default function CartPage() {
                 );
               }
 
-              // 🟢 2 o más banners
+             
               return (
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 sm:gap-10 justify-center items-end">
                   {activeBanners.map((b) => (
