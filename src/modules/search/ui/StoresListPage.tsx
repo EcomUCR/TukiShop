@@ -62,14 +62,17 @@ export default function SearchedStores() {
   return (
     <div>
       <NavBar />
-      <div className="max-w-6xl mx-auto my-10 flex flex-col  px-6">
-        {stores.map((store) => (
-          <div className="">
-            <StoreListCard key={store.id} store={store} />
-            <div className="relative bottom-0 left-0 w-full my-10 h-[2px] bg-gradient-to-r from-main via-contrast-secondary to-contrast-main"></div>
-          </div>
-        ))}
-      </div>
+      <div className="max-w-6xl mx-auto my-10 px-5 grid grid-cols-1 sm:grid-cols-2 gap-5 sm:space-y-10">
+  {stores.map((store, index) => (
+    <div key={store.id}>
+      <StoreListCard store={store} />
+      {index < stores.length - 1 && (
+        <div className="w-full my-10 h-[2px] bg-gradient-to-r from-main via-contrast-secondary to-contrast-main sm:hidden"></div>
+      )}
+    </div>
+  ))}
+</div>
+
       <Footer />
     </div>
   );
