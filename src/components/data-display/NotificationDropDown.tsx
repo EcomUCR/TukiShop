@@ -14,9 +14,29 @@ export default function NotificationDropdown() {
   const [expandedId, setExpandedId] = useState<number | null>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
+  // 👇 agrega estos 3 estados dentro de NotificationDropdown()
+  const [marking, setMarking] = useState<Set<number>>(new Set()); // ids en proceso
+  const [locallyRead, setLocallyRead] = useState<Set<number>>(new Set()); // ids marcadas OK
+  const [markError, setMarkError] = useState<number | null>(null); // id con error último
 
   const { notifications, loading } = useNotifications();
-  const { setStoreToOpen } = useNotificationContext();
+  const { setStoreToOpen, markNotificationAsRead } = useNotificationContext();
+  const handleMarkRead = async (id: number) => {
+    setMarkError(null);
+    setMarking((prev) => new Set(prev).add(id)); // loading ON
+    try {
+      await markNotificationAsRead(id); // PATCH backend
+      setLocallyRead((prev) => new Set(prev).add(id)); // UI optimista definitiva
+    } catch (e) {
+      setMarkError(id); // muestra error en ese item
+    } finally {
+      setMarking((prev) => {
+        const next = new Set(prev);
+        next.delete(id); // loading OFF
+        return next;
+      });
+    }
+  };
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -43,9 +63,15 @@ export default function NotificationDropdown() {
         className="relative py-2 sm:p-2 rounded-full transition cursor-pointer"
       >
         <IconBell size={22} className="text-white" />
-        {notifications.length > 0 && (
+        {notifications.filter((n) => !n.is_read && !locallyRead.has(n.id))
+          .length > 0 && (
           <span className="absolute top-0.5 right-0.5 bg-contrast-secondary text-white text-[10px] font-semibold rounded-full shadow-sm flex items-center justify-center h-4 min-w-[1rem] px-1">
-            {notifications.length > 9 ? "9+" : notifications.length}
+            {(() => {
+              const count = notifications.filter(
+                (n) => !n.is_read && !locallyRead.has(n.id)
+              ).length;
+              return count > 9 ? "9+" : count;
+            })()}
           </span>
         )}
       </button>
@@ -71,80 +97,147 @@ export default function NotificationDropdown() {
                 Cargando...
               </p>
             ) : notifications.length > 0 ? (
-              notifications.map((n) => {
-                const isExpanded = expandedId === n.id;
-                return (
-                  <li
-                    key={n.id}
-                    className={`px-4 py-3 border-b border-gray-100 transition-all duration-300 ${
-                      isExpanded ? "bg-main/5" : "hover:bg-main/5"
-                    }`}
-                  >
-                    <div
-                      onClick={() => setExpandedId(isExpanded ? null : n.id)}
-                      className="flex justify-between items-start cursor-pointer"
+              [...notifications]
+                .sort((a, b) => {
+                  const aRead = a.is_read || locallyRead.has(a.id);
+                  const bRead = b.is_read || locallyRead.has(b.id);
+                  return Number(aRead) - Number(bRead); // no leídas primero
+                })
+                .map((n) => {
+                  const isExpanded = expandedId === n.id;
+                  const isRead = n.is_read || locallyRead.has(n.id);
+                  const isMarking = marking.has(n.id);
+
+                  return (
+                    <li
+                      key={n.id}
+                      className={`px-4 py-3 border-b border-gray-100 transition-all duration-300 flex flex-col gap-1 ${
+                        isExpanded ? "bg-main/5" : "hover:bg-main/5"
+                      } ${isRead ? "bg-gray-50 opacity-70" : "bg-white"}`}
                     >
-                      <div>
-                        <p className="text-sm text-gray-800 font-medium">
-                          {n.title}
-                        </p>
-                        <span className="text-xs text-gray-500">
-                          {new Date(n.created_at).toLocaleString("es-CR")}
-                        </span>
-                      </div>
-                      {isExpanded ? (
-                        <IconChevronUp
-                          size={16}
-                          className="text-gray-400 mt-1"
-                        />
-                      ) : (
-                        <IconChevronDown
-                          size={16}
-                          className="text-gray-400 mt-1"
-                        />
-                      )}
-                    </div>
-
-                    {/* Contenido expandido */}
-                    {isExpanded && (
-                      <div className="mt-2 p-2 rounded-md bg-gray-50 border border-gray-100 animate-fadeIn">
-                        <p className="text-xs text-gray-700">{n.message}</p>
-
-                        {n.priority && (
-                          <span
-                            className={`inline-block mt-2 text-[10px] px-2 py-0.5 rounded-full font-semibold ${
-                              n.priority === "HIGH"
-                                ? "bg-red-100 text-red-600"
-                                : n.priority === "NORMAL"
-                                ? "bg-yellow-100 text-yellow-700"
-                                : "bg-green-100 text-green-700"
+                      <div className="flex justify-between items-start gap-2">
+                        <div
+                          onClick={() =>
+                            setExpandedId(isExpanded ? null : n.id)
+                          }
+                          className="flex-1 cursor-pointer"
+                        >
+                          <p
+                            className={`text-sm font-medium ${
+                              isRead ? "text-gray-500" : "text-gray-800"
                             }`}
                           >
-                            Prioridad: {n.priority}
+                            {n.title}
+                          </p>
+                          <span className="text-xs text-gray-500">
+                            {new Date(n.created_at).toLocaleString("es-CR")}
                           </span>
-                        )}
+                        </div>
 
-                        {/* 🚀 Botón para ir al perfil/tienda */}
-                        {n.related_type === "store" &&
-                          n.data &&
-                          n.data.store_id && (
-                            <button
-                              onClick={() => {
-                                const storeId = n.data!.store_id; // el "!" ya es seguro aquí
-                                setStoreToOpen(storeId ?? null);
-                                navigate("/profile");
-                                setOpen(false);
-                              }}
-                              className="mt-3 text-xs text-white bg-main px-3 py-1.5 rounded-full hover:bg-contrast-secondary transition-all duration-200"
-                            >
-                              Ver tienda
-                            </button>
-                          )}
+                        {/* ✅ Botón marcar como leída (con feedback) */}
+                        {!isRead && (
+                          <button
+                            onClick={() => handleMarkRead(n.id)}
+                            disabled={isMarking}
+                            className={`ml-1 px-2 h-7 rounded-full border border-gray-200 flex items-center gap-1 ${
+                              isMarking
+                                ? "bg-gray-100 cursor-wait"
+                                : "hover:bg-gray-100"
+                            }`}
+                            title="Marcar como leída"
+                          >
+                            {isMarking ? (
+                              // mini spinner
+                              <svg
+                                className="animate-spin h-4 w-4 text-main"
+                                viewBox="0 0 24 24"
+                              >
+                                <circle
+                                  className="opacity-25"
+                                  cx="12"
+                                  cy="12"
+                                  r="10"
+                                  stroke="currentColor"
+                                  strokeWidth="4"
+                                  fill="none"
+                                />
+                                <path
+                                  className="opacity-75"
+                                  fill="currentColor"
+                                  d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                                />
+                              </svg>
+                            ) : (
+                              // check
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                className="w-4 h-4 text-main"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                                strokeWidth={2}
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  d="M5 13l4 4L19 7"
+                                />
+                              </svg>
+                            )}
+                            <span className="text-xs text-main font-semibold">
+                              {isMarking ? "Marcando..." : "Visto"}
+                            </span>
+                          </button>
+                        )}
                       </div>
-                    )}
-                  </li>
-                );
-              })
+
+                      {/* Error inline si falla marcar */}
+                      {markError === n.id && (
+                        <span className="text-[11px] text-red-600 mt-1">
+                          No se pudo marcar como leída. Intenta de nuevo.
+                        </span>
+                      )}
+
+                      {/* Contenido expandido */}
+                      {isExpanded && (
+                        <div className="mt-1 p-2 rounded-md bg-gray-50 border border-gray-100 animate-fadeIn">
+                          <p className="text-xs text-gray-700">{n.message}</p>
+
+                          {n.priority && (
+                            <span
+                              className={`inline-block mt-2 text-[10px] px-2 py-0.5 rounded-full font-semibold ${
+                                n.priority === "HIGH"
+                                  ? "bg-red-100 text-red-600"
+                                  : n.priority === "NORMAL"
+                                  ? "bg-yellow-100 text-yellow-700"
+                                  : "bg-green-100 text-green-700"
+                              }`}
+                            >
+                              Prioridad: {n.priority}
+                            </span>
+                          )}
+
+                          {n.related_type === "store" &&
+                            n.data &&
+                            n.data.store_id && (
+                              <button
+                                onClick={async () => {
+                                  await handleMarkRead(n.id); // marca leída con feedback
+                                  const storeId = n.data!.store_id;
+                                  setStoreToOpen(storeId ?? null);
+                                  navigate("/profile");
+                                  setOpen(false);
+                                }}
+                                className="mt-3 text-xs text-white bg-main px-3 py-1.5 rounded-full hover:bg-contrast-secondary transition-all duration-200"
+                              >
+                                Ver tienda
+                              </button>
+                            )}
+                        </div>
+                      )}
+                    </li>
+                  );
+                })
             ) : (
               <p className="text-center text-gray-500 py-6 text-sm">
                 No hay notificaciones
@@ -180,26 +273,100 @@ export default function NotificationDropdown() {
                   Cargando...
                 </p>
               ) : notifications.length > 0 ? (
-                notifications.map((n) => (
-                  <li
-                    key={n.id}
-                    className="px-4 py-3 hover:bg-main/5 cursor-pointer border-b border-gray-100 transition"
-                    onClick={() => {
-                      if (n.related_type === "store" && n.data?.store_id) {
-                        setStoreToOpen(n.data.store_id);
-                        navigate("/profile");
-                        setOpen(false);
-                      }
-                    }}
-                  >
-                    <p className="text-sm text-gray-800 font-medium">
-                      {n.title}
-                    </p>
-                    <span className="text-xs text-gray-500">
-                      {new Date(n.created_at).toLocaleString("es-CR")}
-                    </span>
-                  </li>
-                ))
+                [...notifications]
+                  .sort((a, b) => {
+                    const aRead = a.is_read || locallyRead.has(a.id);
+                    const bRead = b.is_read || locallyRead.has(b.id);
+                    return Number(aRead) - Number(bRead);
+                  })
+                  .map((n) => {
+                    const isRead = n.is_read || locallyRead.has(n.id);
+                    const isMarking = marking.has(n.id);
+
+                    return (
+                      <li
+                        key={n.id}
+                        className={`px-4 py-3 flex justify-between items-start border-b border-gray-100 transition ${
+                          isRead
+                            ? "bg-gray-50 opacity-70 text-gray-500"
+                            : "hover:bg-main/5 text-gray-800"
+                        }`}
+                      >
+                        <div
+                          className="flex-1 cursor-pointer"
+                          onClick={async () => {
+                            if (
+                              n.related_type === "store" &&
+                              n.data?.store_id
+                            ) {
+                              await handleMarkRead(n.id);
+                              setStoreToOpen(n.data.store_id);
+                              navigate("/profile");
+                              setOpen(false);
+                            }
+                          }}
+                        >
+                          <p className="text-sm font-medium">{n.title}</p>
+                          <span className="text-xs text-gray-500">
+                            {new Date(n.created_at).toLocaleString("es-CR")}
+                          </span>
+                        </div>
+
+                        {!isRead && (
+                          <button
+                            onClick={() => handleMarkRead(n.id)}
+                            disabled={isMarking}
+                            className={`ml-2 px-2 h-7 rounded-full border border-gray-200 flex items-center gap-1 ${
+                              isMarking
+                                ? "bg-gray-100 cursor-wait"
+                                : "hover:bg-gray-100"
+                            }`}
+                            title="Marcar como leída"
+                          >
+                            {isMarking ? (
+                              <svg
+                                className="animate-spin h-4 w-4 text-main"
+                                viewBox="0 0 24 24"
+                              >
+                                <circle
+                                  className="opacity-25"
+                                  cx="12"
+                                  cy="12"
+                                  r="10"
+                                  stroke="currentColor"
+                                  strokeWidth="4"
+                                  fill="none"
+                                />
+                                <path
+                                  className="opacity-75"
+                                  fill="currentColor"
+                                  d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                                />
+                              </svg>
+                            ) : (
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                className="w-4 h-4 text-main"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                                strokeWidth={2}
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  d="M5 13l4 4L19 7"
+                                />
+                              </svg>
+                            )}
+                            <span className="text-xs text-main font-semibold">
+                              {isMarking ? "Marcando..." : "Visto"}
+                            </span>
+                          </button>
+                        )}
+                      </li>
+                    );
+                  })
               ) : (
                 <p className="text-center text-gray-500 py-6 text-sm">
                   No hay notificaciones

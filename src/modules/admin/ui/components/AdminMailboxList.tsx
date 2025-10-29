@@ -8,7 +8,7 @@ export default function AdminMailboxList() {
   const { setStoreToOpen } = useNotificationContext();
   const navigate = useNavigate();
 
-    const formattedNotifications = notifications.map((n) => {
+  const formattedNotifications = notifications.map((n) => {
     const type: "STORE_PENDING_VERIFICATION" | "CONTACT_MESSAGE" =
       n.type === "STORE_PENDING_VERIFICATION" || n.related_type === "store"
         ? "STORE_PENDING_VERIFICATION"
@@ -52,19 +52,21 @@ export default function AdminMailboxList() {
             No hay notificaciones por el momento.
           </p>
         ) : (
-          formattedNotifications.map((n) => (
-            <MailboxCard
-              key={n.id}
-              {...n}
-              onViewStore={() => {
-                if (n.data?.store_id) {
-                  setStoreToOpen(n.data.store_id);
-                  navigate("/profile");
-                  window.scrollTo(0, 0);
-                }
-              }}
-            />
-          ))
+          [...formattedNotifications]
+            .sort((a, b) => Number(a.is_read) - Number(b.is_read)) // 🔹 No leídas primero
+            .map((n) => (
+              <MailboxCard
+                key={n.id}
+                {...n}
+                onViewStore={() => {
+                  if (n.data?.store_id) {
+                    setStoreToOpen(n.data.store_id);
+                    navigate("/profile");
+                    window.scrollTo(0, 0);
+                  }
+                }}
+              />
+            ))
         )}
       </div>
     </section>

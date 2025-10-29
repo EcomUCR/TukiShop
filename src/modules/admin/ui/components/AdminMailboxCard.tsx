@@ -57,7 +57,7 @@ export default function AdminMailboxCard({
     onConfirm: () => void;
   } | null>(null);
 
-    const openAlert = (title: string, message: string, onConfirm: () => void) => {
+  const openAlert = (title: string, message: string, onConfirm: () => void) => {
     setAlertConfig({ title, message, onConfirm });
     setAlertVisible(true);
   };
@@ -78,24 +78,39 @@ export default function AdminMailboxCard({
     }
 
     const token = localStorage.getItem("access_token");
-    const contactId = data?.contact_id ?? id;
+    const contactId = data?.contact_id; // <-- Debe ser el ID del mensaje de contacto, NO el ID de la notificación
+
+    if (!contactId) {
+      openAlert(
+        "Falta el ID del contacto",
+        "No se encontró el identificador del mensaje de contacto para responder.",
+        closeAlert
+      );
+      return;
+    }
 
     setSending(true);
     try {
+      // 1) Enviar respuesta
       await axios.post(
         `${import.meta.env.VITE_API_URL}/contact-messages/${contactId}/reply`,
         { reply_message: replyText },
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
+      // 2) Marcar notificación como leída en el BACKEND
+      await markAsRead(id);
+
       openAlert(
         "Respuesta enviada",
-        `La respuesta fue enviada correctamente a ${data?.email || "el remitente"}.`,
+        `La respuesta fue enviada correctamente a ${
+          data?.email || "el remitente"
+        }.`,
         () => {
           closeAlert();
           setReplyText("");
           setReplyOpen(false);
-          setReviewed(true);
+          setReviewed(true); // feedback inmediato en UI
         }
       );
     } catch (err) {
