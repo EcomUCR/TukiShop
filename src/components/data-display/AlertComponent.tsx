@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from "framer-motion";
-import {  IconX } from "@tabler/icons-react";
+import { IconX } from "@tabler/icons-react";
 
 interface AlertComponentProps {
     show: boolean;
@@ -17,7 +17,7 @@ export default function AlertComponent({
     title = "¿Estás seguro?",
     message = "Esta acción no se puede deshacer.",
     confirmText = "Aceptar",
-    cancelText = "Cancelar",
+    cancelText, // ← ya no tiene valor por defecto
     onConfirm,
     onCancel,
 }: AlertComponentProps) {
@@ -35,18 +35,20 @@ export default function AlertComponent({
                 >
                     <motion.div
                         className="w-[90%] max-w-md rounded-2xl border border-white/20 bg-gradient-to-br from-contrast-main/50 via-contrast-secondary/50 to-main/50 backdrop-blur-lg shadow-2xl p-6 text-white font-quicksand relative"
-                        initial={{ opacity: 0}}
+                        initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                         transition={{ duration: 0.3, ease: "easeOut" }}
                     >
-                        {/* Botón cerrar */}
-                        <button
-                            onClick={onCancel}
-                            className="absolute top-3 right-3 text-white/70 hover:text-white transition"
-                        >
-                            <IconX />
-                        </button>
+                        {/* Botón cerrar solo si hay cancelText */}
+                        {cancelText && (
+                            <button
+                                onClick={onCancel}
+                                className="absolute top-3 right-3 text-white/70 hover:text-white transition"
+                            >
+                                <IconX />
+                            </button>
+                        )}
 
                         {/* Encabezado */}
                         <div className="flex items-center gap-3 mb-3">
@@ -58,12 +60,14 @@ export default function AlertComponent({
 
                         {/* Botones */}
                         <div className="flex justify-end gap-3">
-                            <button
-                                onClick={onCancel}
-                                className="px-4 py-2 rounded-lg bg-white/20 text-white/90 hover:bg-white/30 transition backdrop-blur-md"
-                            >
-                                {cancelText}
-                            </button>
+                            {cancelText && (
+                                <button
+                                    onClick={onCancel}
+                                    className="px-4 py-2 rounded-lg bg-white/20 text-white/90 hover:bg-white/30 transition backdrop-blur-md"
+                                >
+                                    {cancelText}
+                                </button>
+                            )}
                             <button
                                 onClick={onConfirm}
                                 className="px-4 py-2 rounded-lg bg-contrast-secondary text-white hover:bg-contrast-secondary/80 transition backdrop-blur-md"

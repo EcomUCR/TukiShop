@@ -36,7 +36,7 @@ export function AlertProvider({ children }: { children: ReactNode }) {
     message: "",
     type: "info",
     confirmText: "Aceptar",
-    cancelText: "Cancelar",
+    cancelText: undefined,
   });
 
   const [resolver, setResolver] = useState<((value: boolean) => void) | null>(
@@ -50,7 +50,7 @@ export function AlertProvider({ children }: { children: ReactNode }) {
         message: "",
         type: "info",
         confirmText: "Aceptar",
-        cancelText: "Cancelar",
+        cancelText: undefined,
         ...opts,
       });
       setVisible(true);

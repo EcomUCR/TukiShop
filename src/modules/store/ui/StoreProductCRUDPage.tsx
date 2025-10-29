@@ -11,6 +11,8 @@ import FeaturedProductCard from "../../../components/data-display/FeaturedProduc
 import CategorySelector from "../../../components/data-display/CategorySelector";
 import { useAuth } from "../../../hooks/context/AuthContext";
 import { useParams } from "react-router-dom";
+import { useAlert } from "../../../hooks/context/AlertContext";
+
 
 type ProductForm = Omit<
   Product,
@@ -43,6 +45,8 @@ export default function StoreProductCRUDPage() {
     error,
     success,
   } = useProducts();
+
+  const { showAlert } = useAlert();
 
   const { id } = useParams();
   const { user } = useAuth();
@@ -122,19 +126,35 @@ export default function StoreProductCRUDPage() {
 
     const storeId = user?.store?.id;
     if (!storeId) {
-      alert("⚠️ No se encontró la tienda asociada al usuario.");
+      showAlert({
+        title: "Error al añadir",
+        message: "Hubo un problema con la tienda del usuario",
+        type: "error",
+      });
+      e.preventDefault();
       console.warn("❌ user sin store:", user);
       return;
     }
 
     // 🔹 Validar nombre e imagen principal
     if (!form.name.trim()) {
-      alert("⚠️ El producto necesita un nombre.");
+      showAlert({
+        title: "Error",
+        message: "Debes asignarle un nombre al producto.",
+        type: "error",
+      });
+      e.preventDefault();
+
       return;
     }
 
     if (!form.images[0]) {
-      alert("⚠️ Debes subir al menos una imagen principal.");
+      showAlert({
+        title: "Error al crear el producto",
+        message: "Debes subir al menos una imagen principal.",
+        type: "error",
+      });
+      e.preventDefault();
       console.warn("❌ form.images vacío:", form.images);
       return;
     }
@@ -165,11 +185,19 @@ export default function StoreProductCRUDPage() {
       if (id) {
         console.log("✏️ Editando producto con ID:", id);
         await updateProduct(Number(id), payload as any);
-        alert("✅ Producto editado correctamente");
+        showAlert({
+          title: "Producto editado",
+          message: "El producto se ha editado correctamente",
+          type: "success",
+        });
       } else {
         console.log("🆕 Creando nuevo producto...");
         await createProduct(payload as any);
-        alert("✅ Producto creado correctamente");
+        showAlert({
+          title: "Producto creado",
+          message: "El producto se ha creado correctamente",
+          type: "success",
+        });
 
         // 🔹 Reset del formulario
         setForm({
