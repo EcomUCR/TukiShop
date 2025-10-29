@@ -77,6 +77,7 @@ export default function ProductCartCard({ item }: Props) {
       });
     }
   };
+  const isArchived = product.status === "ARCHIVED";
 
   const productStatus =
     product.status === "ARCHIVED"
@@ -96,8 +97,13 @@ export default function ProductCartCard({ item }: Props) {
     <>
       {/* 🌟 Desktop version */}
       <figure
-        className="hidden sm:flex relative items-center justify-between w-full bg-gradient-to-br from-white to-gray-50 rounded-2xl p-5 shadow-md border border-gray-100 
-                  hover:border-contrast-secondary/40 transition-all duration-500 overflow-hidden mb-5 font-quicksand"
+        className={`hidden sm:flex relative items-center justify-between w-full rounded-2xl p-5 shadow-md border 
+      overflow-hidden mb-5 font-quicksand transition-all duration-500
+      ${
+        isArchived
+          ? "bg-gray-100 border-gray-300 scale-[0.96] grayscale opacity-80"
+          : "bg-gradient-to-br from-white to-gray-50 border-gray-100 hover:border-contrast-secondary/40"
+      }`}
       >
         {/* Imagen */}
         <div className="flex-shrink-0 flex items-center justify-center w-32 h-32 rounded-2xl overflow-hidden bg-white shadow-inner">
@@ -108,7 +114,9 @@ export default function ProductCartCard({ item }: Props) {
                 "https://electrogenpro.com/wp-content/themes/estore/images/placeholder-shop.jpg"
               }
               alt={product.name}
-              className="object-contain w-full h-full transition-transform duration-500 cursor-pointer hover:scale-105"
+              className={`object-contain w-full h-full transition-transform duration-500 cursor-pointer ${
+                isArchived ? "opacity-70 grayscale" : "hover:scale-105"
+              }`}
             />
           </Link>
         </div>
@@ -118,7 +126,13 @@ export default function ProductCartCard({ item }: Props) {
           <div className="flex flex-col gap-1">
             <div className="flex items-center justify-between">
               <Link to={`/product/${product.id}`}>
-                <h3 className="font-bold text-lg text-gray-800 cursor-pointer hover:text-main transition-colors">
+                <h3
+                  className={`font-bold text-lg cursor-pointer transition-colors ${
+                    isArchived
+                      ? "text-gray-500"
+                      : "text-gray-800 hover:text-main"
+                  }`}
+                >
                   {product.name}
                 </h3>
               </Link>
@@ -137,27 +151,29 @@ export default function ProductCartCard({ item }: Props) {
           </div>
 
           {/* Cantidad */}
-          <div className="mt-3 flex items-center justify-start gap-3">
-            <div className="flex items-center bg-white border border-contrast-secondary/60 rounded-full shadow-sm">
-              <button
-                onClick={() => handleQuantityChange(item.quantity - 1)}
-                disabled={updating}
-                className="px-3 py-1 text-lg font-semibold text-contrast-main hover:text-contrast-secondary disabled:opacity-50 transition-colors"
-              >
-                −
-              </button>
-              <span className="px-3 text-base font-semibold text-gray-800">
-                {item.quantity}
-              </span>
-              <button
-                onClick={() => handleQuantityChange(item.quantity + 1)}
-                disabled={updating}
-                className="px-3 py-1 text-lg font-semibold text-contrast-main hover:text-contrast-secondary disabled:opacity-50 transition-colors"
-              >
-                +
-              </button>
+          {!isArchived && (
+            <div className="mt-3 flex items-center justify-start gap-3">
+              <div className="flex items-center bg-white border border-contrast-secondary/60 rounded-full shadow-sm">
+                <button
+                  onClick={() => handleQuantityChange(item.quantity - 1)}
+                  disabled={updating}
+                  className="px-3 py-1 text-lg font-semibold text-contrast-main hover:text-contrast-secondary disabled:opacity-50 transition-colors"
+                >
+                  −
+                </button>
+                <span className="px-3 text-base font-semibold text-gray-800">
+                  {item.quantity}
+                </span>
+                <button
+                  onClick={() => handleQuantityChange(item.quantity + 1)}
+                  disabled={updating}
+                  className="px-3 py-1 text-lg font-semibold text-contrast-main hover:text-contrast-secondary disabled:opacity-50 transition-colors"
+                >
+                  +
+                </button>
+              </div>
             </div>
-          </div>
+          )}
         </div>
 
         {/* Precio y acciones */}
@@ -180,9 +196,11 @@ export default function ProductCartCard({ item }: Props) {
           </div>
 
           <div className="flex gap-3 text-main">
-            <button className="p-2 rounded-full bg-gradient-to-br from-contrast-main to-contrast-secondary text-white hover:scale-110 shadow-md transition-transform duration-300">
-              <IconHeart size={18} />
-            </button>
+            {!isArchived && (
+              <button className="p-2 rounded-full bg-gradient-to-br from-contrast-main to-contrast-secondary text-white hover:scale-110 shadow-md transition-transform duration-300">
+                <IconHeart size={18} />
+              </button>
+            )}
             <button
               onClick={handleDelete}
               className="p-2 rounded-full bg-gray-200 hover:bg-red-500 hover:text-white transition-all duration-300 shadow-sm hover:scale-110"
@@ -195,8 +213,13 @@ export default function ProductCartCard({ item }: Props) {
 
       {/* 📱 Mobile version */}
       <figure
-        className="sm:hidden relative w-full bg-gradient-to-br from-white to-gray-50 rounded-2xl shadow-md border border-gray-100 
-                  hover:border-contrast-secondary/40 transition-all duration-500 overflow-hidden mb-5 font-quicksand p-4 h-[14rem] flex flex-col justify-between"
+        className={`sm:hidden relative w-full rounded-2xl shadow-md border 
+      transition-all duration-500 overflow-hidden mb-5 font-quicksand p-4 h-[14rem] flex flex-col justify-between
+      ${
+        isArchived
+          ? "bg-gray-100 border-gray-300 scale-[0.96] grayscale opacity-80"
+          : "bg-gradient-to-br from-white to-gray-50 border-gray-100 hover:border-contrast-secondary/40"
+      }`}
       >
         <div className="flex w-full">
           <div className="flex-shrink-0 flex items-center justify-center w-24 h-24 rounded-2xl overflow-hidden bg-white shadow-inner mr-3">
@@ -207,7 +230,9 @@ export default function ProductCartCard({ item }: Props) {
                   "https://electrogenpro.com/wp-content/themes/estore/images/placeholder-shop.jpg"
                 }
                 alt={product.name}
-                className="object-contain w-full h-full transition-transform duration-500 cursor-pointer hover:scale-105"
+                className={`object-contain w-full h-full transition-transform duration-500 cursor-pointer ${
+                  isArchived ? "opacity-70 grayscale" : "hover:scale-105"
+                }`}
               />
             </Link>
           </div>
@@ -216,7 +241,13 @@ export default function ProductCartCard({ item }: Props) {
           <div className="flex flex-col justify-between flex-grow">
             <div>
               <Link to={`/product/${product.id}`}>
-                <h3 className="font-bold text-sm text-gray-800 cursor-pointer hover:text-main transition-colors">
+                <h3
+                  className={`font-bold text-sm cursor-pointer transition-colors ${
+                    isArchived
+                      ? "text-gray-500"
+                      : "text-gray-800 hover:text-main"
+                  }`}
+                >
                   {product.name}
                 </h3>
               </Link>
@@ -236,30 +267,32 @@ export default function ProductCartCard({ item }: Props) {
 
         {/* Parte inferior */}
         <div className="flex justify-between items-end w-full">
-          <div className="flex flex-col items-start gap-4">
-            <div className="flex items-center bg-white border border-contrast-secondary/60 rounded-full shadow-sm">
-              <button
-                onClick={() => handleQuantityChange(item.quantity - 1)}
-                disabled={updating}
-                className="px-3 py-1 text-lg font-semibold text-contrast-main hover:text-contrast-secondary disabled:opacity-50 transition-colors"
-              >
-                −
-              </button>
-              <span className="px-3 text-base font-semibold text-gray-800">
-                {item.quantity}
+          {!isArchived && (
+            <div className="flex flex-col items-start gap-4">
+              <div className="flex items-center bg-white border border-contrast-secondary/60 rounded-full shadow-sm">
+                <button
+                  onClick={() => handleQuantityChange(item.quantity - 1)}
+                  disabled={updating}
+                  className="px-3 py-1 text-lg font-semibold text-contrast-main hover:text-contrast-secondary disabled:opacity-50 transition-colors"
+                >
+                  −
+                </button>
+                <span className="px-3 text-base font-semibold text-gray-800">
+                  {item.quantity}
+                </span>
+                <button
+                  onClick={() => handleQuantityChange(item.quantity + 1)}
+                  disabled={updating}
+                  className="px-3 py-1 text-lg font-semibold text-contrast-main hover:text-contrast-secondary disabled:opacity-50 transition-colors"
+                >
+                  +
+                </button>
+              </div>
+              <span className={`text-base ${productStatusColor}`}>
+                {productStatus}
               </span>
-              <button
-                onClick={() => handleQuantityChange(item.quantity + 1)}
-                disabled={updating}
-                className="px-3 py-1 text-lg font-semibold text-contrast-main hover:text-contrast-secondary disabled:opacity-50 transition-colors"
-              >
-                +
-              </button>
             </div>
-            <span className={`text-base ${productStatusColor}`}>
-              {productStatus}
-            </span>
-          </div>
+          )}
 
           {/* Precio + acciones */}
           <div className="flex flex-col items-end gap-4">
@@ -269,9 +302,11 @@ export default function ProductCartCard({ item }: Props) {
                 : formatCRC(product.price)}
             </p>
             <div className="flex gap-3 text-main">
-              <button className="p-2 rounded-full bg-gradient-to-br from-contrast-main to-contrast-secondary text-white hover:scale-110 shadow-md transition-transform duration-300">
-                <IconHeart size={16} />
-              </button>
+              {!isArchived && (
+                <button className="p-2 rounded-full bg-gradient-to-br from-contrast-main to-contrast-secondary text-white hover:scale-110 shadow-md transition-transform duration-300">
+                  <IconHeart size={16} />
+                </button>
+              )}
               <button
                 onClick={handleDelete}
                 className="p-2 rounded-full bg-gray-200 hover:bg-red-500 hover:text-white transition-all duration-300 shadow-sm hover:scale-110"
