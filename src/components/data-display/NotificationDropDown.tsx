@@ -2,8 +2,6 @@ import { useEffect, useRef, useState } from "react";
 import {
   IconX,
   IconBell,
-  IconChevronDown,
-  IconChevronUp,
 } from "@tabler/icons-react";
 import { useNotifications } from "../../hooks/useNotifications";
 import { useNavigate } from "react-router-dom";
