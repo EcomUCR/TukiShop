@@ -69,6 +69,9 @@ export default function CustomerProfileComponent({
           const imageUrl = await uploadImage(newProfileFile);
           body.image = imageUrl;
         }
+        // 🧾 Actualizar nombre y username si cambiaron
+        if (user?.first_name) body.first_name = user.first_name;
+        if (user?.username) body.username = user.username;
 
         // 📩 Actualizar foto si aplica
         if (Object.keys(body).length > 0) {
@@ -257,12 +260,17 @@ export default function CustomerProfileComponent({
           <div className="flex flex-col sm:flex-row gap-3 sm:gap-5">
             <input
               type="text"
-              placeholder={user?.first_name || "Nombre"}
+              defaultValue={user?.first_name || ""}
+              placeholder="Nombre"
+              onChange={(e) => {
+                if (user) user.first_name = e.target.value;
+              }}
               className="bg-main-dark/20 rounded-xl px-3 py-2 w-full text-sm sm:text-base"
             />
             <input
               type="text"
-              placeholder={user?.email || "Correo electrónico"}
+              value={user?.email || ""}
+              placeholder="Correo electrónico"
               className="bg-main-dark/20 rounded-xl px-3 py-2 w-full text-sm sm:text-base"
               disabled
             />
@@ -271,7 +279,11 @@ export default function CustomerProfileComponent({
           {/* Username */}
           <input
             type="text"
-            placeholder={user?.username || "Nombre de usuario"}
+            defaultValue={user?.username || ""}
+            placeholder="Nombre de usuario"
+            onChange={(e) => {
+              if (user) user.username = e.target.value;
+            }}
             className="bg-main-dark/20 rounded-xl px-3 py-2 w-full sm:w-[50%] text-sm sm:text-base"
           />
 
