@@ -115,7 +115,7 @@ export default function useAdmin() {
         }
 
         try {
-            const res = await axios.patch(`${BASE_URL}/users/${userId}`, updatedData, {
+            const res = await axios.patch(`${BASE_URL}/admin/users/${userId}`, updatedData, {
                 headers: { Authorization: `Bearer ${token}` },
             });
 
