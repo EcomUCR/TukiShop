@@ -1,3 +1,5 @@
+import Footer from "../../../components/layout/Footer";
+import NavBar from "../../../components/layout/NavBar";
 import logo from "../../../img/TukiLogo.png";
 import React, { useState } from "react";
 import { useSearchParams } from "react-router-dom";
@@ -47,6 +49,7 @@ export default function ResetPasswordPage() {
 
   return (
     <div>
+      <NavBar />
       <section className="flex flex-col lg:flex-row justify-center items-center font-quicksand">
         {/* Columna izquierda (solo visible en desktop) */}
         <div className="hidden lg:flex relative flex-col justify-center bg-gradient-to-br from-contrast-main via-contrast-secondary to-main h-[100vh] w-[35%] gap-4">
@@ -93,8 +96,8 @@ export default function ResetPasswordPage() {
                 />
                 <button
                   className={`rounded-full py-3 px-4 w-[70%] sm:w-[50%] lg:w-[30%] font-quicksand text-white transition-all duration-300 ${loading
-                      ? "bg-gray-400 cursor-not-allowed"
-                      : "bg-contrast-secondary hover:bg-contrast-main"
+                    ? "bg-gray-400 cursor-not-allowed"
+                    : "bg-contrast-secondary hover:bg-contrast-main"
                     }`}
                   type="submit"
                   disabled={loading}
@@ -136,6 +139,7 @@ export default function ResetPasswordPage() {
         </div>
       </section>
 
+      <Footer />
     </div>
   );
 }
