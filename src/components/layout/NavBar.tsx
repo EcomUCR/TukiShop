@@ -184,7 +184,7 @@ export default function NavBar() {
               <div className="flex items-center gap-2 pr-5">
                 <Link
                   to="/loginRegister?mode=login"
-                  className="flex items-center gap-1 hover:font-semibold"
+                  className="flex items-center gap-1 hover:font-semibold transition-all duration-200"
                 >
                   <IconUser className="h-5 w-5" />
                   Iniciar sesión
@@ -192,7 +192,7 @@ export default function NavBar() {
                 <span>|</span>
                 <Link
                   to="/loginRegister?mode=register"
-                  className="hover:font-semibold"
+                  className="hover:font-semibold transition-all duration-200"
                 >
                   Regístrate
                 </Link>
