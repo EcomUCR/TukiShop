@@ -111,57 +111,94 @@ export default function StoreProductCRUDPage() {
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    const storeId = user?.store?.id;
-    if (!storeId) {
-      alert("No se encontró la tienda asociada al usuario");
-      return;
-    }
+  console.log("🟢 Iniciando guardado de producto...");
 
-    const mainImageFile = form.images[0];
+  const storeId = user?.store?.id;
+  if (!storeId) {
+    alert("⚠️ No se encontró la tienda asociada al usuario.");
+    console.warn("❌ user sin store:", user);
+    return;
+  }
 
-    const payload: ProductPayload = {
-      image: mainImageFile || null,
-      store_id: storeId,
-      price: Number(form.price),
-      discount_price: Number(form.discount_price),
-      image_1: form.images[0],
-      image_2: form.images[1],
-      image_3: form.images[2],
-      name: form.name,
-      description: form.description,
-      stock: form.stock,
-      status: form.status,
-      categories: form.categories,
-      is_featured: form.is_featured,
-    };
+  // 🔹 Validar nombre e imagen principal
+  if (!form.name.trim()) {
+    alert("⚠️ El producto necesita un nombre.");
+    return;
+  }
 
-    try {
-      if (id) {
-        await updateProduct(Number(id), payload as any);
-      } else {
-        await createProduct(payload as any);
-        setForm({
-          name: "",
-          description: "",
-          price: 0,
-          discount_price: 0,
-          stock: 0,
-          status: "ACTIVE",
-          categories: [],
-          images: [null, null, null],
-          is_featured: false,
-        });
-        setPreviews([null, null, null]);
-        fileInputRefs.forEach((ref) => {
-          if (ref.current) ref.current.value = "";
-        });
-      }
-    } catch (err) {
-      console.error(err);
-    }
+  if (!form.images[0]) {
+    alert("⚠️ Debes subir al menos una imagen principal.");
+    console.warn("❌ form.images vacío:", form.images);
+    return;
+  }
+
+  // 🔹 Preparar payload
+  const payload: ProductPayload = {
+    image: form.images[0],
+    store_id: storeId,
+    price: Number(form.price),
+    discount_price: Number(form.discount_price),
+    image_1: form.images[0],
+    image_2: form.images[1],
+    image_3: form.images[2],
+    name: form.name,
+    description: form.description,
+    stock: form.stock,
+    status: form.status,
+    categories: form.categories,
+    is_featured: form.is_featured,
   };
+
+  // 🧠 Debug visual
+  console.log("🧾 PAYLOAD A ENVIAR:", payload);
+  console.log("🧍 Usuario:", user);
+  console.log("🖼️ Imágenes:", form.images);
+
+  try {
+    if (id) {
+      console.log("✏️ Editando producto con ID:", id);
+      await updateProduct(Number(id), payload as any);
+      alert("✅ Producto editado correctamente");
+    } else {
+      console.log("🆕 Creando nuevo producto...");
+      await createProduct(payload as any);
+      alert("✅ Producto creado correctamente");
+
+      // 🔹 Reset del formulario
+      setForm({
+        name: "",
+        description: "",
+        price: 0,
+        discount_price: 0,
+        stock: 0,
+        status: "ACTIVE",
+        categories: [],
+        images: [null, null, null],
+        is_featured: false,
+      });
+      setPreviews([null, null, null]);
+      fileInputRefs.forEach((ref) => {
+        if (ref.current) ref.current.value = "";
+      });
+    }
+  } catch (err: any) {
+    console.error("🚨 Error al guardar producto:", err);
+
+    // Mostrar mensaje legible al usuario
+    if (err.response?.data?.errors) {
+      const errors = err.response.data.errors;
+      const firstError = Object.values(errors)[0];
+      alert("⚠️ Error: " + firstError);
+    } else if (err.response?.data?.message) {
+      alert("⚠️ " + err.response.data.message);
+    } else {
+      alert("⚠️ No se pudo guardar el producto. Revisa la consola para más detalles.");
+    }
+  }
+};
+
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
     if (e.target.files && e.target.files[0]) {

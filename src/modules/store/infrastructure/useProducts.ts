@@ -134,8 +134,11 @@ export function useProducts() {
         image_1_url: image1Url,
         image_2_url: image2Url,
         image_3_url: image3Url,
-        category_ids: product.categories,
+        category_ids: Array.isArray(product.categories)
+          ? product.categories
+          : [product.categories],
       };
+  console.log("📦 Payload final (antes de POST):", JSON.stringify(payload, null, 2));
 
       await axios.post(`${BASE_URL}/products`, payload);
       setSuccess("¡Producto creado con éxito!");
