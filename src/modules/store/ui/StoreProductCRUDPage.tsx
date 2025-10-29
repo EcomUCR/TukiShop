@@ -481,7 +481,7 @@ export default function StoreProductCRUDPage() {
                   price={Number(form.price) || 0}
                   discountPrice={Number(form.discount_price) || undefined}
                   img={mainPreview}
-                  edit={false}
+                  edit={true}
                   id={0}
                 />
               )}
