@@ -41,7 +41,7 @@ export default function RegisterSellerPage() {
     setRegisterError(null);
     try {
       await register({
-        username: form.username.toLowerCase(),
+        username: form.username,
         email: form.email.toLowerCase(),
         password: form.password,
         phone_number: form.phone_number,
