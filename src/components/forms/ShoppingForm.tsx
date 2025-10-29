@@ -15,6 +15,9 @@ import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
 import StripePaymentForm from "../ui/StripePaymentForm";
 
+import { useAuth } from "../../hooks/context/AuthContext";
+import { useNavigate } from "react-router-dom";
+
 const stripePromise = loadStripe(
   "pk_test_51SJQBqLl2yLxOyLIFdLhdGoXjNKpBn2WFxWjMhInw72TUbRe7DVmYLa17tBOfswYlYqe0E3J3bqYWFyuJaEFYMLI00aJOZAoJY"
 );
@@ -37,6 +40,9 @@ export default function ShoppingForm({
   const { totals, getTotals, loading, error } = useCartTotals();
   const { showAlert } = useAlert();
 
+  const { user, token } = useAuth();
+  const navigate = useNavigate();
+
   const [addresses, setAddresses] = useState<any[]>([]);
   const [addressText, setAddressText] = useState("");
   const [selectedAddressId, setSelectedAddressId] = useState<number | null>(
@@ -47,7 +53,7 @@ export default function ShoppingForm({
     getTotals();
   }, []);
 
-  // 🏠 Cargar direcciones
+  // Cargar direcciones
   useEffect(() => {
     const fetchAddresses = async () => {
       try {
@@ -62,17 +68,16 @@ export default function ShoppingForm({
 
   const format = (n: number) => (n ?? 0).toLocaleString("es-CR");
 
-  // ⚙️ Validación antes del pago
+  // Validación antes del pago
   const handlePayment = async (paymentIntent: any) => {
     if (!addressText.trim()) {
       showAlert({
-        title: "Dirección requerida 🏠",
+        title: "Dirección requerida",
         message: "Por favor escribe o selecciona una dirección antes de pagar.",
         type: "warning",
       });
       return;
     }
-  
 
     await getForexRate("CRC", "USD");
     const selected = addresses.find((a) => a.id === selectedAddressId);
@@ -94,8 +99,20 @@ export default function ShoppingForm({
           : "Detalles de la compra"}
       </h2>
 
-      {/* Totales */}
-      {loading ? (
+      {/* Totales o mensaje de login */}
+      {!user || !token ? (
+        <div className="mt-6 p-5 border border-red-300 bg-red-50 rounded-lg text-center text-red-700">
+          <p className="font-semibold mb-3">
+            ⚠️ Debes iniciar sesión para ver los detalles de tu compra.
+          </p>
+          <Button
+            onClick={() => navigate("/loginRegister")}
+            className="bg-contrast-secondary hover:bg-main text-white rounded-full px-6"
+          >
+            Iniciar sesión
+          </Button>
+        </div>
+      ) : loading ? (
         <p className="text-gray-500 mt-5">Cargando totales...</p>
       ) : error ? (
         <p className="text-red-500 mt-5">{error}</p>
@@ -215,7 +232,7 @@ export default function ShoppingForm({
               onChange={(e) => setAddressText(e.target.value)}
             />
           </div>
-          {/* 💳 Stripe */}
+          {/* Stripe */}
           <div className="pt-10">
             <Elements stripe={stripePromise}>
               <StripePaymentForm
