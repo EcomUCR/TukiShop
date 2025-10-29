@@ -153,7 +153,7 @@ export default function useAdmin() {
         }
 
         try {
-            const res = await axios.patch(`${BASE_URL}/stores/${storeId}`, updatedData, {
+            const res = await axios.patch(`${BASE_URL}/admin/stores/${storeId}`, updatedData, {
                 headers: { Authorization: `Bearer ${token}` },
             });
 
