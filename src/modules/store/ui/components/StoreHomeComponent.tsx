@@ -81,7 +81,7 @@ export default function StoreHomeComponent() {
                         : undefined
                     }
                     img={prod.image_1_url ? prod.image_1_url : audifonos}
-                    edit={false}
+                    edit={"NONE"}
                   />
                 ))}
               </div>
@@ -101,7 +101,7 @@ export default function StoreHomeComponent() {
                         : undefined
                     }
                     img={prod.image_1_url ? prod.image_1_url : audifonos}
-                    edit={false}
+                    edit={"NONE"}
                   />
                 ))}
               </div>
@@ -174,7 +174,7 @@ export default function StoreHomeComponent() {
                   price={prod.price}
                   discountPrice={prod.discount_price}
                   img={prod.image_1_url || audifonos}
-                  edit={false}
+                  edit={"NONE"}
                 />
               ))}
             </div>

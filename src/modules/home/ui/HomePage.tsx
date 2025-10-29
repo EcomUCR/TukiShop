@@ -137,7 +137,7 @@ export default function HomePage() {
                         : undefined
                     }
                     img={prod.image_1_url ? prod.image_1_url : audifonos}
-                    edit={false}
+                    edit={"NONE"}
                   />
                 ))}
               </div>
@@ -157,7 +157,7 @@ export default function HomePage() {
                         : undefined
                     }
                     img={prod.image_1_url ? prod.image_1_url : audifonos}
-                    edit={false}
+                    edit={"NONE"}
                   />
                 ))}
               </div>
@@ -268,7 +268,7 @@ export default function HomePage() {
                       : undefined
                   }
                   img={prod.image_1_url ? prod.image_1_url : audifonos}
-                  edit={false}
+                  edit={"NONE"}
                 />
               ))}
             </div>

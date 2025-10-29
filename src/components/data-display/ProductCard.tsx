@@ -15,7 +15,7 @@ interface ProductCardProps {
   price: number;
   discountPrice?: number;
   img?: string;
-  edit: boolean;
+  edit: "EDIT" | "EDITING" | "NONE";
 }
 
 export default function ProductCard(props: ProductCardProps) {
@@ -66,7 +66,7 @@ export default function ProductCard(props: ProductCardProps) {
   return (
     <figure className="relative flex flex-col w-44 sm:w-55 h-70 sm:h-90 p-3 bg-light-gray rounded-2xl shadow-md font-quicksand group transition-all duration-300">
       {/* Edit Button */}
-      {props.edit && (
+      {props.edit === "EDIT" && (
         <Link
           to={`/editProduct/${props.id}`}
           onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
@@ -79,7 +79,7 @@ export default function ProductCard(props: ProductCardProps) {
       )}
 
       {/* Favorite Button */}
-      {!props.edit && (
+      {props.edit === "NONE" && (
         <>
           {/* Desktop */}
           <div className="hidden sm:block group-hover:opacity-100 opacity-0 transition-all duration-300 ease-in-out">
@@ -96,43 +96,67 @@ export default function ProductCard(props: ProductCardProps) {
       )}
 
       {/* Cart Button */}
-      {!props.edit && (
+      {props.edit === "NONE" && (
         <button onClick={handleAddToCart}
           className="sm:hidden absolute top-3 right-3 bg-gradient-to-br from-contrast-main to-contrast-secondary text-white p-2 rounded-xl hover:bg-gradient-to-br transition-all duration-300" >
           <IconShoppingBag size={20} className="stroke-[2.5]" />
         </button>
       )}
 
-
       {/* Product Image */}
-      <Link
-        to={`/product/${props.id}`}
-        onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-        className="w-full h-[55%] mb-2"
-      >
-        <img
-          className="w-full h-full object-cover rounded-2xl"
-          src={
-            props.img ||
-            "https://electrogenpro.com/wp-content/themes/estore/images/placeholder-shop.jpg"
-          }
-          alt={props.title}
-        />
-      </Link>
-
-      {/* Product Details */}
-      <div className="flex flex-col gap-2 sm:gap-3 h-[45%]">
+      {(props.edit === "NONE" || props.edit === "EDIT") && (
         <Link
           to={`/product/${props.id}`}
           onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-          className="h-[33%]"
+          className="w-full h-[55%] mb-2"
         >
-          <p className="font-semibold text-center text-xs sm:text-sm line-clamp-2">
-            {props.title}
-          </p>
+          <img
+            className="w-full h-full object-cover rounded-2xl"
+            src={
+              props.img ||
+              "https://electrogenpro.com/wp-content/themes/estore/images/placeholder-shop.jpg"
+            }
+            alt={props.title}
+          />
         </Link>
+      )}
+      {props.edit === "EDITING" && (
+        <div
+          className="w-full h-[55%] mb-2"
+        >
+          <img
+            className="w-full h-full object-cover rounded-2xl"
+            src={
+              props.img ||
+              "https://electrogenpro.com/wp-content/themes/estore/images/placeholder-shop.jpg"
+            }
+            alt={props.title}
+          />
+        </div>
+      )}
 
-        {!props.edit && (
+      {/* Product Details */}
+      <div className="flex flex-col gap-2 sm:gap-3 h-[45%]">
+        {(props.edit === "NONE" || props.edit === "EDIT") && (
+          <Link
+            to={`/product/${props.id}`}
+            onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+            className="h-[33%]"
+          >
+            <p className="font-semibold text-center text-xs sm:text-sm line-clamp-2">
+              {props.title}
+            </p>
+          </Link>
+        )}
+        {props.edit === "EDITING" && (
+          <div className="h-[33%]">
+            <p className="font-semibold text-center text-xs sm:text-sm line-clamp-2">
+              {props.title}
+            </p>
+          </div>
+        )}
+
+        {props.edit === "NONE" && (
           <div className="relative w-full flex pt-2 h-[66%]">
             <div className="text-center flex flex-col relative w-full gap-2 sm:gap-3 sm:group-hover:-translate-x-14 transition-all duration-300 ease-in-out">
               <p className="font-poiret text-xs sm:text-sm">{props.shop}</p>
@@ -227,12 +251,11 @@ export default function ProductCard(props: ProductCardProps) {
 
           </div>
         )}
-
         {/* Edit View */}
-        {props.edit && (
+        {(props.edit === "EDIT" || props.edit === "EDITING") && (
           <div className="text-center flex flex-col relative w-full gap-2 sm:gap-3">
             <p className="font-poiret text-xs sm:text-sm">{props.shop}</p>
-            <div className="flex flex-col">
+            <div className="flex flex-col ">
               {Number(props.discountPrice) > 0 ? (
                 <>
                   <p className="line-through font-comme text-[10px] sm:text-xs text-black/30">
@@ -243,7 +266,7 @@ export default function ProductCard(props: ProductCardProps) {
                   </p>
                 </>
               ) : (
-                <p className="font-comme pt-2 text-sm sm:text-base">
+                <p className="font-comme pt-2 text-sm sm:text-base ">
                   ₡ {formatPrice(props.price)}
                 </p>
               )}

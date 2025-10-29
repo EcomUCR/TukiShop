@@ -427,7 +427,7 @@ export default function ProductPage() {
                             prod.discount_price ? prod.discount_price : undefined
                           }
                           img={prod.image_1_url || "https://via.placeholder.com/200"}
-                          edit={false}
+                          edit={"NONE"}
                         />
                       ))
                     ) : (
