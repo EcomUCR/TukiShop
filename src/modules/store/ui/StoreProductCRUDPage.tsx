@@ -13,7 +13,6 @@ import { useAuth } from "../../../hooks/context/AuthContext";
 import { useParams } from "react-router-dom";
 import { useAlert } from "../../../hooks/context/AlertContext";
 
-
 type ProductForm = Omit<
   Product,
   | "price"
@@ -116,7 +115,9 @@ export default function StoreProductCRUDPage() {
 
   const handleGenerateDescription = async () => {
     const description = await getDescription(form.name);
-    if (description) setForm({ ...form, description });
+    if (description) {
+      setForm((prev) => ({ ...prev, description }));
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
