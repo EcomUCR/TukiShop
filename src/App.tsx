@@ -34,6 +34,7 @@ import HelpPage from "./modules/home/ui/HelpPage";
 import WishListPage from "./modules/users/ui/WishListPage";
 import NotFoundPage from "./components/navigation/NotFoundPage";
 import { NotificationProvider } from "./hooks/context/NotificationContext";
+import ReportProblemPage from "./modules/home/ui/ReportProblemPage";
 
 function App() {
   return (
@@ -75,6 +76,7 @@ function App() {
                 <Route path="/help" element={<HelpPage />} />
                 <Route path="/editProduct/:id" element={<StoreProductCRUDPage />} />
                 <Route path="/store/:id/search" element={<StorePage />} />
+                <Route path="/reportProblem" element={<ReportProblemPage />} />
                 <Route path="*" element={<NotFoundPage />} />
               </Routes>
             </NotificationProvider>

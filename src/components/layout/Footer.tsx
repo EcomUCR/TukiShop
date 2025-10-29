@@ -15,40 +15,30 @@ export default function Footer() {
     <footer className="h-auto py-10 bg-main text-white flex flex-col items-center font-quicksand px-6 sm:px-10 space-y-10">
       {/* Contenedor principal */}
       <div className="flex flex-col sm:flex-row w-full sm:w-[90%] justify-between items-center sm:items-start gap-15 sm:gap-0">
-        {/* 🔹 Columna izquierda: enlaces + redes */}
+        {/*Columna izquierda: enlaces + redes */}
         <div className="space-y-15 w-full sm:w-[33%] flex flex-col items-center order-2 sm:order-1">
-          <div className="flex justify-center sm:justify-center mx-0 sm:mx-10 pt-0 sm:pt-10 gap-6 sm:gap-10 text-sm font-light text-center sm:text-left">
-            <ul className="space-y-3 sm:mr-10">
-              <li>
-                <a href="/search?mode=offers">Ofertas</a>
-              </li>
-              <li>
-                <a href="/search/stores">Tiendas</a>
-              </li>
-              <li>
-                <a href="/search?mode=explore">Explorar</a>
-              </li>
+          <div className="flex flex-col sm:grid sm:grid-cols-3 sm:gap-x-16 sm:gap-y-0 justify-center sm:justify-center
+            mx-0 sm:mx-10 pt-0 sm:pt-10 text-sm font-light text-center sm:text-left">
+            <ul className="space-y-3 min-w-[7rem]">
+              <li><a href="/search?mode=offers">Ofertas</a></li>
+              <li><a href="/search/stores">Tiendas</a></li>
+              <li><a href="/search?mode=explore">Explorar</a></li>
             </ul>
-            <ul className="space-y-3">
-              <li>
-                <a href="/about">Conócenos</a>
-              </li>
-              <li>
-                <a href="/beSellerPage">Vender</a>
-              </li>
-              <li>
-                <a href="/search?mode=best-sellers">Lo más vendido</a>
-              </li>
+
+            <ul className="space-y-3 min-w-[8rem]">
+              <li><a href="/about">Conócenos</a></li>
+              <li><a href="/beSellerPage">Vender</a></li>
+              <li><a href="/help">Ayuda</a></li>
             </ul>
-            <ul className="space-y-3">
-              <li>
-                <a href="/help">Ayuda</a>
-              </li>
+
+            <ul className="space-y-3 min-w-[9rem]">
+              <li><a href="/search?mode=best-sellers">Lo más vendido</a></li>
+              <li><a href="/reportProblem">Reportar un problema</a></li>
             </ul>
           </div>
 
           {/* Sigue dentro de la misma columna */}
-          <div className="flex flex-col gap-3 items-center">
+          <div className="flex flex-col gap-3 items-center mt-6 sm:mt-0">
             <p className="font-semibold text-xl">Síguenos en</p>
             <div className="flex gap-5">
               <a
@@ -59,7 +49,6 @@ export default function Footer() {
               >
                 <IconBrandFacebook />
               </a>
-
               <a
                 href="https://www.instagram.com/tukishop_cr?igsh=MTYyeHNjcHRsbGo0ZQ=="
                 target="_blank"
@@ -68,7 +57,6 @@ export default function Footer() {
               >
                 <IconBrandInstagram />
               </a>
-
               <a
                 href="https://www.tiktok.com/@tukishopcr?is_from_webapp=1&sender_device=pc"
                 target="_blank"
@@ -77,7 +65,6 @@ export default function Footer() {
               >
                 <IconBrandTiktok />
               </a>
-
               <a
                 href="https://x.com/TukiShopCR?s=09"
                 target="_blank"
@@ -89,6 +76,7 @@ export default function Footer() {
             </div>
           </div>
         </div>
+
 
         {/* 🔹 Columna central: logo */}
         <div className="flex flex-col items-center gap-2 w-full sm:w-[33%] order-1 sm:order-2">
