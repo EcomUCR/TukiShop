@@ -130,9 +130,7 @@ export default function FeaturedProductCard(props: FeaturedProductCardProps) {
           </Link>
           )
             }
-
           <RaitingComponent value={props.rating} size={12} />
-
           <div className="mt-1">
             {hasDiscount ? (
               <>
