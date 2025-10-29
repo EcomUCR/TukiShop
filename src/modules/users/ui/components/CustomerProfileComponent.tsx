@@ -64,7 +64,7 @@ export default function CustomerProfileComponent({
       if (user) {
         const body: Record<string, any> = {};
 
-        // 🖼️ Imagen de perfil
+        // 🖼️ Imagen de perfilaaaa
         if (newProfileFile) {
           const imageUrl = await uploadImage(newProfileFile);
           body.image = imageUrl;
