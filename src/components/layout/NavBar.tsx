@@ -1,4 +1,4 @@
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import {
   IconBuildingStore,
   IconHeart,
@@ -30,11 +30,27 @@ export default function NavBar() {
 
   const { getCategories } = useProducts();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [categories, setCategories] = useState<Category[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+
+
+  const isActiveLink = (path: string, searchParams?: string): boolean => {
+    if (location.pathname === path && !searchParams) {
+      return true;
+    }
+    if (location.pathname === path && searchParams) {
+      return location.search.includes(searchParams);
+    }
+    if (path === "/" && location.pathname === "/") {
+      return true;
+    }
+    return false;
+  };
+
   useEffect(() => {
     if (user) fetchWishlist();
   }, [user]);
@@ -50,6 +66,7 @@ export default function NavBar() {
     };
     fetchCategories();
   }, []);
+
   useEffect(() => {
     const handleCartUpdate = () => refreshCart();
     window.addEventListener("cartUpdated", handleCartUpdate);
@@ -78,6 +95,18 @@ export default function NavBar() {
     document.addEventListener("click", handleClickOutside);
     return () => document.removeEventListener("click", handleClickOutside);
   }, []);
+
+ 
+  const navLinkClass = (isActive: boolean) =>
+    `transition-all cursor-pointer ${
+      isActive
+        ? "font-semibold transform -translate-y-1"
+        : "hover:-translate-y-1"
+    }`;
+
+
+  const mobileLinkClass = (isActive: boolean) =>
+    `${isActive ? "font-semibold text-main-dark" : "text-main-dark"}`;
 
   return (
     <nav className="bg-main px-4 sm:px-30 pt-4 pb-4 sm:pb-0 font-quicksand relative z-50">
@@ -247,7 +276,7 @@ export default function NavBar() {
         </div>
       </div>
 
-      {/* Menú inferior desktop */}
+    
       <div className="hidden md:block">
         <ul className="flex justify-center gap-10 p-4 text-white text-sm">
           <li>
@@ -255,44 +284,46 @@ export default function NavBar() {
           </li>
           <li
             onClick={() => navigate("/search?mode=explore")}
-            className="hover:-translate-y-1 transition-all cursor-pointer"
+            className={navLinkClass(isActiveLink("/search", "mode=explore"))}
           >
             Explorar
           </li>
           <li
             onClick={() => navigate("/search?mode=offers")}
-            className="hover:-translate-y-1 transition-all cursor-pointer"
+            className={navLinkClass(isActiveLink("/search", "mode=offers"))}
           >
             Ofertas
           </li>
           <li
             onClick={() => navigate("/search?mode=best-sellers")}
-            className="hover:-translate-y-1 transition-all cursor-pointer"
+            className={navLinkClass(
+              isActiveLink("/search", "mode=best-sellers")
+            )}
           >
             Lo más vendido
           </li>
           <li
             onClick={() => navigate("/search/stores")}
-            className="hover:-translate-y-1 transition-all cursor-pointer"
+            className={navLinkClass(isActiveLink("/search/stores"))}
           >
             Tiendas
           </li>
           <li
             onClick={() => navigate("/beSellerPage")}
-            className="hover:-translate-y-1 transition-all cursor-pointer"
+            className={navLinkClass(isActiveLink("/beSellerPage"))}
           >
             Vender
           </li>
           <li
             onClick={() => navigate("/about")}
-            className="hover:-translate-y-1 transition-all cursor-pointer"
+            className={navLinkClass(isActiveLink("/about"))}
           >
             Conócenos
           </li>
         </ul>
       </div>
 
-      {/* Desplegable menú hamburguesas */}
+      
       <AnimatePresence>
         {menuOpen && (
           <motion.div
@@ -324,31 +355,55 @@ export default function NavBar() {
               <div className="pt-2 border-t-2">
                 <CategoryDropdown categories={categories} navigate={navigate} />
               </div>
-              <Link to="/" onClick={() => setMenuOpen(false)}>
+              <Link
+                to="/"
+                onClick={() => setMenuOpen(false)}
+                className={mobileLinkClass(isActiveLink("/"))}
+              >
                 Inicio
               </Link>
               <Link
                 to="/search?mode=explore"
                 onClick={() => setMenuOpen(false)}
+                className={mobileLinkClass(isActiveLink("/search", "mode=explore"))}
               >
                 Explorar
               </Link>
-              <Link to="/search?mode=offers" onClick={() => setMenuOpen(false)}>
+              <Link
+                to="/search?mode=offers"
+                onClick={() => setMenuOpen(false)}
+                className={mobileLinkClass(isActiveLink("/search", "mode=offers"))}
+              >
                 Ofertas
               </Link>
               <Link
                 to="/search?mode=best-sellers"
                 onClick={() => setMenuOpen(false)}
+                className={mobileLinkClass(
+                  isActiveLink("/search", "mode=best-sellers")
+                )}
               >
                 Lo más vendido
               </Link>
-              <Link to="/search/stores" onClick={() => setMenuOpen(false)}>
+              <Link
+                to="/search/stores"
+                onClick={() => setMenuOpen(false)}
+                className={mobileLinkClass(isActiveLink("/search/stores"))}
+              >
                 Tiendas
               </Link>
-              <Link to="/beSellerPage" onClick={() => setMenuOpen(false)}>
+              <Link
+                to="/beSellerPage"
+                onClick={() => setMenuOpen(false)}
+                className={mobileLinkClass(isActiveLink("/beSellerPage"))}
+              >
                 Vender
               </Link>
-              <Link to="/about" onClick={() => setMenuOpen(false)}>
+              <Link
+                to="/about"
+                onClick={() => setMenuOpen(false)}
+                className={mobileLinkClass(isActiveLink("/about"))}
+              >
                 Conócenos
               </Link>
             </div>
@@ -360,13 +415,20 @@ export default function NavBar() {
                   <p className="font-semibold text-sm">
                     {displayName || "Usuario"}
                   </p>
-                  <Link to="/profile" onClick={() => setMenuOpen(false)}>
+                  <Link
+                    to="/profile"
+                    onClick={() => setMenuOpen(false)}
+                    className={mobileLinkClass(isActiveLink("/profile"))}
+                  >
                     Ver perfil
                   </Link>
                   {user.role === "SELLER" && (
                     <Link
                       to={`/store/${user.store?.id}`}
                       onClick={() => setMenuOpen(false)}
+                      className={mobileLinkClass(
+                        isActiveLink(`/store/${user.store?.id}`)
+                      )}
                     >
                       Mi tienda
                     </Link>
