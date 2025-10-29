@@ -50,15 +50,19 @@ const iconMap = {
 
 interface SellerProfileComponentProps {
   alert: any;
-  setAlert: React.Dispatch<React.SetStateAction<{
-    show: boolean;
-    title: string;
-    message: string;
-    type: "warning" | "info" | "success" | "error";
-  }>>;
+  setAlert: React.Dispatch<
+    React.SetStateAction<{
+      show: boolean;
+      title: string;
+      message: string;
+      type: "warning" | "info" | "success" | "error";
+    }>
+  >;
 }
 
-export default function SellerProfileComponent({ setAlert }: SellerProfileComponentProps) {
+export default function SellerProfileComponent({
+  setAlert,
+}: SellerProfileComponentProps) {
   const { user, refreshUser, token } = useAuth();
   const [editableStore, setEditableStore] = useState<Store | null>(null);
   const [socialLinks, setSocialLinks] = useState<SocialLink[]>([]);
@@ -303,7 +307,7 @@ export default function SellerProfileComponent({ setAlert }: SellerProfileCompon
                 <label className="bg-contrast-secondary/80 hover:bg-main/80 text-white p-2 rounded-full cursor-pointer transition-all duration-200 flex items-center justify-center">
                   <input
                     type="file"
-                    accept="image/*"
+                    accept=".png, .jpg, .jpeg .webp"
                     onChange={handleImageChange}
                     className="hidden"
                   />
@@ -329,7 +333,7 @@ export default function SellerProfileComponent({ setAlert }: SellerProfileCompon
                 <label className="bg-contrast-secondary/80 hover:bg-main/80 text-white p-2 rounded-full cursor-pointer transition-all duration-200 flex items-center justify-center">
                   <input
                     type="file"
-                    accept="image/*"
+                    accept=".png, .jpg, .jpeg .webp"
                     onChange={handleBannerChange}
                     className="hidden"
                   />

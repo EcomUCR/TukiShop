@@ -14,7 +14,12 @@ import { useParams } from "react-router-dom";
 
 type ProductForm = Omit<
   Product,
-  "price" | "discount_price" | "image" | "image_1_url" | "image_2_url" | "image_3_url"
+  | "price"
+  | "discount_price"
+  | "image"
+  | "image_1_url"
+  | "image_2_url"
+  | "image_3_url"
 > & {
   price: string | number;
   discount_price: string | number;
@@ -194,13 +199,17 @@ export default function StoreProductCRUDPage() {
       } else if (err.response?.data?.message) {
         alert("⚠️ " + err.response.data.message);
       } else {
-        alert("⚠️ No se pudo guardar el producto. Revisa la consola para más detalles.");
+        alert(
+          "⚠️ No se pudo guardar el producto. Revisa la consola para más detalles."
+        );
       }
     }
   };
 
-
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
+  const handleImageChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    index: number
+  ) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
       const fileURL = URL.createObjectURL(file);
@@ -262,7 +271,10 @@ export default function StoreProductCRUDPage() {
           </h1>
         </div>
 
-        <form onSubmit={handleSubmit} className="flex flex-col gap-10 py-6 sm:py-10">
+        <form
+          onSubmit={handleSubmit}
+          className="flex flex-col gap-10 py-6 sm:py-10"
+        >
           {/* 🔹 Datos principales */}
           <div className="w-full flex flex-col sm:flex-row justify-between gap-6 sm:gap-0">
             <label className="flex flex-col sm:w-5/12 gap-2">
@@ -299,7 +311,9 @@ export default function StoreProductCRUDPage() {
                 <input
                   type="text"
                   value={form.discount_price}
-                  onChange={(e) => setForm({ ...form, discount_price: e.target.value })}
+                  onChange={(e) =>
+                    setForm({ ...form, discount_price: e.target.value })
+                  }
                   placeholder="Precio de oferta"
                   className="bg-main-dark/20 rounded-2xl p-2 w-full"
                 />
@@ -367,7 +381,9 @@ export default function StoreProductCRUDPage() {
                 <textarea
                   placeholder="Sobre este producto"
                   value={form.description}
-                  onChange={(e) => setForm({ ...form, description: e.target.value })}
+                  onChange={(e) =>
+                    setForm({ ...form, description: e.target.value })
+                  }
                   cols={30}
                   rows={5}
                   className="bg-main-dark/20 rounded-xl px-3 py-2 w-full"
@@ -393,7 +409,9 @@ export default function StoreProductCRUDPage() {
               </label>
 
               <div className="flex flex-col gap-4">
-                <p className="font-semibold text-lg text-main">Agregar imágenes</p>
+                <p className="font-semibold text-lg text-main">
+                  Agregar imágenes
+                </p>
 
                 {previews.map((previewUrl, index) => (
                   <div
@@ -432,7 +450,7 @@ export default function StoreProductCRUDPage() {
 
                       <input
                         type="file"
-                        accept="image/*"
+                        accept=".png, .jpg, .jpeg .webp"
                         ref={fileInputRefs[index]}
                         onChange={(e) => handleImageChange(e, index)}
                         className="flex-1 text-sm file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-main-dark/20 file:text-main file:cursor-pointer hover:file:bg-main-dark/30 transition max-sm:w-full max-sm:text-xs"
@@ -441,8 +459,6 @@ export default function StoreProductCRUDPage() {
                   </div>
                 ))}
               </div>
-
-
             </div>
 
             {/* Derecha */}
@@ -459,7 +475,7 @@ export default function StoreProductCRUDPage() {
                 />
               </label>
               <div className="">
-              {form.is_featured ? (
+                {form.is_featured ? (
                   <FeaturedProductCard
                     shop="Preview"
                     title={form.name || "Nombre del producto"}
@@ -476,16 +492,16 @@ export default function StoreProductCRUDPage() {
                   />
                 ) : (
                   <ProductCard
-                  shop="Preview"
-                  title={form.name || "Nombre del producto"}
-                  price={Number(form.price) || 0}
-                  discountPrice={Number(form.discount_price) || undefined}
-                  img={mainPreview}
-                  edit="EDITING"
-                  id={0}
+                    shop="Preview"
+                    title={form.name || "Nombre del producto"}
+                    price={Number(form.price) || 0}
+                    discountPrice={Number(form.discount_price) || undefined}
+                    img={mainPreview}
+                    edit="EDITING"
+                    id={0}
                   />
                 )}
-                </div>
+              </div>
 
               <div className="flex flex-col gap-4 w-full sm:w-2/3">
                 <ButtonComponent
@@ -504,7 +520,12 @@ export default function StoreProductCRUDPage() {
                     style="text-white text-lg py-2 rounded-full bg-red-600 w-full hover:bg-red-700 transition-all duration-400 cursor-pointer"
                     onClick={async () => {
                       if (!id) return;
-                      if (!window.confirm("¿Estás seguro de eliminar este producto?")) return;
+                      if (
+                        !window.confirm(
+                          "¿Estás seguro de eliminar este producto?"
+                        )
+                      )
+                        return;
 
                       const payload: ProductPayload = {
                         image: form.images[0] || null,

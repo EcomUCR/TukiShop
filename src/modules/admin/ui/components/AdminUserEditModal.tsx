@@ -220,7 +220,7 @@ export default function AdminUserEditModal({
                     <IconCamera size={14} /> Cambiar
                     <input
                       type="file"
-                      accept="image/*"
+                      accept=".png, .jpg, .jpeg .webp"
                       onChange={handleProfileChange}
                       className="hidden"
                     />

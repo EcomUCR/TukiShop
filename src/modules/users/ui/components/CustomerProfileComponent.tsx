@@ -10,7 +10,9 @@ interface CustomerProfileComponentProps {
   setAlert: React.Dispatch<React.SetStateAction<any>>;
 }
 
-export default function CustomerProfileComponent({ setAlert }: CustomerProfileComponentProps) {
+export default function CustomerProfileComponent({
+  setAlert,
+}: CustomerProfileComponentProps) {
   const { user, refreshUser, token } = useAuth();
   const [newProfileFile, setNewProfileFile] = useState<File | null>(null);
   const [profilePreview, setProfilePreview] = useState<string | null>(null);
@@ -103,13 +105,17 @@ export default function CustomerProfileComponent({ setAlert }: CustomerProfileCo
 
           try {
             // Enviar solicitud para cambiar la contraseña
-            await axios.put("/change-password", {
-              current_password: currentPassword,
-              new_password: newPassword,
-              new_password_confirmation: confirmPassword,
-            }, {
-              headers: { Authorization: `Bearer ${token}` }
-            });
+            await axios.put(
+              "/change-password",
+              {
+                current_password: currentPassword,
+                new_password: newPassword,
+                new_password_confirmation: confirmPassword,
+              },
+              {
+                headers: { Authorization: `Bearer ${token}` },
+              }
+            );
           } catch (err: unknown) {
             // Verificar si `err` es un error de Axios con la propiedad `response`
             if (axios.isAxiosError(err) && err.response) {
@@ -162,7 +168,6 @@ export default function CustomerProfileComponent({ setAlert }: CustomerProfileCo
       setSaving(false);
     }
   };
-
 
   const handleAddAddress = async () => {
     try {
@@ -238,7 +243,7 @@ export default function CustomerProfileComponent({ setAlert }: CustomerProfileCo
           <IconEdit size={20} />
           <input
             type="file"
-            accept="image/*"
+            accept=".png, .jpg, .jpeg .webp"
             className="hidden"
             onChange={handleProfileFileChange}
           />

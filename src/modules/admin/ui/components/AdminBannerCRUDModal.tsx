@@ -126,7 +126,7 @@ export default function AdminBannerCRUDModal({
               </label>
               <input
                 type="file"
-                accept="image/*"
+                accept=".png, .jpg, .jpeg .webp"
                 onChange={(e) => handleFileChange(e, "image")}
                 className="w-full border rounded-lg px-3 py-2 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:bg-main-dark file:text-white file:cursor-pointer hover:file:bg-main transition-all"
                 required
@@ -139,7 +139,7 @@ export default function AdminBannerCRUDModal({
               </label>
               <input
                 type="file"
-                accept="image/*"
+                accept=".png, .jpg, .jpeg .webp"
                 onChange={(e) => handleFileChange(e, "character")}
                 className="w-full border rounded-lg px-3 py-2 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:bg-main-dark file:text-white file:cursor-pointer hover:file:bg-main transition-all"
               />
@@ -279,11 +279,11 @@ export default function AdminBannerCRUDModal({
             onClick={onClose}
           />
           <ButtonComponent
-            text={loading || uploading ? 'Guardando...' : 'Guardar'}
+            text={loading || uploading ? "Guardando..." : "Guardar"}
             style={`${
               loading || uploading
-                ? 'bg-gray-400 cursor-not-allowed'
-                : 'bg-main-dark hover:bg-main'
+                ? "bg-gray-400 cursor-not-allowed"
+                : "bg-main-dark hover:bg-main"
             } text-white rounded-full px-4 py-2 transition-all duration-300 w-full sm:w-auto`}
             onClick={handleSave}
           />

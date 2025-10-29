@@ -206,7 +206,7 @@ export default function AdminStoreEditModal({
                   <IconEdit size={14} />
                   <input
                     type="file"
-                    accept="image/*"
+                    accept=".png, .jpg, .jpeg .webp"
                     onChange={handleLogoChange}
                     className="hidden"
                   />
@@ -242,7 +242,7 @@ export default function AdminStoreEditModal({
                   <IconEdit size={14} />
                   <input
                     type="file"
-                    accept="image/*"
+                    accept=".png, .jpg, .jpeg .webp"
                     onChange={handleBannerChange}
                     className="hidden"
                   />
@@ -306,7 +306,7 @@ export default function AdminStoreEditModal({
                 style="bg-gray-200 text-gray-700 px-4 sm:px-6 py-2 rounded-full font-semibold hover:bg-gray-300 transition text-sm"
               />
               <ButtonComponent
-                text={uploading ? 'Guardando...' : 'Guardar'}
+                text={uploading ? "Guardando..." : "Guardar"}
                 type="submit"
                 style="bg-gradient-to-br from-main via-contrast-secondary to-contrast-main text-white px-4 sm:px-6 py-2 rounded-full font-semibold shadow-md hover:shadow-lg transition text-sm"
               />
