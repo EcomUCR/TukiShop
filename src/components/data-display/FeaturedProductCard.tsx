@@ -17,7 +17,7 @@ interface FeaturedProductCardProps {
   price: string;
   discountPrice?: string;
   rating: number;
-  edit: boolean;
+  edit: 'EDIT' | 'EDITING' | 'NONE';
 }
 
 export default function FeaturedProductCard(props: FeaturedProductCardProps) {
@@ -65,7 +65,7 @@ export default function FeaturedProductCard(props: FeaturedProductCardProps) {
         }`}
     >
       {/* ✏️ Botón de edición */}
-      {props.edit && (
+      {props.edit === "EDIT" && (
         <Link
           to={`/editProduct/${props.id}`}
           onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
@@ -76,14 +76,28 @@ export default function FeaturedProductCard(props: FeaturedProductCardProps) {
           />
         </Link>
       )}
-
-      {/* 🖼️ Contenedor principal */}
+       
+        {/* 🖼️ Contenedor principal */}
       <div className="flex flex-row sm:flex-row w-full">
-        <Link
+        {props.edit === "EDITING" ? (
+          <div className="w-1/2 sm:w-1/2 h-40 sm:h-60 flex items-center justify-center">
+            <img
+              className="flex items-center w-auto h-full object-contain rounded-2xl"
+              src={
+                props.img ||
+                "https://electrogenpro.com/wp-content/themes/estore/images/placeholder-shop.jpg"
+              }
+              alt={props.title}
+              loading="lazy"
+            />
+          </div>
+        ) : (
+
+          <Link
           to={`/product/${props.id}`}
           onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
           className="w-1/2 sm:w-1/2 h-40 sm:h-60 flex items-center justify-center"
-        >
+          >
           <img
             className="flex items-center w-auto h-full object-contain rounded-2xl"
             src={
@@ -92,23 +106,30 @@ export default function FeaturedProductCard(props: FeaturedProductCardProps) {
             }
             alt={props.title}
             loading="lazy"
-          />
+            />
         </Link>
+          )}
 
         {/* Información */}
         <div className="flex flex-col justify-between w-1/2 sm:w-1/2 pl-4 sm:pl-6 py-1">
           <p className="font-light font-poiret text-xs sm:text-base line-clamp-1">
             {props.shop}
           </p>
-
-          <Link
+          { props.edit === "EDITING" ? (
+            <h3 className="font-semibold text-xs sm:text-base leading-snug line-clamp-3">
+              {props.title}
+            </h3>
+          ) : (
+            <Link
             to={`/product/${props.id}`}
             onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-          >
+            >
             <h3 className="font-semibold text-xs sm:text-base leading-snug line-clamp-3">
               {props.title}
             </h3>
           </Link>
+          )
+            }
 
           <RaitingComponent value={props.rating} size={12} />
 
@@ -130,7 +151,7 @@ export default function FeaturedProductCard(props: FeaturedProductCardProps) {
           </div>
 
           {/* 🔹 Botones desktop */}
-          {!props.edit && (
+          {props.edit === "NONE" && (
             <div className="hidden sm:flex gap-2 w-full text-white mt-2">
               <motion.button
                 onClick={handleAddToCart}
@@ -139,46 +160,46 @@ export default function FeaturedProductCard(props: FeaturedProductCardProps) {
                 whileTap={{ scale: 0.97 }}
                 animate={
                   added
-                    ? {
-                      background: "linear-gradient(90deg, var(--color-contrast-secondary), var(--color-main))",
-                      scale: [1, 1.05, 1],
-                      boxShadow: "0 0 15px rgba(150, 80, 220, 0.6)",
-                    }
-                    : {
-                      background: "linear-gradient(90deg, var(--color-contrast-main), var(--color-contrast-secondary))",
-                      scale: 1,
-                      boxShadow: "0 0 0 rgba(0,0,0,0)",
-                    }
+                  ? {
+                    background: "linear-gradient(90deg, var(--color-contrast-secondary), var(--color-main))",
+                    scale: [1, 1.05, 1],
+                    boxShadow: "0 0 15px rgba(150, 80, 220, 0.6)",
+                  }
+                  : {
+                    background: "linear-gradient(90deg, var(--color-contrast-main), var(--color-contrast-secondary))",
+                    scale: 1,
+                    boxShadow: "0 0 0 rgba(0,0,0,0)",
+                  }
                 }
                 transition={{
                   duration: 0.1,
                   ease: "easeInOut",
                 }}
                 className="relative overflow-hidden cursor-pointer rounded-full text-sm sm:text-base transition-all duration-400 py-2 px-6 shadow-md w-full text-white"
-              >
+                >
                 {/* Contenedor del texto animado */}
                 <div className="relative h-5 sm:h-6 flex items-center justify-center">
                   <AnimatePresence mode="wait">
                     {added ? (
                       <motion.span
-                        key="added"
-                        initial={{ y: -25, opacity: 0, scale: 0.8 }}
-                        animate={{
-                          y: 0,
-                          opacity: 1,
-                          scale: 1,
-                          transition: {
-                            type: "spring",
-                            stiffness: 500,
-                            damping: 20,
-                          },
-                        }}
-                        exit={{
-                          y: 25,
-                          opacity: 0,
-                          scale: 0.9,
-                          transition: { duration: 0.2 },
-                        }}
+                      key="added"
+                      initial={{ y: -25, opacity: 0, scale: 0.8 }}
+                      animate={{
+                        y: 0,
+                        opacity: 1,
+                        scale: 1,
+                        transition: {
+                          type: "spring",
+                          stiffness: 500,
+                          damping: 20,
+                        },
+                      }}
+                      exit={{
+                        y: 25,
+                        opacity: 0,
+                        scale: 0.9,
+                        transition: { duration: 0.2 },
+                      }}
                         className="absolute inset-0 flex items-center justify-center font-semibold"
                       >
                         <motion.div
@@ -224,7 +245,7 @@ export default function FeaturedProductCard(props: FeaturedProductCardProps) {
       </div>
 
       {/* 🔹 Barra inferior (mobile) */}
-      {!props.edit && (
+      {props.edit === "NONE" && (
         <div className="flex sm:hidden justify-between items-center w-full mt-3 gap-3">
           <motion.button
                 onClick={handleAddToCart}
@@ -313,6 +334,7 @@ export default function FeaturedProductCard(props: FeaturedProductCardProps) {
           <HeartButton productId={props.id} variant="filled" />
         </div>
       )}
+    
     </figure>
   );
 }

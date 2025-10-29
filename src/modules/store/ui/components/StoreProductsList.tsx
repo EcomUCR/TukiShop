@@ -191,7 +191,7 @@ export default function StoreProductsList() {
                         : undefined
                     }
                     rating={4.5}
-                    edit
+                    edit = "EDIT"
                     id={product.id ?? 0}
                   />
                 ))}

@@ -37,7 +37,7 @@ export default function FeaturedProductsSlider(props: FeaturedProductsSliderProp
                             price={product.price}
                             discountPrice={product.discountPrice}
                             rating={product.rating}
-                            edit={false}
+                            edit={"NONE"}
                         />
                     </CarouselItem>
                 ))}
