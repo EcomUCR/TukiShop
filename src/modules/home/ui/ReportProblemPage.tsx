@@ -4,10 +4,10 @@ import NavBar from "../../../components/layout/NavBar";
 import Footer from "../../../components/layout/Footer";
 import ButtonComponent from "../../../components/ui/ButtonComponent";
 import { motion } from "framer-motion";
-import { useAlert } from "../../../hooks/context/AlertContext"; // 👈 Importa el contexto
+import { useAlert } from "../../../hooks/context/AlertContext";
 
 export default function ReportProblemPage() {
-    const { showAlert } = useAlert(); // 👈 Usa el hook aquí
+    const { showAlert } = useAlert();
 
     const [form, setForm] = useState({
         name: "",
@@ -50,16 +50,14 @@ export default function ReportProblemPage() {
         e.preventDefault();
         setSending(true);
 
-        await new Promise((res) => setTimeout(res, 1000)); // Simula envío
+        await new Promise((res) => setTimeout(res, 1000));
 
-        // ✅ Mostrar alerta de éxito
         showAlert({
             title: "Mensaje enviado",
             message: "Tu reporte ha sido realizado correctamente",
             type: "success",
         });
 
-        // ✅ Limpiar formulario
         setForm({ name: "", email: "", subject: "", description: "" });
         setFiles([]);
         setPreviews([]);
@@ -84,8 +82,6 @@ export default function ReportProblemPage() {
                     contacto contigo.
                 </p>
             </section>
-
-            {/* Formulario */}
             <section className="flex justify-center w-full px-6 py-10 sm:py-16 font-quicksand">
                 <form
                     onSubmit={handleSubmit}
@@ -142,8 +138,6 @@ export default function ReportProblemPage() {
                             required
                         />
                     </label>
-
-                    {/* Adjuntar imágenes */}
                     <div className="flex flex-col gap-3">
                         <p className="font-semibold text-main">
                             Adjuntar evidencia (opcional)
@@ -159,7 +153,6 @@ export default function ReportProblemPage() {
                                 className="hidden"
                             />
                         </label>
-
                         {previews.length > 0 && (
                             <div className="flex flex-wrap gap-4 mt-2 overflow-x-auto pb-2">
                                 {previews.map((src, index) => (
@@ -187,8 +180,6 @@ export default function ReportProblemPage() {
                             </div>
                         )}
                     </div>
-
-                    {/* Botón */}
                     <ButtonComponent
                         type="submit"
                         text={sending ? "Enviando..." : "Enviar reporte"}

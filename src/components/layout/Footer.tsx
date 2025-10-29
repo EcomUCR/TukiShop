@@ -5,20 +5,17 @@ import {
   IconBrandX,
 } from "@tabler/icons-react";
 import logo from "../../img/TukiLogo.png";
-import useContactForm from "../../hooks/useContactForm";
 
 export default function Footer() {
-  const { fields, handleChange, handleSubmit, loading, sent, error } =
-    useContactForm();
-
   return (
     <footer className="h-auto py-10 bg-main text-white flex flex-col items-center font-quicksand px-6 sm:px-10 space-y-10">
       {/* Contenedor principal */}
       <div className="flex flex-col sm:flex-row w-full sm:w-[90%] justify-between items-center sm:items-start gap-15 sm:gap-0">
         {/*Columna izquierda: enlaces + redes */}
-        <div className="space-y-15 w-full sm:w-[33%] flex flex-col items-center order-2 sm:order-1">
+        <div className="space-y-10 w-full sm:w-[33%] flex flex-col items-center order-2 sm:order-1">
           <div className="flex flex-col sm:grid sm:grid-cols-3 sm:gap-x-16 sm:gap-y-0 justify-center sm:justify-center
-            mx-0 sm:mx-10 pt-0 sm:pt-10 text-sm font-light text-center sm:text-left">
+            mx-0 sm:mx-10 pt-0 sm:pt-10 text-sm font-light text-center sm:text-left"
+          >
             <ul className="space-y-3 min-w-[7rem]">
               <li><a href="/search?mode=offers">Ofertas</a></li>
               <li><a href="/search/stores">Tiendas</a></li>
@@ -77,7 +74,6 @@ export default function Footer() {
           </div>
         </div>
 
-
         {/* 🔹 Columna central: logo */}
         <div className="flex flex-col items-center gap-2 w-full sm:w-[33%] order-1 sm:order-2">
           <img src={logo} alt="TukiShop" className="h-15 w-auto" />
@@ -86,80 +82,19 @@ export default function Footer() {
           </a>
         </div>
 
-        {/* 🔹 Columna derecha: formulario */}
-        <div className="flex flex-col gap-3 text-xs w-full sm:w-[33%] items-center pt-4 sm:pt-8 order-3 sm:order-3">
-          <p className="font-semibold text-xl">Contáctanos</p>
-          <form
-            className="flex flex-col gap-4 w-[90%] sm:w-[80%]"
-            onSubmit={handleSubmit}
+        {/* 🔹 Columna derecha: llamada a la acción */}
+        <div className="flex flex-col gap-8 text-center w-full sm:w-[33%] items-center pt-4 sm:pt-8 order-3 sm:order-3">
+          <p className="font-semibold text-xl">¿Tienes dudas o consultas?</p>
+          <p className="text-sm text-white/80 max-w-[25rem]">
+            Estamos aquí para ayudarte. Si necesitas asistencia o deseas
+            comunicarte con nuestro equipo, visita nuestra página de contacto.
+          </p>
+          <a
+            href="/contact"
+            className="bg-contrast-secondary hover:bg-contrast-main hover:scale-105 text-white font-semibold py-2 px-6 rounded-full transition-all duration-300"
           >
-            <label className="flex flex-col gap-1">
-              <p className="pl-3 font-semibold">Nombre</p>
-              <input
-                type="text"
-                name="name"
-                value={fields.name}
-                onChange={handleChange}
-                placeholder="Ingresa tu nombre"
-                className="rounded-full p-2 text-white border border-white w-full bg-transparent"
-                required
-              />
-            </label>
-
-            <label className="flex flex-col gap-1">
-              <p className="pl-3 font-semibold">Asunto</p>
-              <input
-                type="text"
-                name="subject"
-                value={fields.subject}
-                onChange={handleChange}
-                placeholder="Escribe el asunto de tu mensaje"
-                className="rounded-full p-2 text-white border border-white w-full bg-transparent"
-                required
-              />
-            </label>
-
-            <label className="flex flex-col gap-1">
-              <p className="pl-3 font-semibold">Email</p>
-              <input
-                type="email"
-                name="email"
-                value={fields.email}
-                onChange={handleChange}
-                placeholder="Ingresa tu email"
-                className="rounded-full p-2 text-white border border-white w-full bg-transparent"
-                required
-              />
-            </label>
-
-            <label className="flex flex-col gap-1">
-              <p className="pl-3 font-semibold">Mensaje</p>
-              <textarea
-                name="message"
-                value={fields.message}
-                onChange={handleChange}
-                placeholder="Ingresa tu mensaje"
-                className="rounded-2xl p-2 text-white border border-white w-full h-20 bg-transparent"
-                required
-              />
-            </label>
-
-            <button
-              type="submit"
-              disabled={loading}
-              className={`bg-contrast-secondary cursor-pointer p-2 rounded-full hover:bg-contrast-main transition-all duration-300 ${loading ? "opacity-50 cursor-not-allowed" : ""
-                }`}
-            >
-              {loading ? "Enviando..." : "Enviar"}
-            </button>
-
-            {sent && (
-              <p className="text-green-400 text-center">
-                ¡Mensaje enviado correctamente!
-              </p>
-            )}
-            {error && <p className="text-red-400 text-center">{error}</p>}
-          </form>
+            Contáctanos
+          </a>
         </div>
       </div>
 
