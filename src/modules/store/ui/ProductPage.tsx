@@ -361,7 +361,7 @@ export default function ProductPage() {
                           </div>
 
                           <div className="relative">
-                            <ShareComponent positionClass="absolute right-30 top-25" shareUrl={""} />
+                            <ShareComponent positionClass="absolute right-21.5 top-25" shareUrl={""} />
                           </div>
                         </div>
                       </div>
@@ -427,7 +427,7 @@ export default function ProductPage() {
                             prod.discount_price ? prod.discount_price : undefined
                           }
                           img={prod.image_1_url || "https://via.placeholder.com/200"}
-                          edit={false}
+                          edit={"NONE"}
                         />
                       ))
                     ) : (

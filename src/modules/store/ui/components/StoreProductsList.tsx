@@ -152,7 +152,7 @@ export default function StoreProductsList() {
                       price={product.price}
                       discountPrice={product.discount_price || undefined}
                       img={product.image_1_url ? product.image_1_url : audifonos}
-                      edit
+                      edit="EDIT"
                       id={product.id ?? 0}
                     />
                   ))}
@@ -191,7 +191,7 @@ export default function StoreProductsList() {
                         : undefined
                     }
                     rating={4.5}
-                    edit
+                    edit = "EDIT"
                     id={product.id ?? 0}
                   />
                 ))}

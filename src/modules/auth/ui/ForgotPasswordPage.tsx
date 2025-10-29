@@ -1,5 +1,6 @@
 import Footer from "../../../components/layout/Footer";
 import NavBar from "../../../components/layout/NavBar";
+import { useNavigate } from "react-router-dom";
 import logo from "../../../img/TukiLogo.png";
 import React, { useState } from "react";
 import { useAuth } from "../infrastructure/useAuth";
@@ -7,6 +8,7 @@ import { useAuth } from "../infrastructure/useAuth";
 export default function ForgotPasswordPage() {
     const [email, setEmail] = useState("");
     const { forgotPassword, loading, error, success } = useAuth();
+    const navigate = useNavigate(); 
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -17,7 +19,7 @@ export default function ForgotPasswordPage() {
         <div>
             <NavBar />
             <section className="flex flex-col lg:flex-row justify-center items-center font-quicksand">
-                {/* Panel decorativo (solo visible en desktop) */}
+              
                 <div className="hidden lg:flex relative flex-col justify-center bg-gradient-to-br from-contrast-main via-contrast-secondary to-main h-[90vh] w-[35%] gap-4">
                     <div
                         className={`bg-white absolute right-0 top-40 z-1 h-30 w-80 rounded-l-full transform transition-all duration-300`}
@@ -35,14 +37,15 @@ export default function ForgotPasswordPage() {
                         </p>
                     </div>
                 </div>
-                {/* Panel de formulario (visible siempre) */}
+
+               
                 <div className="flex flex-col items-center justify-center w-full h-[80vh] lg:w-[65%] px-6 sm:px-10 py-10 bg-white">
                     <div className="flex flex-col items-center w-full justify-center">
                         <img className="h-20" src={logo} alt="TukiShop" />
                         <p className="font-fugaz text-2xl mt-2">TukiShop</p>
 
                         <div className="flex flex-col w-full items-center space-y-5 mt-10">
-                            {/* Formulario de recuperación */}
+                           
                             <form
                                 className="flex flex-col items-center w-full space-y-5"
                                 onSubmit={handleSubmit}
@@ -55,12 +58,22 @@ export default function ForgotPasswordPage() {
                                     onChange={(e) => setEmail(e.target.value)}
                                     required
                                 />
+
                                 <button
                                     className="bg-main text-white rounded-full py-3 px-4 w-[70%] sm:w-[50%] lg:w-[40%] font-quicksand cursor-pointer transition-all duration-300 hover:bg-contrast-main"
                                     type="submit"
                                     disabled={loading}
                                 >
                                     {loading ? "Enviando..." : "Enviar correo de recuperación"}
+                                </button>
+
+                                
+                                <button
+                                    onClick={() => navigate("/loginRegister")}
+                                    className="bg-main text-white rounded-full py-3 px-4 w-[70%] sm:w-[50%] lg:w-[40%] font-quicksand cursor-pointer transition-all duration-300 hover:bg-contrast-main"
+                                    type="button"
+                                >
+                                    Volver a la página de registro
                                 </button>
 
                                 {error && <p className="text-red-500 text-center px-4">{error}</p>}

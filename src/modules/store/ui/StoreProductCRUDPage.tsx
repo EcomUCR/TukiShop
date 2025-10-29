@@ -113,16 +113,30 @@ export default function StoreProductCRUDPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    console.log("🟢 Iniciando guardado de producto...");
+
     const storeId = user?.store?.id;
     if (!storeId) {
-      alert("No se encontró la tienda asociada al usuario");
+      alert("⚠️ No se encontró la tienda asociada al usuario.");
+      console.warn("❌ user sin store:", user);
       return;
     }
 
-    const mainImageFile = form.images[0];
+    // 🔹 Validar nombre e imagen principal
+    if (!form.name.trim()) {
+      alert("⚠️ El producto necesita un nombre.");
+      return;
+    }
 
+    if (!form.images[0]) {
+      alert("⚠️ Debes subir al menos una imagen principal.");
+      console.warn("❌ form.images vacío:", form.images);
+      return;
+    }
+
+    // 🔹 Preparar payload
     const payload: ProductPayload = {
-      image: mainImageFile || null,
+      image: form.images[0],
       store_id: storeId,
       price: Number(form.price),
       discount_price: Number(form.discount_price),
@@ -137,11 +151,22 @@ export default function StoreProductCRUDPage() {
       is_featured: form.is_featured,
     };
 
+    // 🧠 Debug visual
+    console.log("🧾 PAYLOAD A ENVIAR:", payload);
+    console.log("🧍 Usuario:", user);
+    console.log("🖼️ Imágenes:", form.images);
+
     try {
       if (id) {
+        console.log("✏️ Editando producto con ID:", id);
         await updateProduct(Number(id), payload as any);
+        alert("✅ Producto editado correctamente");
       } else {
+        console.log("🆕 Creando nuevo producto...");
         await createProduct(payload as any);
+        alert("✅ Producto creado correctamente");
+
+        // 🔹 Reset del formulario
         setForm({
           name: "",
           description: "",
@@ -158,10 +183,22 @@ export default function StoreProductCRUDPage() {
           if (ref.current) ref.current.value = "";
         });
       }
-    } catch (err) {
-      console.error(err);
+    } catch (err: any) {
+      console.error("🚨 Error al guardar producto:", err);
+
+      // Mostrar mensaje legible al usuario
+      if (err.response?.data?.errors) {
+        const errors = err.response.data.errors;
+        const firstError = Object.values(errors)[0];
+        alert("⚠️ Error: " + firstError);
+      } else if (err.response?.data?.message) {
+        alert("⚠️ " + err.response.data.message);
+      } else {
+        alert("⚠️ No se pudo guardar el producto. Revisa la consola para más detalles.");
+      }
     }
   };
+
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
     if (e.target.files && e.target.files[0]) {
@@ -409,7 +446,7 @@ export default function StoreProductCRUDPage() {
             </div>
 
             {/* Derecha */}
-            <div className="flex flex-col items-center justify-center sm:w-6/12 gap-6">
+            <div className="flex flex-col items-center sm:w-6/12 gap-6">
               <label className="flex items-center gap-2">
                 <p className="font-semibold">Destacar producto</p>
                 <input
@@ -421,33 +458,34 @@ export default function StoreProductCRUDPage() {
                   className="cursor-pointer"
                 />
               </label>
-
+              <div className="">
               {form.is_featured ? (
-                <FeaturedProductCard
-                  shop="Preview"
-                  title={form.name || "Nombre del producto"}
-                  price={form.price ? form.price.toString() : "0"}
-                  discountPrice={
-                    form.discount_price
-                      ? form.discount_price.toString()
-                      : undefined
-                  }
-                  img={mainPreview}
-                  rating={0}
-                  edit={false}
-                  id={0}
-                />
-              ) : (
-                <ProductCard
+                  <FeaturedProductCard
+                    shop="Preview"
+                    title={form.name || "Nombre del producto"}
+                    price={form.price ? form.price.toString() : "0"}
+                    discountPrice={
+                      form.discount_price
+                        ? form.discount_price.toString()
+                        : undefined
+                    }
+                    img={mainPreview}
+                    rating={0}
+                    edit={"EDITING"}
+                    id={0}
+                  />
+                ) : (
+                  <ProductCard
                   shop="Preview"
                   title={form.name || "Nombre del producto"}
                   price={Number(form.price) || 0}
                   discountPrice={Number(form.discount_price) || undefined}
                   img={mainPreview}
-                  edit={false}
+                  edit="EDITING"
                   id={0}
-                />
-              )}
+                  />
+                )}
+                </div>
 
               <div className="flex flex-col gap-4 w-full sm:w-2/3">
                 <ButtonComponent
