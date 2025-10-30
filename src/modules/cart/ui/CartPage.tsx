@@ -3,15 +3,16 @@ import ShoppingForm from "../../../components/forms/ShoppingForm";
 import NavBar from "../../../components/layout/NavBar";
 import ProductCartCard from "../../cart/ui/ProductCartCard";
 import { IconBrandWhatsapp } from "@tabler/icons-react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import BannerComponent from "../../../components/data-display/BannerComponent";
 import { useBanner } from "../../admin/infrastructure/useBanner";
 import { useCart } from "../../../hooks/context/CartContext";
 import { SkeletonCartPage } from "../../../components/ui/AllSkeletons";
 
 export default function CartPage() {
-  const { cart, loading, refreshCart } = useCart();
+  const { cart, loading, refreshCart, clearCart } = useCart();
   const { banners, fetchBanners, loading: loadingBanners } = useBanner();
+  const [clearing, setClearing] = useState(false);
 
   useEffect(() => {
     fetchBanners();
@@ -21,14 +22,30 @@ export default function CartPage() {
     refreshCart();
   }, []);
 
-  
-  if (loading || loadingBanners) return (
-    <div>
-      <NavBar />
-      <SkeletonCartPage />
-      <Footer />
-    </div>
-  );
+  const handleClearCart = async () => {
+    const confirmClear = window.confirm(
+      "¿Estás seguro de que deseas vaciar tu carrito? 🗑️"
+    );
+    if (!confirmClear) return;
+
+    try {
+      setClearing(true);
+      await clearCart();
+      await refreshCart();
+    } catch (err) {
+      console.error("Error al vaciar el carrito:", err);
+    } finally {
+      setClearing(false);
+    }
+  };
+  if (loading || loadingBanners)
+    return (
+      <div>
+        <NavBar />
+        <SkeletonCartPage />
+        <Footer />
+      </div>
+    );
 
   const hasItems = cart && cart.items && cart.items.length > 0;
 
@@ -46,6 +63,22 @@ export default function CartPage() {
         <section className="mx-4 sm:mx-10 flex flex-col sm:flex-row">
           {/* Lista de productos */}
           <div className="my-5 w-full sm:w-2/3 sm:border-r-2 sm:pr-5 border-main flex flex-col">
+        {hasItems && (
+          <div className="flex justify-end mt-3">
+            <button
+              onClick={handleClearCart}
+              disabled={clearing}
+              className={`mb-4 px-6 py-2 rounded-full border-2 border-[#ff7e47] text-[#ff7e47] font-medium transition-all duration-200 
+        ${
+          clearing
+            ? "opacity-60 cursor-not-allowed"
+            : "hover:bg-[#ff7e47] hover:text-white"
+        }`}
+            >
+              {clearing ? "Vaciando..." : "Vaciar"}
+            </button>
+          </div>
+        )}
             {hasItems ? (
               cart.items.map((item) => (
                 <ProductCartCard key={item.id} item={item} />
@@ -56,7 +89,6 @@ export default function CartPage() {
               </p>
             )}
 
-       
             <section className="flex flex-col items-center justify-center text-center py-10 font-quicksand">
               <h2 className="text-base sm:text-lg font-semibold mb-2">
                 ¿Necesitas ayuda?
@@ -80,13 +112,11 @@ export default function CartPage() {
             </section>
           </div>
 
-         
           <div className="my-5 sm:my-10 sm:pl-10 w-full sm:w-1/3">
             <ShoppingForm />
           </div>
         </section>
 
-      
         <section className="mx-4 sm:mx-10 sm:my-10 my-6">
           {banners.length > 0 ? (
             (() => {
@@ -119,7 +149,6 @@ export default function CartPage() {
                 );
               }
 
-             
               return (
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 sm:gap-10 justify-center items-end">
                   {activeBanners.map((b) => (
