@@ -16,7 +16,7 @@ interface StoreProps {
 
 export default function StoreListCard({ store }: StoreProps) {
   return (
-    <div className="relative flex flex-col border border-white/20 bg-gradient-to-br from-contrast-main/50 via-contrast-secondary/50 to-main/50 backdrop-blur-lg rounded-2xl shadow-lg overflow-hidden w-full max-w-[30rem] mx-auto font-quicksand transition-all duration-300 sm:w-[35rem]">
+    <div className="relative flex flex-col border border-white/20 bg-gradient-to-br from-contrast-main/50 via-contrast-secondary/50 to-main/50 backdrop-blur-lg rounded-2xl shadow-lg overflow-hidden w-full max-w-[30rem] mx-auto font-quicksand transition-all duration-300 sm:w-[35rem] min-h-[28rem] sm:min-h-[26rem]">
       {/* 🔹 Banner superior */}
       <div className="relative h-24 sm:h-28 md:h-32 bg-gradient-to-r from-main via-contrast-main to-contrast-secondary">
         <img
@@ -42,7 +42,7 @@ export default function StoreListCard({ store }: StoreProps) {
       </div>
 
       {/* 🔹 Contenido */}
-      <div className="flex relative flex-col items-center pt-14 sm:pt-15 pb-6 px-4 text-center">
+      <div className="flex relative flex-col items-center pt-14 sm:pt-15 pb-6 px-4 text-center flex-1">
         {/* 🏷️ Categoría */}
         <p className="absolute top-2 right-3 bg-white/50 text-xs text-main px-3 py-1 rounded-full">
           {store.category?.trim() || "Sin categoría"}
@@ -64,13 +64,15 @@ export default function StoreListCard({ store }: StoreProps) {
             "Esta tienda aún no ha agregado una descripción."}
         </p>
 
-        {/* Botón original */}
-        <Link to={`/store/${store.id}`} className="mt-4 w-full sm:w-[80%]">
-          <ButtonComponent
-            text="Ver tienda"
-            style="relative bg-gradient-to-br from-contrast-main via-contrast-secondary to-main text-white font-medium rounded-full w-full py-2 sm:py-3 text-sm sm:text-base transition-all duration-300 transform hover:scale-[1.04] hover:brightness-110 shadow-md hover:shadow-lg"
-          />
-        </Link>
+        {/* Botón */}
+        <div className="mt-auto w-full sm:w-[80%]">
+          <Link to={`/store/${store.id}`}>
+            <ButtonComponent
+              text="Ver tienda"
+              style="relative bg-gradient-to-br from-contrast-main via-contrast-secondary to-main text-white font-medium rounded-full w-full py-2 sm:py-3 text-sm sm:text-base transition-all duration-300 transform hover:scale-[1.04] hover:brightness-110 shadow-md hover:shadow-lg"
+            />
+          </Link>
+        </div>
       </div>
     </div>
   );
