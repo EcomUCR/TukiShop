@@ -95,13 +95,12 @@ export default function NavBar() {
     return () => document.removeEventListener("click", handleClickOutside);
   }, []);
 
-  
+
   const navLinkClass = (isActive: boolean) =>
-    `transition-all cursor-pointer relative ${
-      isActive
-        ? "font-semibold before:content-[''] before:absolute before:bottom-0 before:left-0 before:w-full before:h-[2px] before:bg-white"
-        : "hover:opacity-80"
-    }`;
+    `transition-all duration-200 cursor-pointer relative ${isActive
+      ? "font-semibold before:content-[''] before:absolute before:bottom-0 before:left-0 before:w-full before:h-[2px] before:bg-white"
+      : ""
+    } hover:translate-y-[-2px] `;
 
   const mobileLinkClass = (isActive: boolean) =>
     `${isActive ? "font-semibold text-main-dark" : "text-main-dark"}`;
@@ -274,7 +273,7 @@ export default function NavBar() {
         </div>
       </div>
 
-     
+
       <div className="hidden md:block">
         <ul className="flex justify-center gap-10 p-4 text-white text-sm">
           <li>
