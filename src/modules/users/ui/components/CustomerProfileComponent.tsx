@@ -390,7 +390,7 @@ export default function CustomerProfileComponent({
                     />
                   </div>
                   <input
-                    type="text"
+                    type="tel"
                     placeholder="Teléfono de contacto"
                     value={form.phone_number}
                     onChange={(e) =>
