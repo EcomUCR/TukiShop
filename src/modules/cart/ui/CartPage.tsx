@@ -1,7 +1,7 @@
 import Footer from "../../../components/layout/Footer";
 import ShoppingForm from "../../../components/forms/ShoppingForm";
 import NavBar from "../../../components/layout/NavBar";
-import ProductCartCard from "../../../components/data-display/ProductCartCard";
+import ProductCartCard from "../../cart/ui/ProductCartCard";
 import { IconBrandWhatsapp } from "@tabler/icons-react";
 import { useEffect } from "react";
 import BannerComponent from "../../../components/data-display/BannerComponent";

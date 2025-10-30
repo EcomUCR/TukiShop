@@ -1,8 +1,8 @@
 import { IconHeart, IconTrash } from "@tabler/icons-react";
-import StarRatingComponent from "../ui/StarRatingComponent";
-import { useCart } from "../../hooks/context/CartContext";
+import StarRatingComponent from "../../../components/ui/StarRatingComponent";
+import { useCart } from "../../../hooks/context/CartContext";
 import { Link } from "react-router-dom";
-import { useAlert } from "../../hooks/context/AlertContext";
+import { useAlert } from "../../../hooks/context/AlertContext";
 import { useState } from "react";
 
 interface Props {
