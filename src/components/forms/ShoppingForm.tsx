@@ -69,27 +69,57 @@ export default function ShoppingForm({
   const format = (n: number) => (n ?? 0).toLocaleString("es-CR");
 
   // Validación antes del pago
-  const handlePayment = async (paymentIntent: any) => {
-    if (!addressText.trim()) {
-      showAlert({
-        title: "Dirección requerida",
-        message: "Por favor escribe o selecciona una dirección antes de pagar.",
-        type: "warning",
-      });
-      return;
-    }
+  // ============================
+// 💳 Validación antes del pago
+// ============================
+const handlePayment = async (paymentIntent: any) => {
+  // Extraemos los campos individuales desde el string
+  const parts = addressText.split(",").map((p) => p.trim());
+  const [street, city, state, country, zip_code, phone_number] = parts;
 
-    await getForexRate("CRC", "USD");
-    const selected = addresses.find((a) => a.id === selectedAddressId);
-    await processCheckout(paymentIntent, totals, {
-      street: selected?.street,
-      city: selected?.city,
-      state: selected?.state,
-      zip_code: selected?.zip_code, // ✅ agregado
-      country: selected?.country,
-      phone_number: selected?.phone_number,
+  // Determinar si escribió manualmente una dirección
+  const hasTypedAddress =
+    street?.length > 2 && city?.length > 2 && country?.length > 2;
+
+  // Determinar si seleccionó una guardada
+  const selected = addresses.find((a) => a.id === selectedAddressId);
+
+  // Validación combinada
+  if (!selected && !hasTypedAddress) {
+    showAlert({
+      title: "Dirección requerida 🏠",
+      message:
+        "Debes seleccionar una dirección guardada o escribir una nueva completa antes de pagar.",
+      type: "warning",
     });
-  };
+    return;
+  }
+
+  await getForexRate("CRC", "USD");
+
+  // 🧩 Construimos la dirección final (usa la guardada o la escrita)
+  const finalAddress = selected
+    ? {
+        street: selected.street,
+        city: selected.city,
+        state: selected.state,
+        zip_code: selected.zip_code,
+        country: selected.country,
+        phone_number: selected.phone_number,
+      }
+    : {
+        street,
+        city,
+        state,
+        zip_code,
+        country,
+        phone_number,
+      };
+
+  // Procesar checkout
+  await processCheckout(paymentIntent, totals, finalAddress);
+};
+
 
   return (
     <div className="font-quicksand">
@@ -169,7 +199,9 @@ export default function ShoppingForm({
                   setAddressText(
                     `${selected.street}, ${selected.city}, ${
                       selected.state || ""
-                    }, ${selected.country}, ${selected.zip_code || ""}`
+                    }, ${selected.country}, ${selected.zip_code || ""}, ${
+                      selected.phone_number || ""
+                    }`
                   );
                 } else {
                   setSelectedAddressId(null);
@@ -188,49 +220,130 @@ export default function ShoppingForm({
             </select>
 
             {/* Mostrar resumen de dirección seleccionada */}
-            {selectedAddressId && (
-              <div className="mt-3 p-3 bg-purple-50 border border-[#DDD6FE] rounded-lg text-sm text-[#4C1D95]">
-                {(() => {
-                  const a = addresses.find((a) => a.id === selectedAddressId);
-                  if (!a) return null;
-                  return (
-                    <>
-                      <p>
-                        <strong>Calle:</strong> {a.street}
-                      </p>
-                      <p>
-                        <strong>Ciudad:</strong> {a.city}
-                      </p>
-                      <p>
-                        <strong>Provincia:</strong> {a.state}
-                      </p>
-                      <p>
-                        <strong>Código postal:</strong> {a.zip_code || "—"}
-                      </p>
-                      <p>
-                        <strong>País:</strong> {a.country}
-                      </p>
-                      <p>
-                        <strong>Teléfono:</strong> {a.phone_number || "—"}
-                      </p>
-                    </>
-                  );
-                })()}
-              </div>
-            )}
 
             {/* Textarea opcional */}
-            <textarea
-              className={`border rounded-lg px-3 py-2 text-sm focus:outline-none transition-all duration-200 ${
-                !addressText.trim()
-                  ? "border-red-300 focus:ring-2 focus:ring-red-400"
-                  : "border-[#C4B5FD] focus:ring-2 focus:ring-[#7C3AED]"
-              }`}
-              placeholder="Escribe o ajusta la dirección de entrega..."
-              rows={3}
-              value={addressText}
-              onChange={(e) => setAddressText(e.target.value)}
-            />
+            {/* Campos detallados de dirección */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
+              <div>
+                <label className="text-sm font-medium text-[#4C1D95]">
+                  Calle
+                </label>
+                <input
+                  type="text"
+                  className="w-full border border-[#C4B5FD] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#7C3AED] transition-all duration-200"
+                  placeholder="Ej: Avenida Central #102"
+                  value={(() => {
+                    const parts = addressText.split(",");
+                    return parts[0]?.trim() || "";
+                  })()}
+                  onChange={(e) => {
+                    const parts = addressText.split(",");
+                    parts[0] = e.target.value;
+                    setAddressText(parts.join(", "));
+                  }}
+                />
+              </div>
+
+              <div>
+                <label className="text-sm font-medium text-[#4C1D95]">
+                  Ciudad
+                </label>
+                <input
+                  type="text"
+                  className="w-full border border-[#C4B5FD] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#7C3AED]"
+                  placeholder="Ej: San José"
+                  value={(() => {
+                    const parts = addressText.split(",");
+                    return parts[1]?.trim() || "";
+                  })()}
+                  onChange={(e) => {
+                    const parts = addressText.split(",");
+                    parts[1] = e.target.value;
+                    setAddressText(parts.join(", "));
+                  }}
+                />
+              </div>
+
+              <div>
+                <label className="text-sm font-medium text-[#4C1D95]">
+                  Provincia
+                </label>
+                <input
+                  type="text"
+                  className="w-full border border-[#C4B5FD] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#7C3AED]"
+                  placeholder="Ej: Heredia"
+                  value={(() => {
+                    const parts = addressText.split(",");
+                    return parts[2]?.trim() || "";
+                  })()}
+                  onChange={(e) => {
+                    const parts = addressText.split(",");
+                    parts[2] = e.target.value;
+                    setAddressText(parts.join(", "));
+                  }}
+                />
+              </div>
+
+              <div>
+                <label className="text-sm font-medium text-[#4C1D95]">
+                  Código postal
+                </label>
+                <input
+                  type="text"
+                  className="w-full border border-[#C4B5FD] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#7C3AED]"
+                  placeholder="Ej: 10101"
+                  value={(() => {
+                    const parts = addressText.split(",");
+                    return parts[4]?.trim() || "";
+                  })()}
+                  onChange={(e) => {
+                    const parts = addressText.split(",");
+                    parts[4] = e.target.value;
+                    setAddressText(parts.join(", "));
+                  }}
+                />
+              </div>
+
+              <div>
+                <label className="text-sm font-medium text-[#4C1D95]">
+                  País
+                </label>
+                <input
+                  type="text"
+                  className="w-full border border-[#C4B5FD] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#7C3AED]"
+                  placeholder="Ej: Costa Rica"
+                  value={(() => {
+                    const parts = addressText.split(",");
+                    return parts[3]?.trim() || "";
+                  })()}
+                  onChange={(e) => {
+                    const parts = addressText.split(",");
+                    parts[3] = e.target.value;
+                    setAddressText(parts.join(", "));
+                  }}
+                />
+              </div>
+
+              <div>
+                <label className="text-sm font-medium text-[#4C1D95]">
+                  Teléfono
+                </label>
+                <input
+                  type="text"
+                  className="w-full border border-[#C4B5FD] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#7C3AED]"
+                  placeholder="Ej: +506 8888 8888"
+                  value={(() => {
+                    const parts = addressText.split(",");
+                    return parts[5]?.trim() || "";
+                  })()}
+                  onChange={(e) => {
+                    const parts = addressText.split(",");
+                    parts[5] = e.target.value;
+                    setAddressText(parts.join(", "));
+                  }}
+                />
+              </div>
+            </div>
           </div>
           {/* Stripe */}
           <div className="pt-10">
