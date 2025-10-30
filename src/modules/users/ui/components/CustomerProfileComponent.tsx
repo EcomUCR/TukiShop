@@ -393,11 +393,12 @@ export default function CustomerProfileComponent({
                     type="tel"
                     placeholder="Teléfono de contacto"
                     value={form.phone_number}
-                    onChange={(e) =>
-                      setForm({ ...form, phone_number: e.target.value })
-                    }
+                    onChange={(e) => setForm({ ...form, phone_number: e.target.value })}
+                    pattern="(\+506)?[0-9]{8}"
+                    title="Debe ser un número válido de Costa Rica (ej: +506 8888 8888)"
                     className="bg-white rounded-xl px-3 py-2 w-full text-sm border border-gray-200"
                   />
+
                 </div>
                 <div className="flex flex-col sm:flex-row gap-3 mt-4">
                   <ButtonComponent
