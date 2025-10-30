@@ -6,25 +6,24 @@ import { useAuth } from "../../../../hooks/context/AuthContext";
 
 export default function LoginForm() {
   const { login, loading } = useAuth();
-  const [email, setEmail] = useState("");
+  const [loginField, setLoginField] = useState(""); // ✅ Puede ser correo o username
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState("");
   const navigate = useNavigate();
-const [error, setError] = useState("");
-
-
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
 
-    const emailLower = email.toLowerCase();
+    const loginInput = loginField.trim().toLowerCase();
 
     try {
-      const success = await login(emailLower, password);
+      // ✅ Mandar el campo "login" al backend (puede ser correo o username)
+      const success = await login(loginInput, password);
 
       if (!success) {
-        setError("Correo o contraseña incorrectos.");
+        setError("Usuario, correo o contraseña incorrectos.");
         return;
       }
 
@@ -33,30 +32,30 @@ const [error, setError] = useState("");
       console.error("Error al iniciar sesión:", error);
 
       if (error.response?.status === 401) {
-        setError("Correo o contraseña incorrectos.");
+        setError("Usuario, correo o contraseña incorrectos.");
       } else {
         setError("No se pudo conectar con el servidor. Intenta nuevamente.");
       }
     }
   };
 
-
-
   return (
     <div className="flex flex-col items-center w-full justify-center">
-      <img className="h-20" src={logo} alt="" />
+      <img className="h-20" src={logo} alt="Logo TukiShop" />
       <p className="font-fugaz text-2xl">TukiShop</p>
+
       <div className="flex flex-col w-full items-center space-y-5 mt-10">
         <form
           className="flex flex-col items-center w-full space-y-5"
           onSubmit={handleSubmit}
         >
+          {/* ✉️ Campo genérico: puede ser correo o usuario */}
           <input
             className="border-2 border-contrast-secondary text-contrast-secondary rounded-full px-4 py-3 w-full sm:w-[65%] font-quicksand"
-            placeholder="Correo electrónico"
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            placeholder="Correo o nombre de usuario"
+            type="text"
+            value={loginField}
+            onChange={(e) => setLoginField(e.target.value)}
             required
           />
 
@@ -64,7 +63,7 @@ const [error, setError] = useState("");
           <div className="relative w-full sm:w-[65%]">
             <input
               className="border-2 border-contrast-secondary text-contrast-secondary rounded-full px-4 py-3 w-full font-quicksand pr-10"
-              placeholder="Contraseña"
+              placeholder="Contraseña"
               type={showPassword ? "text" : "password"}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
@@ -75,7 +74,11 @@ const [error, setError] = useState("");
               onClick={() => setShowPassword(!showPassword)}
               className="absolute right-4 top-4 text-contrast-secondary"
             >
-              {showPassword ? <IconEye size={20} /> : <IconEyeClosed size={20} />}
+              {showPassword ? (
+                <IconEye size={20} />
+              ) : (
+                <IconEyeClosed size={20} />
+              )}
             </button>
           </div>
 
@@ -92,7 +95,7 @@ const [error, setError] = useState("");
 
         <Link to="/forgotPassword">
           <span className="text-main font-quicksand">
-            ¿Olvidaste tu contraseña?
+            ¿Olvidaste tu contraseña?
           </span>
         </Link>
       </div>
