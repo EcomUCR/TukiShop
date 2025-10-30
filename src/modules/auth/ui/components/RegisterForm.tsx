@@ -45,8 +45,8 @@ export default function RegisterForm({ onRegisterSuccess }: Props) {
     }
 
     const payload = {
-      username: form.username.toLowerCase(),
-      email: form.email.toLowerCase(),
+      username: form.username, 
+      email: form.email.toLowerCase(), 
       password: form.password,
       first_name: form.first_name || undefined,
       last_name: form.last_name || undefined,
