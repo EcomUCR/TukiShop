@@ -283,6 +283,12 @@ export default function NavBar() {
             <CategoryDropdown categories={categories} navigate={navigate} />
           </li>
           <li
+            onClick={() => navigate("/*")}
+            className={navLinkClass(isActiveLink("/*"))}
+          >
+            Inicio
+          </li>
+          <li
             onClick={() => navigate("/search?mode=explore")}
             className={navLinkClass(isActiveLink("/search", "mode=explore"))}
           >
