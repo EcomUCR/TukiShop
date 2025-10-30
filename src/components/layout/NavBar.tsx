@@ -283,8 +283,8 @@ export default function NavBar() {
             <CategoryDropdown categories={categories} navigate={navigate} />
           </li>
           <li
-            onClick={() => navigate("/*")}
-            className={navLinkClass(isActiveLink("/*"))}
+            onClick={() => navigate("/")}
+            className={navLinkClass(isActiveLink("/"))}
           >
             Inicio
           </li>
