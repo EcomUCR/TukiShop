@@ -46,7 +46,6 @@ export default function StoreProductCRUDPage() {
   } = useProducts();
 
   const { showAlert } = useAlert();
-
   const { id } = useParams();
   const { user } = useAuth();
   const {
@@ -132,7 +131,6 @@ export default function StoreProductCRUDPage() {
         message: "Hubo un problema con la tienda del usuario",
         type: "error",
       });
-      e.preventDefault();
       console.warn("❌ user sin store:", user);
       return;
     }
@@ -144,8 +142,6 @@ export default function StoreProductCRUDPage() {
         message: "Debes asignarle un nombre al producto.",
         type: "error",
       });
-      e.preventDefault();
-
       return;
     }
 
@@ -155,8 +151,19 @@ export default function StoreProductCRUDPage() {
         message: "Debes subir al menos una imagen principal.",
         type: "error",
       });
-      e.preventDefault();
       console.warn("❌ form.images vacío:", form.images);
+      return;
+    }
+
+    // 🔹 Validar precio máximo permitido
+    const maxPrice = 850000;
+    if (Number(form.price) > maxPrice) {
+      showAlert({
+        title: "Monto no permitido",
+        message: `Ingresaste ₡${Number(form.price).toLocaleString()} colones, pero el máximo permitido es ₡${maxPrice.toLocaleString()}.`,
+        type: "error",
+      });
+      console.warn(`❌ Precio ${form.price} supera el límite de ${maxPrice}`);
       return;
     }
 
@@ -177,7 +184,6 @@ export default function StoreProductCRUDPage() {
       is_featured: form.is_featured,
     };
 
-    // 🧠 Debug visual
     console.log("🧾 PAYLOAD A ENVIAR:", payload);
     console.log("🧍 Usuario:", user);
     console.log("🖼️ Imágenes:", form.images);
@@ -220,7 +226,6 @@ export default function StoreProductCRUDPage() {
     } catch (err: any) {
       console.error("🚨 Error al guardar producto:", err);
 
-      // Mostrar mensaje legible al usuario
       if (err.response?.data?.errors) {
         const errors = err.response.data.errors;
         const firstError = Object.values(errors)[0];
@@ -388,7 +393,10 @@ export default function StoreProductCRUDPage() {
                   onChange={(e) =>
                     setForm({
                       ...form,
-                      status: e.target.value as "ACTIVE" | "INACTIVE" | "DRAFT",
+                      status: e.target.value as
+                        | "ACTIVE"
+                        | "INACTIVE"
+                        | "DRAFT",
                     })
                   }
                   className="bg-main-dark/20 rounded-2xl p-2 w-full"
@@ -447,12 +455,10 @@ export default function StoreProductCRUDPage() {
                     key={index}
                     className="relative border border-gray-200 rounded-xl p-4 shadow-sm hover:shadow-md transition-all duration-300 bg-white/70 max-sm:p-3"
                   >
-                    {/* Header del bloque */}
                     <div className="flex justify-between items-center mb-3 max-sm:flex-col max-sm:items-start max-sm:gap-1">
                       <label className="font-medium text-sm text-gray-700">
                         Imagen {index + 1}
                       </label>
-
                       {previewUrl && (
                         <button
                           onClick={() => handleRemoveImage(index)}
@@ -463,7 +469,6 @@ export default function StoreProductCRUDPage() {
                       )}
                     </div>
 
-                    {/* Contenido: Imagen + Input */}
                     <div className="flex items-center gap-4 max-sm:flex-col max-sm:items-start max-sm:gap-3">
                       {previewUrl ? (
                         <img
@@ -479,7 +484,7 @@ export default function StoreProductCRUDPage() {
 
                       <input
                         type="file"
-                        accept=".png, .jpg, .jpeg .webp"
+                        accept=".png, .jpg, .jpeg, .webp"
                         ref={fileInputRefs[index]}
                         onChange={(e) => handleImageChange(e, index)}
                         className="flex-1 text-sm file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-main-dark/20 file:text-main file:cursor-pointer hover:file:bg-main-dark/30 transition max-sm:w-full max-sm:text-xs"
@@ -503,6 +508,7 @@ export default function StoreProductCRUDPage() {
                   className="cursor-pointer"
                 />
               </label>
+
               <div className="">
                 {form.is_featured ? (
                   <FeaturedProductCard
