@@ -34,7 +34,6 @@ export function useCheckout() {
     }
 
     try {
-      // 👇 Evita recarga de carrito aquí
       if (!cart || cart.items.length === 0) {
         showAlert({
           title: "Carrito vacío",
@@ -85,11 +84,11 @@ export function useCheckout() {
         discount_pct:
           item.product.discount_price && Number(item.product.price) > 0
             ? Math.round(
-              ((Number(item.product.price) -
-                Number(item.product.discount_price)) /
-                Number(item.product.price)) *
-              100
-            )
+                ((Number(item.product.price) -
+                  Number(item.product.discount_price)) /
+                  Number(item.product.price)) *
+                  100
+              )
             : 0,
       }));
 
@@ -99,7 +98,6 @@ export function useCheckout() {
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
-      // 💳 Confirmar pago
       const confirmRes = await axios.post(
         "/checkout/confirm",
         {
@@ -114,11 +112,8 @@ export function useCheckout() {
 
       console.log("✅ Orden confirmada:", confirmRes.data);
 
-      // 🧹 Si el pago fue exitoso → limpiar todo sin recargar
-      // 🧹 Si el pago fue exitoso → limpiar todo sin recargar la página
       if (paymentIntent?.status === "succeeded") {
         try {
-          // 1️⃣ Limpia el carrito en backend
           await axios.post(
             `${import.meta.env.VITE_API_URL}/cart/clear`,
             {},
@@ -127,31 +122,23 @@ export function useCheckout() {
 
           console.log("🧹 Carrito del servidor limpiado correctamente");
 
-          // 2️⃣ Limpia el carrito y totales locales
           await clearCart();
           await clearTotals();
 
-          // 3️⃣ Espera un poco y actualiza el carrito en contexto
           setTimeout(() => {
             refreshCart();
-          }, 1000);
+          }, 800);
+
+          // ✅ Mostrar alerta única aquí
+          showAlert({
+            title: "Pago exitoso 💳",
+            message: "Tu orden fue registrada correctamente 🧾",
+            type: "success",
+          });
         } catch (err: any) {
           console.warn("⚠️ No se pudo limpiar el carrito:", err);
         }
       }
-
-
-      // ✅ Mostrar alerta final
-      showAlert({
-        title: "Pago exitoso 💳",
-        message: "Tu orden fue registrada correctamente 🧾",
-        type: "success",
-      });
-
-      // ⏳ Espera 1.5 s y actualiza el estado del carrito sin reload
-      setTimeout(() => {
-        refreshCart(); // solo actualiza contexto
-      }, 1500);
 
       return confirmRes.data;
     } catch (err: any) {

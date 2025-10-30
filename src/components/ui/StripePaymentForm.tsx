@@ -62,13 +62,6 @@ export default function StripePaymentForm({
           type: "error",
         });
       } else if (result.paymentIntent?.status === "succeeded") {
-        showAlert({
-          title: "Pago exitoso 💳",
-          message: "Tu pago fue procesado correctamente.",
-          type: "success",
-        });
-
-        //Llamar callback para continuar con el checkout
         onPaymentSuccess(result.paymentIntent);
       }
     } catch (err: any) {
