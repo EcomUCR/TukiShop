@@ -12,13 +12,6 @@ export function useCheckout() {
   const { cart, clearCart, refreshCart } = useCart();
   const { clearCart: clearTotals } = useCartTotals();
 
-  /**
-   * Procesar el checkout
-   * @param paymentIntent objeto de Stripe (contiene zip_code, payment_id, etc.)
-   * @param totals totales de la compra
-   * @param addressData datos de la dirección escrita o seleccionada
-   */
-  // useCheckout.ts
   const processCheckout = async (
     paymentIntent: any,
     totals: any,
@@ -31,7 +24,6 @@ export function useCheckout() {
       phone_number?: string;
     }
   ) => {
-
     if (!token || !user) {
       showAlert({
         title: "Inicia sesión",
@@ -42,8 +34,7 @@ export function useCheckout() {
     }
 
     try {
-      await refreshCart();
-
+      // 👇 Evita recarga de carrito aquí
       if (!cart || cart.items.length === 0) {
         showAlert({
           title: "Carrito vacío",
@@ -62,7 +53,7 @@ export function useCheckout() {
         return;
       }
 
-      // 🧾 Crear orden SIN zip_code
+      // 🧾 Crear orden
       const initRes = await axios.post(
         "/checkout/init",
         {
@@ -79,7 +70,6 @@ export function useCheckout() {
         },
         { headers: { Authorization: `Bearer ${token}` } }
       );
-
 
       const orderId = initRes.data?.order?.id;
       console.log("🧾 Orden inicial creada:", orderId);
@@ -109,7 +99,7 @@ export function useCheckout() {
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
-      // 💳 Confirmar pago (sin postal_code)
+      // 💳 Confirmar pago
       const confirmRes = await axios.post(
         "/checkout/confirm",
         {
@@ -124,16 +114,44 @@ export function useCheckout() {
 
       console.log("✅ Orden confirmada:", confirmRes.data);
 
+      // 🧹 Si el pago fue exitoso → limpiar todo sin recargar
+      // 🧹 Si el pago fue exitoso → limpiar todo sin recargar la página
       if (paymentIntent?.status === "succeeded") {
-        await clearCart();
-        await clearTotals();
+        try {
+          // 1️⃣ Limpia el carrito en backend
+          await axios.post(
+            `${import.meta.env.VITE_API_URL}/cart/clear`,
+            {},
+            { headers: { Authorization: `Bearer ${token}` } }
+          );
+
+          console.log("🧹 Carrito del servidor limpiado correctamente");
+
+          // 2️⃣ Limpia el carrito y totales locales
+          await clearCart();
+          await clearTotals();
+
+          // 3️⃣ Espera un poco y actualiza el carrito en contexto
+          setTimeout(() => {
+            refreshCart();
+          }, 1000);
+        } catch (err: any) {
+          console.warn("⚠️ No se pudo limpiar el carrito:", err);
+        }
       }
 
+
+      // ✅ Mostrar alerta final
       showAlert({
         title: "Pago exitoso 💳",
         message: "Tu orden fue registrada correctamente 🧾",
         type: "success",
       });
+
+      // ⏳ Espera 1.5 s y actualiza el estado del carrito sin reload
+      setTimeout(() => {
+        refreshCart(); // solo actualiza contexto
+      }, 1500);
 
       return confirmRes.data;
     } catch (err: any) {
@@ -148,7 +166,6 @@ export function useCheckout() {
       throw err;
     }
   };
-
 
   return { processCheckout };
 }
