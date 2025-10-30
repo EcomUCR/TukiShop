@@ -397,10 +397,11 @@ export default function CustomerProfileComponent({
                       const value = e.target.value.replace(/[^0-9+\s-]/g, "");
                       setForm({ ...form, phone_number: value });
                     }}
-                    pattern="(\+506)?[0-9]{8}"
-                    title="Debe ser un número válido de Costa Rica (ej: +506 8888 8888)"
+                    pattern="^(\+506\s?)?(\d{4}[-\s]?\d{4})$"
+                    title="Debe ser un número válido de Costa Rica (ej: +506 8888 8888 o 8888-8888)"
                     className="bg-white rounded-xl px-3 py-2 w-full text-sm border border-gray-200"
                   />
+
 
 
                 </div>
