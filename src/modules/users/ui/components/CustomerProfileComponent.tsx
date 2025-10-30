@@ -394,16 +394,20 @@ export default function CustomerProfileComponent({
                     placeholder="Teléfono de contacto"
                     value={form.phone_number}
                     onChange={(e) => {
-                      const value = e.target.value.replace(/[^0-9+\s-]/g, "");
-                      setForm({ ...form, phone_number: value });
+                      let digits = e.target.value.replace(/\D/g, "");
+                      if (digits.length > 8) digits = digits.slice(0, 8);
+                      const formatted =
+                        digits.length > 4
+                          ? `${digits.slice(0, 4)} ${digits.slice(4)}`
+                          : digits;
+                      setForm({ ...form, phone_number: formatted });
                     }}
-                    pattern="^(\+506\s?)?(\d{4}[-\s]?\d{4})$"
-                    title="Debe ser un número válido de Costa Rica (ej: +506 8888 8888 o 8888-8888)"
+                    maxLength={9}
+                    inputMode="numeric"
+                    pattern="^\d{4}\s\d{4}$"
+                    title="Debe tener el formato 8888 8888"
                     className="bg-white rounded-xl px-3 py-2 w-full text-sm border border-gray-200"
                   />
-
-
-
                 </div>
                 <div className="flex flex-col sm:flex-row gap-3 mt-4">
                   <ButtonComponent
