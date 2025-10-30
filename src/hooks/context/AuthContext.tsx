@@ -63,9 +63,9 @@ type AuthContextType = {
   user: UserType | null;
   token: string | null;
   loading: boolean;
-  login: (email: string, password: string) => Promise<boolean>;
+  login: (loginInput: string, password: string) => Promise<boolean>; // ✅ puede ser username o email
   logout: () => Promise<void>;
-  refreshUser: () => Promise<void>; // 🔹 ahora requerido, no opcional
+  refreshUser: () => Promise<void>;
 };
 
 // ============================
@@ -74,7 +74,7 @@ type AuthContextType = {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// ✅ Contexto corregido
+// ✅ Contexto completo actualizado
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<UserType | null>(null);
   const [token, setToken] = useState<string | null>(
@@ -119,9 +119,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     await loadUser();
   };
 
-  // 🔹 Iniciar sesión
-  const login = async (email: string, password: string) => {
-    const { data } = await axios.post("/login", { email, password });
+  // 🔹 Iniciar sesión (ahora acepta correo o username)
+  const login = async (loginInput: string, password: string) => {
+    const { data } = await axios.post("/login", {
+      login: loginInput, 
+      password,
+    });
+
     const token = data.token;
     localStorage.setItem("access_token", token);
     setToken(token);
@@ -143,7 +147,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     delete axios.defaults.headers.common["Authorization"];
   };
 
-  // ✅ Ahora se expone refreshUser
   return (
     <AuthContext.Provider
       value={{ user, token, loading, login, logout, refreshUser }}
