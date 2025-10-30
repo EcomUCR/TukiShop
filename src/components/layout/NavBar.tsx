@@ -56,7 +56,10 @@ export default function NavBar() {
     return () => window.removeEventListener("cartUpdated", handleCartUpdate);
   }, []);
 
-  const displayName = user?.username || "";
+  const displayName =
+    user?.role === "SELLER" && user?.store?.name
+      ? user.store.name
+      : user?.username || "";
 
   const handleSearch = () => {
     if (searchQuery.trim()) {

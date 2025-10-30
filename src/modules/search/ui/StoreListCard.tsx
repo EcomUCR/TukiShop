@@ -55,7 +55,7 @@ export default function StoreListCard({ store }: StoreProps) {
           <Link to={`/store/${store.id}`}>
             <ButtonComponent
               text="Ver tienda"
-              style="relative bg-gradient-to-br from-contrast-main via-contrast-secondary to-main text-white font-medium rounded-full w-full py-2 sm:py-3 text-sm sm:text-base transition-all duration-300 transform hover:scale-[1.04] hover:brightness-110 shadow-md hover:shadow-lg"
+              style="cursor-pointer relative bg-gradient-to-br from-contrast-main via-contrast-secondary to-main text-white font-medium rounded-full w-full py-2 sm:py-3 text-sm sm:text-base transition-all duration-300 transform hover:scale-[1.04] hover:brightness-110 shadow-md hover:shadow-lg"
             />
           </Link>
         </div>
