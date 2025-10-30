@@ -6,7 +6,7 @@ import ShoppingForm from "../../../components/forms/ShoppingForm";
 import StarRatingComponent from "../../../components/ui/StarRatingComponent";
 import ButtonComponent from "../../../components/ui/ButtonComponent";
 import FeaturedProductsSlider from "../../../components/data-display/FeaturedProductsSlider";
-import { IconArrowBackUp, IconChevronRight, } from "@tabler/icons-react";
+import { IconArrowBackUp, IconChevronRight, IconX } from "@tabler/icons-react";
 import { Link, useParams } from "react-router-dom";
 import type { Product } from "../infrastructure/useProducts";
 import { useProducts } from "../infrastructure/useProducts";
@@ -41,6 +41,7 @@ export default function ProductPage() {
   const [prodStore, setProdStore] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<keyof BorderColors>("description");
+  const [isZoomed, setIsZoomed] = useState(false);
 
   const { token } = useAuth();
   const { showAlert } = useAlert();
@@ -127,13 +128,53 @@ export default function ProductPage() {
     }
   };
 
+  // Función para abrir el zoom
+  const openZoom = () => setIsZoomed(true);
+  // Función para cerrar el zoom
+  const closeZoom = () => setIsZoomed(false);
 
   return (
     <div className="min-h-screen flex flex-col">
       <NavBar />
 
+      
+      <AnimatePresence>
+        {isZoomed && (
+          <motion.div
+            className="fixed inset-0 bg-black/90 z-[9999] flex items-center justify-center p-4 cursor-default" // Mantiene cursor-default en el fondo
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={closeZoom} 
+          >
+            
+            <div className="relative w-full h-full max-w-4xl max-h-4xl"> 
+            
+              <button
+
+                className="absolute top-4 right-4 z-10 bg-white/30 text-white rounded-full p-2  flex items-center justify-center cursor-pointer " 
+                onClick={(e) => {
+                  e.stopPropagation(); 
+                  closeZoom();
+                }}
+                aria-label="Cerrar zoom"
+              >
+                <IconX className="w-8 h-8 text-black" /> 
+              </button>
+              <img
+                src={selectedImage || product?.image_1_url || "https://via.placeholder.com/400"}
+                alt={product?.name || "Producto en zoom"}
+                className="block object-contain w-full h-full mx-auto" 
+                onClick={(e) => e.stopPropagation()} 
+              />
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    
+
       <div className="mx-auto max-w-[80rem] w-full">
-        {/*  Volver */}
+        {/*  Volver */}
         <section className="flex px-5 sm:px-10 pt-5 sm:pt-10 font-quicksand">
           <ButtonComponent
             icon={<IconArrowBackUp />}
@@ -189,16 +230,20 @@ export default function ProductPage() {
                       )}
                     </div>
 
-                    {/*  Imágenes (solo visible en mobile) */}
+                    {/*  Imágenes (solo visible en mobile) */}
                     <div className="flex flex-col items-center mt-6 mb-4 lg:hidden">
                       <div className="w-full flex justify-center mb-5 pb-4">
-                        <div className="relative w-[18rem] h-[18rem] overflow-hidden rounded-2xl">
+                        <button
+                          onClick={openZoom} 
+                          className="relative w-[18rem] h-[18rem] overflow-hidden rounded-2xl cursor-pointer hover:shadow-lg transition-shadow duration-300" 
+                          aria-label="Hacer zoom a la imagen del producto"
+                        >
                           <img
                             src={selectedImage || product.image_1_url || "https://via.placeholder.com/400"}
                             alt={product.name}
                             className="absolute inset-0 w-full h-full object-contain transition-all duration-300 rounded-2xl"
                           />
-                        </div>
+                        </button>
                       </div>
                       <div className="flex gap-3 justify-center flex-wrap pb-5">
                         {[product.image_1_url, product.image_2_url, product.image_3_url]
@@ -207,8 +252,9 @@ export default function ProductPage() {
                             <button
                               key={index}
                               onClick={() => setSelectedImage(img!)}
-                              className={`w-20 h-20 rounded-xl overflow-hidden border-1 transition-all duration-300 ${selectedImage === img ? "border-main scale-105" : "border-transparent hover:scale-105"
-                                }`}
+                              className={`w-20 h-20 rounded-xl overflow-hidden border-1 transition-all duration-300 ${
+                                selectedImage === img ? "border-main scale-105" : "border-transparent hover:scale-105"
+                              }`}
                             >
                               <img src={img!} alt={`Miniatura ${index + 1}`} className="w-full h-full object-cover object-center" />
                             </button>
@@ -328,13 +374,17 @@ export default function ProductPage() {
                   <div className="hidden lg:block w-3/12 pt-10 order-1">
                     <div className="flex flex-col w-full items-center">
                       <div className="w-full flex justify-center mb-5 pb-4">
-                        <div className="relative w-[18rem] h-[18rem] overflow-hidden rounded-2xl">
+                        <button
+                          onClick={openZoom} 
+                          className="relative w-[18rem] h-[18rem] overflow-hidden rounded-2xl cursor-pointer hover:shadow-lg transition-shadow duration-300" 
+                          aria-label="Hacer zoom a la imagen del producto"
+                        >
                           <img
                             src={selectedImage || product.image_1_url || "https://via.placeholder.com/400"}
                             alt={product.name}
                             className="absolute inset-0 w-full h-full object-contain transition-all duration-300 rounded-2xl"
                           />
-                        </div>
+                        </button>
                       </div>
                       <div className="flex gap-3 justify-center flex-wrap pb-5 ">
                         {[product.image_1_url, product.image_2_url, product.image_3_url]
@@ -343,8 +393,9 @@ export default function ProductPage() {
                             <button
                               key={index}
                               onClick={() => setSelectedImage(img!)}
-                              className={`w-20 h-20 rounded-xl overflow-hidden border-1 transition-all duration-300 ${selectedImage === img ? "border-main scale-105" : "border-transparent hover:scale-105"
-                                }`}
+                              className={`w-20 h-20 rounded-xl overflow-hidden border-1 transition-all duration-300 ${
+                                selectedImage === img ? "border-main scale-105" : "border-transparent hover:scale-105"
+                              }`}
                             >
                               <img src={img!} alt={`Miniatura ${index + 1}`} className="w-full h-full object-cover object-center" />
                             </button>
