@@ -151,7 +151,8 @@ export default function ProductPage() {
             <div className="relative w-full h-full max-w-4xl max-h-4xl"> 
             
               <button
-                className="absolute top-4 left-4 z-10 bg-white/30 text-white rounded-full p-2 backdrop-blur-sm transition-colors duration-200 flex items-center justify-center cursor-pointer" // Mantiene cursor-pointer y estilos mejorados
+
+                className="absolute top-4 right-4 z-10 bg-white/30 text-white rounded-full p-2  flex items-center justify-center cursor-pointer " 
                 onClick={(e) => {
                   e.stopPropagation(); 
                   closeZoom();
