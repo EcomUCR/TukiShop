@@ -27,7 +27,8 @@ export default function FeaturedProductCard(props: FeaturedProductCardProps) {
   const navigate = useNavigate();
   const [added, setAdded] = useState(false);
 
-  const hasDiscount = !!props.discountPrice && props.discountPrice !== "0";
+const discountValue = Number(props.discountPrice);
+const hasDiscount = !isNaN(discountValue) && discountValue > 0;
 
   const handleAddToCart = async () => {
     if (!token) {
@@ -142,7 +143,7 @@ export default function FeaturedProductCard(props: FeaturedProductCardProps) {
                 </p>
               </>
             ) : (
-              <p className="font-comme text-base sm:text-lg font-semibold">
+              <p className="font-comme text-base sm:text-lg">
                 ₡ {props.price}
               </p>
             )}
