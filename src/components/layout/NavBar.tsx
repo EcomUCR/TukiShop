@@ -37,7 +37,6 @@ export default function NavBar() {
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
 
-
   const isActiveLink = (path: string, searchParams?: string): boolean => {
     if (location.pathname === path && !searchParams) {
       return true;
@@ -96,14 +95,13 @@ export default function NavBar() {
     return () => document.removeEventListener("click", handleClickOutside);
   }, []);
 
- 
+  
   const navLinkClass = (isActive: boolean) =>
-    `transition-all cursor-pointer ${
+    `transition-all cursor-pointer relative ${
       isActive
-        ? "font-semibold transform -translate-y-1"
-        : "hover:-translate-y-1"
+        ? "font-semibold before:content-[''] before:absolute before:bottom-0 before:left-0 before:w-full before:h-[2px] before:bg-white"
+        : "hover:opacity-80"
     }`;
-
 
   const mobileLinkClass = (isActive: boolean) =>
     `${isActive ? "font-semibold text-main-dark" : "text-main-dark"}`;
@@ -276,7 +274,7 @@ export default function NavBar() {
         </div>
       </div>
 
-    
+     
       <div className="hidden md:block">
         <ul className="flex justify-center gap-10 p-4 text-white text-sm">
           <li>
@@ -323,7 +321,6 @@ export default function NavBar() {
         </ul>
       </div>
 
-      
       <AnimatePresence>
         {menuOpen && (
           <motion.div
