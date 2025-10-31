@@ -5,6 +5,7 @@ import AdminUserTableCard from "./AdminUserTableCard";
 import useAdmin from "../../infrastructure/useAdmin";
 import AdminUserEditModal from "./AdminUserEditModal";
 import AdminStoreEditModal from "./AdminStoreEditModal";
+
 import { AnimatePresence, motion } from "framer-motion";
 import {
   Pagination,
@@ -16,6 +17,7 @@ import {
 } from "../../../../components/ui/pagination";
 import { useNotificationContext } from "../../../../hooks/context/NotificationContext";
 import AdminUserAddModal from "./AdminUserAddModal";
+import AdminStoreProductListModal from "./AdminStoreProductListModal";
 
 export default function AdminUsersList() {
   const {
@@ -41,6 +43,9 @@ export default function AdminUsersList() {
 
   const [selectedUser, setSelectedUser] = useState<any | null>(null);
   const [showModal, setShowModal] = useState(false);
+
+  const [showProductsModal, setShowProductsModal] = useState(false);
+  const [storeForProducts, setStoreForProducts] = useState<{ id: number; name: string } | null>(null);
 
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 6;
@@ -321,9 +326,14 @@ export default function AdminUsersList() {
               store={selectedStore}
               onClose={() => setShowStoreModal(false)}
               onSave={handleSaveStore}
-              onViewProducts={(storeId) =>
-                console.log("Ver productos de tienda:", storeId)
-              }
+              onViewProducts={(storeId) => {
+                const currentStore = users.find((u) => u.store?.id === storeId)?.store;
+                if (currentStore) {
+                  setStoreForProducts({ id: currentStore.id, name: currentStore.name });
+                  setShowProductsModal(true);
+                }
+              }}
+
             />
           </motion.div>
         )}
@@ -349,6 +359,18 @@ export default function AdminUsersList() {
           </motion.div>
         )}
       </AnimatePresence>
+      <AnimatePresence>
+        {showProductsModal && storeForProducts && (
+          <motion.div className="fixed inset-0 z-50 flex items-center justify-center">
+            <AdminStoreProductListModal
+              storeId={storeForProducts.id}
+              storeName={storeForProducts.name}
+              onClose={() => setShowProductsModal(false)}
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
+
     </div>
   );
 }

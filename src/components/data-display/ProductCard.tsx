@@ -16,7 +16,9 @@ interface ProductCardProps {
   discountPrice?: number;
   img?: string;
   edit: "EDIT" | "EDITING" | "NONE";
+  onEditClick?: (id: number) => void; // 👈 nueva prop
 }
+
 
 export default function ProductCard(props: ProductCardProps) {
   const { token } = useAuth();
@@ -67,16 +69,28 @@ export default function ProductCard(props: ProductCardProps) {
     <figure className="relative flex flex-col w-44 sm:w-55 h-70 sm:h-90 p-3 bg-light-gray rounded-2xl shadow-md font-quicksand group transition-all duration-300">
       {/* Edit Button */}
       {props.edit === "EDIT" && (
-        <Link
-          to={`/editProduct/${props.id}`}
-          onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-        >
-          <ButtonComponent
-            style="absolute top-3 right-3 w-8 h-8 sm:w-9 sm:h-9 bg-contrast-main rounded-xl flex items-center justify-center hover:bg-contrast-secondary hover:text-white transition-all duration-400"
-            icon={<IconEdit />}
-          />
-        </Link>
+        <>
+          {props.onEditClick ? (
+            <button
+              onClick={() => props.onEditClick?.(props.id)}
+              className="absolute top-3 right-3 w-8 h-8 sm:w-9 sm:h-9 bg-contrast-main rounded-xl flex items-center justify-center hover:bg-contrast-secondary hover:text-white transition-all duration-400"
+            >
+              <IconEdit />
+            </button>
+          ) : (
+            <Link
+              to={`/editProduct/${props.id}`}
+              onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+            >
+              <ButtonComponent
+                style="absolute top-3 right-3 w-8 h-8 sm:w-9 sm:h-9 bg-contrast-main rounded-xl flex items-center justify-center hover:bg-contrast-secondary hover:text-white transition-all duration-400"
+                icon={<IconEdit />}
+              />
+            </Link>
+          )}
+        </>
       )}
+
 
       {/* Favorite Button */}
       {props.edit === "NONE" && (
