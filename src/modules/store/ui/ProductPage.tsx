@@ -24,6 +24,7 @@ import AnimatedHeartButton from "../../../components/data-display/HeartButton";
 import { AnimatePresence, motion } from "framer-motion";
 import ShareComponent from "../../../components/data-display/ShareComponent";
 import { useCart } from "../../../hooks/context/CartContext";
+import ProductRatingSummary from "../../../components/ui/ProductRatingSummary";
 
 type BorderColors = {
   description: string;
@@ -137,7 +138,7 @@ export default function ProductPage() {
     <div className="min-h-screen flex flex-col">
       <NavBar />
 
-      
+
       <AnimatePresence>
         {isZoomed && (
           <motion.div
@@ -145,33 +146,33 @@ export default function ProductPage() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            onClick={closeZoom} 
+            onClick={closeZoom}
           >
-            
-            <div className="relative w-full h-full max-w-4xl max-h-4xl"> 
-            
+
+            <div className="relative w-full h-full max-w-4xl max-h-4xl">
+
               <button
 
-                className="absolute top-4 right-4 z-10 bg-white/30 text-white rounded-full p-2  flex items-center justify-center cursor-pointer " 
+                className="absolute top-4 right-4 z-10 bg-white/30 text-white rounded-full p-2  flex items-center justify-center cursor-pointer "
                 onClick={(e) => {
-                  e.stopPropagation(); 
+                  e.stopPropagation();
                   closeZoom();
                 }}
                 aria-label="Cerrar zoom"
               >
-                <IconX className="w-8 h-8 text-black" /> 
+                <IconX className="w-8 h-8 text-black" />
               </button>
               <img
                 src={selectedImage || product?.image_1_url || "https://via.placeholder.com/400"}
                 alt={product?.name || "Producto en zoom"}
-                className="block object-contain w-full h-full mx-auto" 
-                onClick={(e) => e.stopPropagation()} 
+                className="block object-contain w-full h-full mx-auto"
+                onClick={(e) => e.stopPropagation()}
               />
             </div>
           </motion.div>
         )}
       </AnimatePresence>
-    
+
 
       <div className="mx-auto max-w-[80rem] w-full">
         {/*  Volver */}
@@ -234,8 +235,8 @@ export default function ProductPage() {
                     <div className="flex flex-col items-center mt-6 mb-4 lg:hidden">
                       <div className="w-full flex justify-center mb-5 pb-4">
                         <button
-                          onClick={openZoom} 
-                          className="relative w-[18rem] h-[18rem] overflow-hidden rounded-2xl cursor-pointer hover:shadow-lg transition-shadow duration-300" 
+                          onClick={openZoom}
+                          className="relative w-[18rem] h-[18rem] overflow-hidden rounded-2xl cursor-pointer hover:shadow-lg transition-shadow duration-300"
                           aria-label="Hacer zoom a la imagen del producto"
                         >
                           <img
@@ -252,9 +253,8 @@ export default function ProductPage() {
                             <button
                               key={index}
                               onClick={() => setSelectedImage(img!)}
-                              className={`w-20 h-20 rounded-xl overflow-hidden border-1 transition-all duration-300 ${
-                                selectedImage === img ? "border-main scale-105" : "border-transparent hover:scale-105"
-                              }`}
+                              className={`w-20 h-20 rounded-xl overflow-hidden border-1 transition-all duration-300 ${selectedImage === img ? "border-main scale-105" : "border-transparent hover:scale-105"
+                                }`}
                             >
                               <img src={img!} alt={`Miniatura ${index + 1}`} className="w-full h-full object-cover object-center" />
                             </button>
@@ -321,18 +321,31 @@ export default function ProductPage() {
                             {product.description || "Sin descripción."}
                           </motion.p>
                         )}
+                        {/* Contenido de la pestaña de Calificaciones (Reviews) */}
                         {activeTab === "reviews" && (
-                          <motion.p
+                          <motion.div
                             key="reviews"
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0, y: -20 }}
                             transition={{ duration: 0.35 }}
-                            className="absolute inset-0 whitespace-pre-line overflow-y-auto p-6"
+                            className="absolute inset-0 overflow-y-auto"
                           >
-                            Este producto aún no tiene calificaciones.
-                          </motion.p>
+                            <ProductRatingSummary
+                              // Usamos product.id como el ID único para esta reseña
+                              productId={product.id || 0}
+
+                              // Función placeholder: Manejar lo que sucede después de que el front-end "guarda" la reseña
+                              onSaveReview={(newReview) => {
+                                console.log("Reseña de producto enviada, ¡pendiente de backend!", newReview);
+                                // Aquí podrías añadir lógica para mostrar un mensaje o recargar la lista de reseñas (una vez implementada)
+                              }}
+
+                              barColor="#FF7E47"
+                            />
+                          </motion.div>
                         )}
+                        {/* Contenido de la pestaña de Detalles (Details) */}
                         {activeTab === "details" && (
                           <motion.p
                             key="details"
@@ -342,7 +355,8 @@ export default function ProductPage() {
                             transition={{ duration: 0.35 }}
                             className="absolute inset-0 whitespace-pre-line overflow-y-auto p-6"
                           >
-                            No se han agregado detalles adicionales para este producto.
+                          
+                            {product?.details || "No se han agregado detalles adicionales para este producto."}
                           </motion.p>
                         )}
                       </AnimatePresence>
@@ -375,8 +389,8 @@ export default function ProductPage() {
                     <div className="flex flex-col w-full items-center">
                       <div className="w-full flex justify-center mb-5 pb-4">
                         <button
-                          onClick={openZoom} 
-                          className="relative w-[18rem] h-[18rem] overflow-hidden rounded-2xl cursor-pointer hover:shadow-lg transition-shadow duration-300" 
+                          onClick={openZoom}
+                          className="relative w-[18rem] h-[18rem] overflow-hidden rounded-2xl cursor-pointer hover:shadow-lg transition-shadow duration-300"
                           aria-label="Hacer zoom a la imagen del producto"
                         >
                           <img
@@ -393,9 +407,8 @@ export default function ProductPage() {
                             <button
                               key={index}
                               onClick={() => setSelectedImage(img!)}
-                              className={`w-20 h-20 rounded-xl overflow-hidden border-1 transition-all duration-300 ${
-                                selectedImage === img ? "border-main scale-105" : "border-transparent hover:scale-105"
-                              }`}
+                              className={`w-20 h-20 rounded-xl overflow-hidden border-1 transition-all duration-300 ${selectedImage === img ? "border-main scale-105" : "border-transparent hover:scale-105"
+                                }`}
                             >
                               <img src={img!} alt={`Miniatura ${index + 1}`} className="w-full h-full object-cover object-center" />
                             </button>

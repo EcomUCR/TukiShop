@@ -25,6 +25,7 @@ type ProductForm = Omit<
   price: string | number;
   discount_price: string | number;
   images: (File | string | null)[];
+  details: string;
 };
 
 type ProductPayload = Omit<ProductForm, "images"> & {
@@ -63,6 +64,7 @@ export default function StoreProductCRUDPage() {
   const [form, setForm] = useState<ProductForm>({
     name: "",
     description: "",
+    details: "", 
     price: 0,
     discount_price: 0,
     stock: 0,
@@ -106,6 +108,7 @@ export default function StoreProductCRUDPage() {
             ? product.categories.map((cat: any) => cat.id)
             : [],
           status: product.status || "ACTIVE",
+          details: (product as any).details || "", 
         });
         setPreviews(loadedImages);
       }
@@ -178,6 +181,7 @@ export default function StoreProductCRUDPage() {
       image_3: form.images[2],
       name: form.name,
       description: form.description,
+      details: form.details, 
       stock: form.stock,
       status: form.status,
       categories: form.categories,
@@ -210,6 +214,7 @@ export default function StoreProductCRUDPage() {
         setForm({
           name: "",
           description: "",
+          details: "", 
           price: 0,
           discount_price: 0,
           stock: 0,
@@ -409,14 +414,15 @@ export default function StoreProductCRUDPage() {
             </div>
           </div>
 
-          {/* 🔹 Descripción + Preview */}
+          {/* 🔹 Descripción + Detalles + Preview */}
           <div className="flex flex-col sm:flex-row gap-10 justify-between">
             {/* Izquierda */}
             <div className="flex flex-col sm:w-5/12 gap-6">
+             
               <label className="flex flex-col w-full gap-2">
-                <p className="font-semibold">Sobre este producto</p>
+                <p className="font-semibold">Sobre este producto (Descripción)</p>
                 <textarea
-                  placeholder="Sobre este producto"
+                  placeholder="Descripción del producto"
                   value={form.description}
                   onChange={(e) =>
                     setForm({ ...form, description: e.target.value })
@@ -443,6 +449,21 @@ export default function StoreProductCRUDPage() {
                     </p>
                   )}
                 </div>
+              </label>
+              
+             
+              <label className="flex flex-col w-full gap-2">
+                <p className="font-semibold">Detalles</p>
+                <textarea
+                  placeholder="Detalles adicionales del producto"
+                  value={form.details}
+                  onChange={(e) =>
+                    setForm({ ...form, details: e.target.value })
+                  }
+                  cols={30}
+                  rows={5}
+                  className="bg-main-dark/20 rounded-xl px-3 py-2 w-full"
+                />
               </label>
 
               <div className="flex flex-col gap-4">
@@ -572,6 +593,7 @@ export default function StoreProductCRUDPage() {
                         image_3: form.images[2],
                         name: form.name,
                         description: form.description,
+                        details: form.details, 
                         stock: form.stock,
                         categories: form.categories,
                         is_featured: form.is_featured,

@@ -17,6 +17,7 @@ export type Product = {
   id?: number;
   name: string;
   description?: string;
+  details?: string; 
   price: number;
   discount_price?: number;
   stock: number;
@@ -126,6 +127,7 @@ export function useProducts() {
         sku: `SKU-${Date.now()}`,
         name: product.name,
         description: product.description || "",
+        details: product.details || "", 
         price: product.price,
         //Si discount_price es 0, null, undefined o cadena vacía, se envía null
         discount_price:
@@ -217,7 +219,6 @@ export function useProducts() {
   };
 
   // Editar producto
-  // Editar producto
   const updateProduct = async (id: number, product: any) => {
     setLoading(true);
     setError(null);
@@ -236,6 +237,7 @@ export function useProducts() {
       const payload: any = {
         name: product.name,
         description: product.description,
+        details: product.details, 
         price: product.price,
         // Si el descuento es 0, null, undefined o vacío → se envía null
         discount_price:
