@@ -1,3 +1,5 @@
+// BannerComponent.tsx
+import { Link } from "react-router-dom";
 import ButtonComponent from "../ui/ButtonComponent";
 
 interface BannerComponentProps {
@@ -32,7 +34,7 @@ export default function BannerComponent(props: BannerComponentProps) {
     }
   };
 
-  // 🔹 Banner SLIDER (no se toca)
+  // 🔹 Banner tipo SLIDER (no se toca)
   if (props.type === "SLIDER") {
     return (
       <img
@@ -43,12 +45,58 @@ export default function BannerComponent(props: BannerComponentProps) {
     );
   }
 
-  // 🔹 Banner LARGE (no se toca)
+  // 🔹 Banner tipo LARGE (versión fiel al original)
   if (props.type === "LARGE") {
-    return <section>desarrollo el banner de orientacion 2</section>;
+    const hasCharacter = !!props.character;
+
+    return (
+      <section className="relative w-full left-1/2 right-1/2 -translate-x-1/2 flex justify-center items-center my-10">
+        <img
+          className="w-full h-36 sm:h-auto rounded-2xl object-cover shadow-lg"
+          src={
+            props.image ??
+            "https://res.cloudinary.com/dpbghs8ep/image/upload/v1761936416/fondoNegro_pxlaji.png"
+          }
+          alt={props.title ?? "Banner TukiShop"}
+        />
+        <div className="absolute w-full space-x-10 flex z-10">
+          <div
+            className={`relative text-white top-0 sm:top-0 left-5 sm:left-25 ${hasCharacter ? "w-7/12 pt-2 sm:pt-8" : "w-[90%]"
+              }`}
+          >
+            <p className="text-xl sm:text-7xl line-clamp-3 leading-7 sm:leading-tight pr-5 sm:pr-10 font font-quicksand font-bold">
+              {props.title ?? "Crea una cuenta de vendedor en TukiShop"}
+            </p>
+            {!hasCharacter && props.link && props.btn_text && (
+              <div className="mt-5 sm:mt-7">
+                <Link to={props.link}>
+                  <ButtonComponent
+                    text={props.btn_text}
+                    style={`${getButtonColor()} py-2 text-sm sm:text-lg px-4 w-[50%] sm:w-[30%] cursor-pointer text-white rounded-full sm:py-4 sm:px-4 font-quicksand shadow-lg transform hover:scale-105 transition-transform duration-300`}
+                  />
+                </Link>
+              </div>
+            )}
+          </div>
+          {hasCharacter && (
+            <div className="relative w-5/12 h-full sm:top-0 right-3">
+              <img src={props.character} alt="Character Banner" />
+            </div>
+          )}
+        </div>
+        {hasCharacter && props.link && props.btn_text && (
+          <Link to={props.link}>
+            <ButtonComponent
+              text={props.btn_text}
+              style={`${getButtonColor()} left-4 bottom-4 z-20 py-1 text-xs sm:text-lg px-2 w-[30%] cursor-pointer text-white rounded-full sm:py-4 sm:px-4 sm:w-[30%] sm:left-25 sm:bottom-14 font-quicksand absolute shadow-lg transform hover:scale-105 transition-transform duration-300`}
+            />
+          </Link>
+        )}
+      </section>
+    );
   }
 
-  // 🔹 Banner corto LEFT
+
   if (props.type === "SHORT" && props.orientation === "LEFT") {
     return (
       <div className="w-[35rem] h-[12rem] sm:h-[17rem] flex items-end rounded-t-3xl rounded-b-2xl overflow-hidden relative transform sm:scale-100 max-w-full mx-auto">
@@ -97,8 +145,6 @@ export default function BannerComponent(props: BannerComponentProps) {
       </div>
     );
   }
-
-  // 🔹 Banner corto RIGHT
   if (props.type === "SHORT" && props.orientation === "RIGTH") {
     return (
       <div className="w-[35rem] h-[12rem] sm:h-[17rem] flex items-end rounded-t-3xl rounded-b-2xl overflow-hidden relative transform sm:scale-100 max-w-full mx-auto">
@@ -116,8 +162,7 @@ export default function BannerComponent(props: BannerComponentProps) {
               {props.title ?? "Encuentra todo para tu perro."}
             </div>
             <div className="text-left text-white text-xs sm:text-base font-quicksand">
-              {props.subtitle ??
-                "Alimentos, juguetes, premios y más para su bienestar."}
+              {props.subtitle ?? "Alimentos, juguetes, premios y más para su bienestar."}
             </div>
 
             {props.btn_text && (
