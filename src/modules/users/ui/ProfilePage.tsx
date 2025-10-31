@@ -18,7 +18,7 @@ import AdminMailboxList from "../../admin/ui/components/AdminMailboxList";
 import StoreOrderList from "../../store/ui/components/StoreOrderList";
 import { SkeletonUserPage } from "../../../components/ui/AllSkeletons";
 import AdminSupportList from "../../admin/ui/AdminSupportList";
-
+import { Navigate } from "react-router-dom";
 export default function UserPage() {
   const [selected, setSelected] = useState("profile");
   const { user, loading } = useAuth();
@@ -54,7 +54,7 @@ export default function UserPage() {
       user.role !== "CUSTOMER" &&
       user.role !== "ADMIN")
   ) {
-    return <div>No autorizado</div>;
+    return <Navigate to="/notAuthorized" replace />;
   }
 
   return (

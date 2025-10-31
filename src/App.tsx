@@ -33,6 +33,7 @@ import AboutUsPage from "./modules/home/ui/AboutUsPage";
 import HelpPage from "./modules/home/ui/HelpPage";
 import WishListPage from "./modules/users/ui/WishListPage";
 import NotFoundPage from "./components/navigation/NotFoundPage";
+import NotAuthorize from "./components/navigation/NotAuthorize";
 import { NotificationProvider } from "./hooks/context/NotificationContext";
 import ReportProblemPage from "./modules/home/ui/ReportProblemPage";
 import ContactPage from "./modules/home/ContactPage";
@@ -80,6 +81,7 @@ function App() {
                 <Route path="/reportProblem" element={<ReportProblemPage />} />
                 <Route path="/contact" element={<ContactPage />} />
                 <Route path="*" element={<NotFoundPage />} />
+                <Route path="/notAuthorized" element={<NotAuthorize />} />
               </Routes>
             </NotificationProvider>
           </CartProvider>
