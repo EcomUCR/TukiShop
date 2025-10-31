@@ -43,6 +43,7 @@ export function useCheckout() {
         return;
       }
 
+      // 🏪 Validación de dirección
       if (!addressData?.street?.trim()) {
         showAlert({
           title: "Dirección requerida 🏠",
@@ -52,28 +53,24 @@ export function useCheckout() {
         return;
       }
 
-      // 🧾 Crear orden
-      const initRes = await axios.post(
+      // 🧾 Crear orden base
+      const { data: initData } = await axios.post(
         "/checkout/init",
         {
           subtotal: totals?.subtotal || 0,
           shipping: totals?.shipping || 0,
           taxes: totals?.taxes || 0,
           total: totals?.total || 0,
-          street: addressData?.street,
-          city: addressData?.city,
-          state: addressData?.state,
+          ...addressData,
           country: addressData?.country || "Costa Rica",
-          zip_code: addressData?.zip_code || null,
-          phone_number: addressData?.phone_number || null,
         },
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
-      const orderId = initRes.data?.order?.id;
-      console.log("🧾 Orden inicial creada:", orderId);
+      const orderId = initData?.order?.id;
+      console.log("🧾 Orden creada:", orderId);
 
-      // 🧩 Agregar productos
+      // 🧩 Enviar items
       const items = cart.items.map((item) => ({
         product_id: item.product.id,
         store_id: item.product.store?.id || null,
@@ -81,24 +78,40 @@ export function useCheckout() {
         unit_price: item.product.discount_price
           ? Number(item.product.discount_price)
           : Number(item.product.price),
-        discount_pct:
-          item.product.discount_price && Number(item.product.price) > 0
-            ? Math.round(
-                ((Number(item.product.price) -
-                  Number(item.product.discount_price)) /
-                  Number(item.product.price)) *
-                  100
-              )
-            : 0,
       }));
 
-      await axios.post(
+      const { data: itemsRes } = await axios.post(
         "/checkout/items",
         { order_id: orderId, items },
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
-      const confirmRes = await axios.post(
+      // 🚨 Validar stock (el backend debe devolver error si no hay stock)
+      if (itemsRes?.error && itemsRes.message.includes("stock")) {
+        showAlert({
+          title: "Stock insuficiente ⚠️",
+          message:
+            "Uno o más productos no tienen stock suficiente. El pago fue cancelado.",
+          type: "error",
+        });
+
+        // Cancela el pago en Stripe si ya fue intentado
+        await axios.post(
+          "/checkout/confirm",
+          {
+            order_id: orderId,
+            status: "CANCELLED",
+            payment_id: paymentIntent?.id || "N/A",
+            payment_method:
+              paymentIntent?.payment_method_types?.[0]?.toUpperCase() || "CARD",
+          },
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+        return;
+      }
+
+      // 🧩 Confirmar orden
+      const { data: confirmRes } = await axios.post(
         "/checkout/confirm",
         {
           order_id: orderId,
@@ -110,37 +123,35 @@ export function useCheckout() {
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
-      console.log("✅ Orden confirmada:", confirmRes.data);
+      console.log("✅ Orden confirmada:", confirmRes);
 
+      // 💳 Mensajes según resultado
       if (paymentIntent?.status === "succeeded") {
-        try {
-          await axios.post(
-            `${import.meta.env.VITE_API_URL}/cart/clear`,
-            {},
-            { headers: { Authorization: `Bearer ${token}` } }
-          );
+        // Limpiar carrito
+        await axios.post(
+          `${import.meta.env.VITE_API_URL}/cart/clear`,
+          {},
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
 
-          console.log("🧹 Carrito del servidor limpiado correctamente");
+        await clearCart();
+        await clearTotals();
+        refreshCart();
 
-          await clearCart();
-          await clearTotals();
-
-          setTimeout(() => {
-            refreshCart();
-          }, 800);
-
-          // ✅ Mostrar alerta única aquí
-          showAlert({
-            title: "Pago exitoso 💳",
-            message: "Tu orden fue registrada correctamente 🧾",
-            type: "success",
-          });
-        } catch (err: any) {
-          console.warn("⚠️ No se pudo limpiar el carrito:", err);
-        }
+        showAlert({
+          title: "Pago exitoso 💳",
+          message: "Tu orden fue enviada correctamente 🧾🚚",
+          type: "success",
+        });
+      } else {
+        showAlert({
+          title: "Pago fallido ❌",
+          message: "El pago no se completó correctamente. Intenta nuevamente.",
+          type: "error",
+        });
       }
 
-      return confirmRes.data;
+      return confirmRes;
     } catch (err: any) {
       console.error("❌ Error en checkout:", err.response?.data || err);
       showAlert({
