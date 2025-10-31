@@ -1,4 +1,5 @@
 import {
+    IconBox,
     IconBuildingStore,
     /*IconClipboardText,*/
     IconFileCheck,
@@ -124,6 +125,14 @@ export default function SideBar({ type, onSelect, selected }: SideBarProps) {
                             >
                                 <IconPhotoScan size={18} />
                                 <span>Banners</span>
+                            </li>
+                            <li
+                                className={`${baseItem} ${selected === "support" ? active : inactive
+                                    }`}
+                                onClick={() => onSelect("support")}
+                            >
+                                <IconBox size={18} />
+                                <span>Soporte de pedidos</span>
                             </li>
                         </>
                     )}

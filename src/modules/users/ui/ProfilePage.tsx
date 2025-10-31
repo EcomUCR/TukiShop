@@ -17,6 +17,7 @@ import { IconMenu2, IconX } from "@tabler/icons-react";
 import AdminMailboxList from "../../admin/ui/components/AdminMailboxList";
 import StoreOrderList from "../../store/ui/components/StoreOrderList";
 import { SkeletonUserPage } from "../../../components/ui/AllSkeletons";
+import AdminSupportList from "../../admin/ui/AdminSupportList";
 
 export default function UserPage() {
   const [selected, setSelected] = useState("profile");
@@ -167,6 +168,9 @@ export default function UserPage() {
               )}
               {selected === "banners" && user.role === "ADMIN" && (
                 <AdminBannerList />
+              )}
+              {selected === "support" && user.role === "ADMIN" && (
+                <AdminSupportList />
               )}
             </motion.div>
           </AnimatePresence>
