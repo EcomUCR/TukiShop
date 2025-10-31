@@ -7,10 +7,14 @@ import { motion } from "framer-motion";
 import { useAlert } from "../../../hooks/context/AlertContext";
 import useUser from "../../../hooks/useUser";
 import { Link } from "react-router-dom";
+import axios from "axios";
+import { useReports } from "../../admin/infrastructure/useReports";
+
 
 export default function ReportProblemPage() {
     const { user, loading } = useUser();
     const { showAlert } = useAlert();
+    const { createReport } = useReports();
 
     const [form, setForm] = useState({
         name: "",
@@ -24,7 +28,7 @@ export default function ReportProblemPage() {
     const [previews, setPreviews] = useState<string[]>([]);
     const [sending, setSending] = useState(false);
 
-    //Datos prellenados si se está logeado
+    // 🔹 Autocompletar si el usuario está logueado
     useEffect(() => {
         if (user) {
             setForm((prev) => ({
@@ -61,37 +65,88 @@ export default function ReportProblemPage() {
         setPreviews((prev) => prev.filter((_, i) => i !== index));
     };
 
+    // 🔹 Subir imágenes a tu endpoint /upload-image
+    const uploadImages = async (): Promise<string[]> => {
+        if (files.length === 0) return [];
+        try {
+            const uploads = await Promise.all(
+                files.map(async (file) => {
+                    const formData = new FormData();
+                    formData.append("image", file);
+                    const { data } = await axios.post(
+                        `${import.meta.env.VITE_API_URL}/upload-image`,
+                        formData,
+                        { headers: { "Content-Type": "multipart/form-data" } }
+                    );
+                    return data.url; // el backend debe devolver { url: "https://..." }
+                })
+            );
+            return uploads;
+        } catch (err) {
+            console.error("Error al subir imágenes:", err);
+            return [];
+        }
+    };
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+
+        if (!form.name || !form.email || !form.subject || !form.description) {
+            showAlert({
+                title: "Campos incompletos",
+                message: "Por favor, completá todos los campos obligatorios.",
+                type: "warning",
+            });
+            return;
+        }
+
         setSending(true);
+        try {
+            const imageUrls = await uploadImages();
 
-        const formData = new FormData();
-        Object.entries(form).forEach(([key, value]) => formData.append(key, value));
-        files.forEach((file) => formData.append("images[]", file));
+            const payload = {
+                name: form.name,
+                email: form.email,
+                subject: form.subject,
+                description: form.description,
+                order_id: null,
+                images: imageUrls,
+            };
 
-        // Simulación
-        await new Promise((res) => setTimeout(res, 1000));
 
-        showAlert({
-            title: "Mensaje enviado",
-            message: "Tu reporte ha sido simulado correctamente (todavia no se ha conectado con el backend).",
-            type: "success",
-        });
+            await createReport(payload);
 
-        // Limpiar
-        setForm({
-            name:
-                user?.first_name || user?.last_name
-                    ? `${user?.first_name ?? ""} ${user?.last_name ?? ""}`.trim()
-                    : user?.username ?? "",
-            email: user?.email ?? "",
-            order_number: "",
-            subject: "",
-            description: "",
-        });
-        setFiles([]);
-        setPreviews([]);
-        setSending(false);
+            showAlert({
+                title: "Reporte enviado",
+                message:
+                    "Tu reporte fue recibido. Nuestro equipo de soporte lo revisará pronto.",
+                type: "success",
+            });
+
+            // Reset del formulario
+            setForm({
+                name:
+                    user?.first_name || user?.last_name
+                        ? `${user?.first_name ?? ""} ${user?.last_name ?? ""}`.trim()
+                        : user?.username ?? "",
+                email: user?.email ?? "",
+                order_number: "",
+                subject: "",
+                description: "",
+            });
+            setFiles([]);
+            setPreviews([]);
+        } catch (err) {
+            console.error("Error al enviar reporte:", err);
+            showAlert({
+                title: "Error al enviar",
+                message:
+                    "Ocurrió un problema al enviar tu reporte. Intentalo de nuevo más tarde.",
+                type: "error",
+            });
+        } finally {
+            setSending(false);
+        }
     };
 
     if (loading) {
@@ -124,7 +179,6 @@ export default function ReportProblemPage() {
             {/* 🔹 Contenido dinámico */}
             <section className="flex justify-center w-full px-6 py-10 sm:py-16">
                 {!user ? (
-                    // Vista si no está logueado
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
@@ -146,11 +200,11 @@ export default function ReportProblemPage() {
                         </Link>
                     </motion.div>
                 ) : (
-                    // Vista si está logueado
                     <form
                         onSubmit={handleSubmit}
                         className="flex flex-col gap-6 bg-white/80 backdrop-blur-lg rounded-2xl p-6 sm:p-10 shadow-xl w-full max-w-[40rem]"
                     >
+                        {/* Campos del formulario */}
                         <label className="flex flex-col gap-1">
                             <p className="font-semibold text-main">Nombre completo</p>
                             <input
@@ -217,6 +271,7 @@ export default function ReportProblemPage() {
                             />
                         </label>
 
+                        {/* Subir imágenes */}
                         <div className="flex flex-col gap-3">
                             <p className="font-semibold text-main">
                                 Adjuntar evidencia (opcional)
@@ -265,8 +320,8 @@ export default function ReportProblemPage() {
                             type="submit"
                             text={sending ? "Enviando..." : "Enviar reporte"}
                             style={`text-white text-lg py-2 rounded-full w-full sm:w-1/2 mx-auto ${sending
-                                    ? "bg-gray-400 cursor-not-allowed"
-                                    : "bg-contrast-main hover:bg-contrast-secondary transition-all duration-300"
+                                ? "bg-gray-400 cursor-not-allowed"
+                                : "bg-contrast-main hover:bg-contrast-secondary transition-all duration-300"
                                 }`}
                         />
                     </form>
