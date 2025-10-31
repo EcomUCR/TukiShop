@@ -129,9 +129,12 @@ export function useProducts() {
         price: product.price,
         //Si discount_price es 0, null, undefined o cadena vacía, se envía null
         discount_price:
-          product.discount_price && Number(product.discount_price) > 0
-            ? Number(product.discount_price)
-            : null,
+          product.discount_price === undefined ||
+            product.discount_price === null ||
+            product.discount_price === ""
+            ? 0
+            : Number(product.discount_price),
+
         stock: product.stock,
         status: product.status || "ACTIVE", // 🔹 conserva el valor real
         is_featured: product.is_featured,
@@ -236,9 +239,12 @@ export function useProducts() {
         price: product.price,
         // Si el descuento es 0, null, undefined o vacío → se envía null
         discount_price:
-          product.discount_price && Number(product.discount_price) > 0
-            ? Number(product.discount_price)
-            : null,
+          product.discount_price === undefined ||
+            product.discount_price === null ||
+            product.discount_price === ""
+            ? 0
+            : Number(product.discount_price),
+
         stock: product.stock,
         status: product.status || "ACTIVE",
         is_featured: product.is_featured ?? false,
