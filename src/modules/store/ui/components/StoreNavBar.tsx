@@ -1,9 +1,12 @@
-import { IconSearch, IconMenu2, IconX } from "@tabler/icons-react";
+import { IconSearch, IconMenu2, IconX, IconEdit } from "@tabler/icons-react";
 import { useEffect, useState } from "react";
 import type { Store } from "../../../users/infrastructure/useUser";
 import { getStore } from "../../infrastructure/storeService";
 import { Skeleton } from "../../../../components/ui/skeleton";
 import { useNavigate, useLocation } from "react-router-dom";
+import { useAuth } from "../../../../hooks/context/AuthContext";
+import { uploadImage } from "../../../users/infrastructure/imageService";
+import { updateStore } from "../../infrastructure/storeService";
 
 interface StoreNavBarProps {
   setView: (view: "home" | "offers" | "contact" | "reviews") => void;
@@ -16,10 +19,12 @@ export default function StoreNavBar({
   currentView,
   id,
 }: StoreNavBarProps) {
+  const { user, refreshUser } = useAuth();
   const [store, setStore] = useState<Store | null>(null);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [menuOpen, setMenuOpen] = useState(false);
+  const [changingImage, setChangingImage] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -49,6 +54,30 @@ export default function StoreNavBar({
     setView(view);
     if (location.pathname.includes("/search") && id) navigate(`/store/${id}`);
     setMenuOpen(false);
+  };
+  const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !store) return;
+
+    try {
+      setChangingImage(true);
+
+      // 🖼️ Subir imagen
+      const imageUrl = await uploadImage(file);
+
+      // 🗂️ Actualizar en el backend
+      await updateStore(store.id, { image: imageUrl });
+
+      // 🔄 Refrescar datos locales
+      const updated = await getStore(store.id);
+      setStore(updated);
+      await refreshUser?.();
+    } catch (error) {
+      console.error("❌ Error al cambiar logo:", error);
+      alert("Error al actualizar el logo. Intenta nuevamente.");
+    } finally {
+      setChangingImage(false);
+    }
   };
 
   // 🦴 Skeleton
@@ -80,6 +109,21 @@ export default function StoreNavBar({
       <nav className="w-full h-20 bg-main-dark/20 text-main-dark px-10 flex justify-between items-center rounded-xl sm:px-10">
         {/* 🔹 Logo */}
         <div className="w-1/3 flex items-center sm:w-1/3">
+          {store?.user_id === user?.id && (
+            <div className="relative">
+              <label className="absolute bottom-1 right-1 z-100 bg-contrast-secondary hover:bg-main text-white p-1 rounded-full cursor-pointer transition-all duration-200 flex items-center justify-center">
+                <input
+                  type="file"
+                  accept=".png, .jpg, .jpeg, .webp"
+                  onChange={handleImageChange}
+                  className="hidden"
+                  disabled={changingImage}
+                />
+                <IconEdit size={18} />
+              </label>
+            </div>
+          )
+          }
           <img
             src={store.image || "https://res.cloudinary.com/dpbghs8ep/image/upload/v1761412207/imagenNoSubida_dymbb7.png"}
             alt={store.name}
@@ -88,15 +132,15 @@ export default function StoreNavBar({
           />
         </div>
 
+
         {/* 🔹 Tabs (solo desktop) */}
         <div className="hidden sm:flex justify-center items-center w-1/3">
           <ul className="flex gap-10 p-3 text-white text-sm font-medium">
             <li>
               <button
                 onClick={() => handleViewChange("home")}
-                className={`text-main-dark hover:-translate-y-1 transform transition-all cursor-pointer duration-300 hover:text-contrast-secondary ${
-                  currentView === "home" ? "font-bold" : ""
-                }`}
+                className={`text-main-dark hover:-translate-y-1 transform transition-all cursor-pointer duration-300 hover:text-contrast-secondary ${currentView === "home" ? "font-bold" : ""
+                  }`}
               >
                 Tienda
               </button>
@@ -104,9 +148,8 @@ export default function StoreNavBar({
             <li>
               <button
                 onClick={() => handleViewChange("offers")}
-                className={`text-main-dark hover:-translate-y-1 transform cursor-pointer transition-all duration-300 hover:text-contrast-secondary ${
-                  currentView === "offers" ? "font-bold" : ""
-                }`}
+                className={`text-main-dark hover:-translate-y-1 transform cursor-pointer transition-all duration-300 hover:text-contrast-secondary ${currentView === "offers" ? "font-bold" : ""
+                  }`}
               >
                 Ofertas
               </button>
@@ -114,9 +157,8 @@ export default function StoreNavBar({
             <li>
               <button
                 onClick={() => handleViewChange("contact")}
-                className={`text-main-dark hover:-translate-y-1 transform cursor-pointer transition-all duration-300 hover:text-contrast-secondary ${
-                  currentView === "contact" ? "font-bold" : ""
-                }`}
+                className={`text-main-dark hover:-translate-y-1 transform cursor-pointer transition-all duration-300 hover:text-contrast-secondary ${currentView === "contact" ? "font-bold" : ""
+                  }`}
               >
                 Contacto
               </button>
@@ -124,9 +166,8 @@ export default function StoreNavBar({
             <li>
               <button
                 onClick={() => handleViewChange("reviews")}
-                className={`text-main-dark hover:-translate-y-1 transform cursor-pointer transition-all duration-300 hover:text-contrast-secondary ${
-                  currentView === "reviews" ? "font-bold" : ""
-                }`}
+                className={`text-main-dark hover:-translate-y-1 transform cursor-pointer transition-all duration-300 hover:text-contrast-secondary ${currentView === "reviews" ? "font-bold" : ""
+                  }`}
               >
                 Opiniones
               </button>
@@ -165,9 +206,8 @@ export default function StoreNavBar({
 
       {/* 🔹 Menú desplegable dentro del flujo */}
       <div
-        className={`overflow-hidden transition-all duration-300 sm:hidden ${
-          menuOpen ? "max-h-[400px] opacity-100 py-4" : "max-h-0 opacity-0 py-0"
-        }`}
+        className={`overflow-hidden transition-all duration-300 sm:hidden ${menuOpen ? "max-h-[400px] opacity-100 py-4" : "max-h-0 opacity-0 py-0"
+          }`}
       >
         <div className=" rounded-b-xl shadow-md flex flex-col items-center gap-4 w-full">
           <ul className="flex flex-col items-center gap-3 text-main-dark text-base font-medium">
