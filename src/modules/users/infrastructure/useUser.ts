@@ -28,6 +28,7 @@ export interface Store {
   support_email?: string | null;
   support_phone?: string | null;
   status?: string;
+  user_id?: number;
 }
 
 export default function useUser() {
