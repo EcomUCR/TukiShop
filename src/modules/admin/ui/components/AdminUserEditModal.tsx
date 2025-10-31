@@ -183,10 +183,12 @@ export default function AdminUserEditModal({
                   setFormData((prev: User) => ({ ...prev, status: checked }))
                 }
               />
-              <ButtonComponent
-                text="Eliminar usuario"
-                style="ml-6 cursor-pointer bg-red-600 text-white rounded-lg py-1 px-3 text-sm font-quicksand hover:bg-red-700 transition-all duration-400 w-auto"
-              />
+              <button
+                type="button"
+                className="ml-6 bg-red-500 text-white rounded-full px-3 py-1 shadow-md hover:bg-red-600 transition text-sm flex items-center gap-1"
+              >
+                <IconTrash size={14} /> Eliminar usuario
+              </button>
             </div>
           </div>
         </div>
