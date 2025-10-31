@@ -127,7 +127,11 @@ export function useProducts() {
         name: product.name,
         description: product.description || "",
         price: product.price,
-        discount_price: product.discount_price ?? 0,
+        //Si discount_price es 0, null, undefined o cadena vacía, se envía null
+        discount_price:
+          product.discount_price && Number(product.discount_price) > 0
+            ? Number(product.discount_price)
+            : null,
         stock: product.stock,
         status: product.status || "ACTIVE", // 🔹 conserva el valor real
         is_featured: product.is_featured,
@@ -138,7 +142,7 @@ export function useProducts() {
           ? product.categories
           : [product.categories],
       };
-  console.log("📦 Payload final (antes de POST):", JSON.stringify(payload, null, 2));
+      console.log("📦 Payload final (antes de POST):", JSON.stringify(payload, null, 2));
 
       await axios.post(`${BASE_URL}/products`, payload);
       setSuccess("¡Producto creado con éxito!");
@@ -230,7 +234,11 @@ export function useProducts() {
         name: product.name,
         description: product.description,
         price: product.price,
-        discount_price: product.discount_price ?? 0,
+        // Si el descuento es 0, null, undefined o vacío → se envía null
+        discount_price:
+          product.discount_price && Number(product.discount_price) > 0
+            ? Number(product.discount_price)
+            : null,
         stock: product.stock,
         status: product.status || "ACTIVE",
         is_featured: product.is_featured ?? false,
