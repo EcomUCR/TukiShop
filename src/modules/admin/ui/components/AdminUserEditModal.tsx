@@ -183,6 +183,10 @@ export default function AdminUserEditModal({
                   setFormData((prev: User) => ({ ...prev, status: checked }))
                 }
               />
+              <ButtonComponent
+                text="Eliminar usuario"
+                style="ml-6 cursor-pointer bg-red-600 text-white rounded-lg py-1 px-3 text-sm font-quicksand hover:bg-red-700 transition-all duration-400 w-auto"
+              />
             </div>
           </div>
         </div>
@@ -341,7 +345,7 @@ export default function AdminUserEditModal({
 
                   <ButtonComponent
                     text="Ver historial de compras"
-                    style="bg-contrast-secondary text-white rounded-full px-4 sm:px-6 py-2 mt-4 text-sm sm:text-base"
+                    style="cursor-pointer bg-contrast-secondary text-white rounded-full px-4 sm:px-6 py-2 mt-4 text-sm sm:text-base"
                   />
                 </div>
               </div>
