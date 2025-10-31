@@ -2,7 +2,7 @@ import { IconX } from "@tabler/icons-react";
 import BannerComponent from "../../../../components/data-display/BannerComponent";
 import ButtonComponent from "../../../../components/ui/ButtonComponent";
 import { useBanner } from "../../infrastructure/useBanner";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { uploadImage } from "../../../users/infrastructure/imageService";
 
 interface AdminBannerCRUDModalProps {
@@ -18,9 +18,21 @@ export default function AdminBannerCRUDModal({
   onClose,
   onSaveSuccess,
 }: AdminBannerCRUDModalProps) {
-  const { saveBanner, loading } = useBanner();
+  const {
+    saveBanner,
+    fetchBannerImages,
+    bannerImages,
+    saveBannerImage,
+    deleteBannerImage,
+    loading,
+  } = useBanner();
   const [uploading, setUploading] = useState(false);
-
+  // 🔹 State para controlar el menú desplegable de banners
+  const [showBannerDropdown, setShowBannerDropdown] = useState(false);
+  const [showCharacterDropdown, setShowCharacterDropdown] = useState(false);
+  useEffect(() => {
+    fetchBannerImages(); // 🔹 carga las imágenes de /banner-images
+  }, []);
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
@@ -48,13 +60,28 @@ export default function AdminBannerCRUDModal({
 
     setUploading(true);
     try {
+      // Subir a Cloudinary (u otro storage)
       const uploadedUrl = await uploadImage(file);
+
+      // 🔹 Guardar la imagen en la tabla `banner_images`
+      await saveBannerImage({
+        link: uploadedUrl,
+        type: field === "image" ? "BACKGROUND" : "CHARACTER",
+        alt_text: `${field === "image" ? "Banner" : "Character"} - ${
+          newBanner.title || "Sin título"
+        }`,
+      });
+
+      // 🔹 Actualizar el estado del banner local
       setNewBanner((prev: any) => ({
         ...prev,
         [field]: uploadedUrl,
       }));
+
+      // 🔹 Actualizar lista de imágenes en dropdown
+      await fetchBannerImages();
     } catch (error) {
-      console.error("❌ Error al subir imagen:", error);
+      console.error("❌ Error al subir y registrar imagen:", error);
       alert("Error al subir la imagen. Intenta de nuevo.");
     } finally {
       setUploading(false);
@@ -120,29 +147,202 @@ export default function AdminBannerCRUDModal({
               />
             </div>
 
+            {/* Imagen de fondo con dropdown */}
             <div>
               <label className="block text-sm font-semibold mb-1">
                 Imagen de fondo *
               </label>
-              <input
-                type="file"
-                accept=".png, .jpg, .jpeg .webp"
-                onChange={(e) => handleFileChange(e, "image")}
-                className="w-full border rounded-lg px-3 py-2 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:bg-main-dark file:text-white file:cursor-pointer hover:file:bg-main transition-all"
-                required
-              />
+
+              <div className="flex gap-2 items-start">
+                {/* 📤 Subida */}
+                <input
+                  type="file"
+                  accept=".png, .jpg, .jpeg, .webp"
+                  onChange={(e) => handleFileChange(e, "image")}
+                  className="w-full border rounded-lg px-3 py-2 file:mr-4 file:py-2 file:px-4 file:rounded-full 
+      file:border-0 file:bg-main-dark file:text-white file:cursor-pointer hover:file:bg-main transition-all"
+                  required
+                />
+
+                {/* 🔽 Dropdown con previews */}
+                <div className="relative w-10 shrink-0">
+                  <button
+                    type="button"
+                    onClick={() => setShowBannerDropdown((prev) => !prev)}
+                    className="w-10 h-10 flex items-center justify-center border rounded-lg bg-white hover:bg-gray-50 transition-all"
+                  >
+                    <svg
+                      className={`w-5 h-5 transform transition-transform ${
+                        showBannerDropdown ? "rotate-180" : ""
+                      }`}
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M19 9l-7 7-7-7"
+                      />
+                    </svg>
+                  </button>
+
+                  {showBannerDropdown && (
+                    <div className="absolute right-0 mt-2 w-[14rem] sm:w-[20rem] bg-white border border-gray-200 rounded-lg shadow-lg p-2 grid grid-cols-2 sm:grid-cols-3 gap-2 z-10">
+                      {bannerImages
+                        .filter((img) => img.type === "BACKGROUND")
+                        .map((img) => (
+                          <div
+                            key={img.id}
+                            className="relative group cursor-pointer rounded-md overflow-hidden border hover:shadow-md transition-all"
+                            onClick={() => {
+                              setNewBanner((prev: any) => ({
+                                ...prev,
+                                image: img.link,
+                              }));
+                              setShowBannerDropdown(false);
+                            }}
+                          >
+                            <img
+                              src={
+                                typeof img.link === "string"
+                                  ? img.link
+                                  : URL.createObjectURL(img.link)
+                              }
+                              alt={img.alt_text || "banner"}
+                              className="object-cover w-full h-20"
+                            />
+
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                if (confirm("¿Eliminar esta imagen?")) {
+                                  deleteBannerImage(img.id!);
+                                }
+                              }}
+                              type="button"
+                              className="absolute top-1 right-1 bg-white/80 hover:bg-red-100 rounded-full p-1 shadow"
+                            >
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                className="h-4 w-4 text-red-500"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M6 18L18 6M6 6l12 12"
+                                />
+                              </svg>
+                            </button>
+                          </div>
+                        ))}
+                    </div>
+                  )}
+                </div>
+              </div>
             </div>
 
+            {/* Imagen del personaje con dropdown */}
             <div>
               <label className="block text-sm font-semibold mb-1">
                 Imagen del personaje
               </label>
-              <input
-                type="file"
-                accept=".png, .jpg, .jpeg .webp"
-                onChange={(e) => handleFileChange(e, "character")}
-                className="w-full border rounded-lg px-3 py-2 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:bg-main-dark file:text-white file:cursor-pointer hover:file:bg-main transition-all"
-              />
+
+              <div className="flex gap-2 items-start">
+                {/* 📤 Subida */}
+                <input
+                  type="file"
+                  accept=".png, .jpg, .jpeg, .webp"
+                  onChange={(e) => handleFileChange(e, "character")}
+                  className="w-full border rounded-lg px-3 py-2 file:mr-4 file:py-2 file:px-4 file:rounded-full 
+      file:border-0 file:bg-main-dark file:text-white file:cursor-pointer hover:file:bg-main transition-all"
+                />
+
+                {/* 🔽 Dropdown con previews */}
+                <div className="relative w-10 shrink-0">
+                  <button
+                    type="button"
+                    onClick={() => setShowCharacterDropdown((prev) => !prev)}
+                    className="w-10 h-10 flex items-center justify-center border rounded-lg bg-white hover:bg-gray-50 transition-all"
+                  >
+                    <svg
+                      className={`w-5 h-5 transform transition-transform ${
+                        showCharacterDropdown ? "rotate-180" : ""
+                      }`}
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M19 9l-7 7-7-7"
+                      />
+                    </svg>
+                  </button>
+
+                  {showCharacterDropdown && (
+                    <div className="absolute right-0 mt-2 w-[14rem] sm:w-[20rem] bg-white border border-gray-200 rounded-lg shadow-lg p-2 grid grid-cols-2 sm:grid-cols-3 gap-2 z-10">
+                      {bannerImages
+                        .filter((img) => img.type === "CHARACTER")
+                        .map((img) => (
+                          <div
+                            key={img.id}
+                            className="relative group cursor-pointer rounded-md overflow-hidden border hover:shadow-md transition-all"
+                            onClick={() => {
+                              setNewBanner((prev: any) => ({
+                                ...prev,
+                                character: img.link,
+                              }));
+                              setShowCharacterDropdown(false);
+                            }}
+                          >
+                            <img
+                              src={
+                                typeof img.link === "string"
+                                  ? img.link
+                                  : URL.createObjectURL(img.link)
+                              }
+                              alt={img.alt_text || "character"}
+                              className="object-cover w-full h-20"
+                            />
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                if (confirm("¿Eliminar esta imagen?")) {
+                                  deleteBannerImage(img.id!);
+                                }
+                              }}
+                              type="button"
+                              className="absolute top-1 right-1 bg-white/80 hover:bg-red-100 rounded-full p-1 shadow"
+                            >
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                className="h-4 w-4 text-red-500"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M6 18L18 6M6 6l12 12"
+                                />
+                              </svg>
+                            </button>
+                          </div>
+                        ))}
+                    </div>
+                  )}
+                </div>
+              </div>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
