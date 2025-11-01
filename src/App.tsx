@@ -1,9 +1,9 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import { ChatBot } from "./modules/bot/ui/ChatBot";
+import { Chatbot } from "./modules/bot/ui/Chatbot";
 import { AuthProvider } from "./hooks/context/AuthContext";
 import { CartProvider } from "./hooks/context/CartContext";
 import { ChatbotProvider } from "./hooks/context/ChatbotContext";
-//admin
+//admins
 //import AdminPage from "./modules/admin/ui/AdminPage";
 
 //auth
@@ -96,7 +96,7 @@ function App() {
                   <Route path="*" element={<NotFoundPage />} />
                   <Route path="/notAuthorized" element={<NotAuthorize />} />
                 </Routes>
-                <ChatBot />
+                <Chatbot />
               </ChatbotProvider>
             </NotificationProvider>
           </CartProvider>

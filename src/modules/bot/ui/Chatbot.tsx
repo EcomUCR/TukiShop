@@ -3,7 +3,7 @@ import { useChatbot } from "../../../hooks/context/ChatbotContext";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useRef } from "react";
 
-export function ChatBot() {
+export function Chatbot() {
   const {
     messages,
     input,
