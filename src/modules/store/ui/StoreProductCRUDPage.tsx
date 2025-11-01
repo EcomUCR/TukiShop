@@ -296,7 +296,7 @@ export default function StoreProductCRUDPage() {
     previews[0] ||
     (typeof form.images[0] === "string"
       ? form.images[0]
-      : "https://upload.wikimedia.org/wikipedia/commons/1/14/No_Image_Available.jpg");
+      : "https://res.cloudinary.com/dpbghs8ep/image/upload/v1761412207/imagenNoSubida_dymbb7.png");
 
   return (
     <div>
