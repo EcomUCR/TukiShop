@@ -15,14 +15,17 @@ export function Chatbot() {
     visible,
     toggleVisible,
   } = useChatbot();
+
   const navigate = useNavigate();
   const chatRef = useRef<HTMLDivElement>(null);
+
   const handleProductClick = (id: number) => {
     navigate(`/product/${id}`);
     window.scrollTo({ top: 0, behavior: "smooth" });
-    toggleVisible(); // opcional: cerrar el chat al entrar al producto
+    toggleVisible();
   };
 
+  // 👂 Cerrar si se hace click fuera
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (
@@ -37,6 +40,7 @@ export function Chatbot() {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [visible, toggleVisible]);
+
   return (
     <>
       {/* 💬 Burbuja flotante */}
@@ -62,7 +66,7 @@ export function Chatbot() {
             initial={{
               scale: 0.2,
               opacity: 0,
-              borderRadius: "50%", // 🔹 en lugar de 9999px
+              borderRadius: "50%",
               width: 64,
               height: 64,
               bottom: 24,
@@ -72,11 +76,11 @@ export function Chatbot() {
             animate={{
               scale: 1,
               opacity: 1,
-              borderRadius: "20px", // 🔹 redondeo suave, no tan cuadrado
-              width: 420,
-              height: 600,
-              bottom: 96,
-              right: 40,
+              borderRadius: "20px",
+              width: "90vw", // 📱 ancho móvil
+              height: "85vh", // 📱 alto móvil
+              bottom: "5vh",
+              right: "5vw",
               transition: {
                 borderRadius: { duration: 0.25, ease: "easeOut" },
               },
@@ -84,7 +88,7 @@ export function Chatbot() {
             exit={{
               scale: 0.2,
               opacity: 0,
-              borderRadius: "50%", // 🔹 vuelve a la forma de burbuja
+              borderRadius: "50%",
               width: 64,
               height: 64,
               bottom: 24,
@@ -97,25 +101,28 @@ export function Chatbot() {
               damping: 18,
               duration: 0.45,
             }}
-            className="fixed bg-white shadow-2xl border border-gray-300 flex flex-col p-5 z-50 origin-bottom-right"
+            className="fixed bg-white shadow-2xl border border-gray-300 flex flex-col p-5 z-50 origin-bottom-right 
+                       sm:w-[420px] sm:h-[600px] sm:bottom-24 sm:right-10 sm:rounded-2xl sm:p-5" // 💻 tamaño escritorio
           >
             {/* Header */}
             <div className="flex justify-between items-center mb-4">
-              <h2 className="font-bold text-lg text-blue-600">TukiBot 🤖</h2>
+              <h2 className="font-bold text-lg sm:text-xl text-blue-600">
+                TukiBot 🤖
+              </h2>
               <button
                 onClick={toggleVisible}
-                className="text-gray-500 hover:text-red-500 text-xl font-bold transition"
+                className="text-gray-500 hover:text-red-500 text-2xl font-bold transition"
               >
                 ✕
               </button>
             </div>
 
             {/* Mensajes */}
-            <div className="flex-1 overflow-y-auto space-y-3 mb-4 text-base leading-relaxed max-h-[70vh] scrollbar-thin scrollbar-thumb-gray-300">
+            <div className="flex-1 overflow-y-auto space-y-3 mb-4 text-base sm:text-lg leading-relaxed max-h-[70vh] scrollbar-thin scrollbar-thumb-gray-300">
               {messages.map((m, i) => (
                 <div
                   key={i}
-                  className={`p-3 rounded-2xl shadow-sm ${
+                  className={`p-3 sm:p-4 rounded-2xl shadow-sm ${
                     m.role === "user"
                       ? "bg-blue-500 text-white self-end ml-auto max-w-[85%]"
                       : "bg-gray-100 text-gray-800 self-start mr-auto max-w-[85%]"
@@ -124,25 +131,26 @@ export function Chatbot() {
                   <p>{m.content}</p>
 
                   {/* 🛍️ Productos encontrados */}
-                  {/* 🛍️ Productos encontrados */}
                   {m.products && m.products.length > 0 && (
                     <div className="mt-3 grid grid-cols-2 gap-3">
                       {m.products.map((p) => (
                         <div
                           key={p.id}
-                          onClick={() => handleProductClick(p.id)} // 👈 click handler
-                          className="cursor-pointer border border-gray-200 rounded-lg p-2 text-sm bg-white hover:shadow-lg hover:scale-[1.02] transition-all active:scale-95"
+                          onClick={() => handleProductClick(p.id)}
+                          className="cursor-pointer border border-gray-200 rounded-lg p-2 sm:p-3 text-sm bg-white hover:shadow-lg hover:scale-[1.02] transition-all active:scale-95"
                         >
                           <img
                             src={p.image_1_url}
                             alt={p.name}
-                            className="w-full h-24 object-cover rounded-md mb-1"
+                            className="w-full h-24 sm:h-28 object-cover rounded-md mb-1"
                           />
-                          <p className="font-semibold truncate">{p.name}</p>
-                          <p className="text-gray-500 text-xs truncate">
+                          <p className="font-semibold truncate text-xs sm:text-sm">
+                            {p.name}
+                          </p>
+                          <p className="text-gray-500 text-[11px] sm:text-xs truncate">
                             {p.store_name}
                           </p>
-                          <p className="text-blue-600 font-bold">
+                          <p className="text-blue-600 font-bold text-xs sm:text-sm">
                             ₡{p.discount_price || p.price}
                           </p>
                         </div>
@@ -164,11 +172,11 @@ export function Chatbot() {
             {/* Input */}
             <form
               onSubmit={sendMessage}
-              className="flex gap-3 mt-auto items-center"
+              className="flex gap-2 sm:gap-3 mt-auto items-center"
             >
               <input
                 type="text"
-                className="flex-1 border border-gray-300 rounded-full px-4 py-2 text-base focus:ring-2 focus:ring-blue-400 outline-none"
+                className="flex-1 border border-gray-300 rounded-full px-3 sm:px-4 py-2 text-base focus:ring-2 focus:ring-blue-400 outline-none"
                 placeholder="Escribe tu mensaje..."
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
@@ -176,7 +184,7 @@ export function Chatbot() {
               />
               <button
                 type="submit"
-                className="bg-blue-600 text-white px-5 py-2 rounded-full text-base font-semibold hover:bg-blue-700 transition-all disabled:opacity-50"
+                className="bg-blue-600 text-white px-4 sm:px-5 py-2 rounded-full text-base font-semibold hover:bg-blue-700 transition-all disabled:opacity-50"
                 disabled={isLoading}
               >
                 {isLoading ? "..." : "Enviar"}
