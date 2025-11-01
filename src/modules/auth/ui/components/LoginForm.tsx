@@ -5,8 +5,9 @@ import logo from "../../../../img/TukiLogo.png";
 import { useAuth } from "../../../../hooks/context/AuthContext";
 
 export default function LoginForm() {
-  const { login, loading } = useAuth();
-  const [loginField, setLoginField] = useState(""); // ✅ Puede ser correo o username
+  const { login } = useAuth();
+  const [loading, setLoading] = useState(false);
+  const [loginField, setLoginField] = useState(""); 
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
@@ -15,11 +16,11 @@ export default function LoginForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+    setLoading(true); 
 
     const loginInput = loginField.trim().toLowerCase();
 
     try {
-      // ✅ Mandar el campo "login" al backend (puede ser correo o username)
       const success = await login(loginInput, password);
 
       if (!success) {
@@ -27,7 +28,8 @@ export default function LoginForm() {
         return;
       }
 
-      navigate("/");
+      // Delay opcional para suavizar la UX
+      setTimeout(() => navigate("/"), 150);
     } catch (error: any) {
       console.error("Error al iniciar sesión:", error);
 
@@ -36,6 +38,8 @@ export default function LoginForm() {
       } else {
         setError("No se pudo conectar con el servidor. Intenta nuevamente.");
       }
+    } finally {
+      setLoading(false); 
     }
   };
 
@@ -83,11 +87,17 @@ export default function LoginForm() {
           </div>
 
           <button
-            className="bg-contrast-secondary text-white rounded-full py-3 px-4 w-full sm:w-[30%] font-quicksand cursor-pointer"
+            className={`relative overflow-hidden bg-contrast-secondary text-white rounded-full py-3 px-4 w-full sm:w-[30%] font-quicksand cursor-pointer
+    transition-all duration-300 ease-in-out transform hover:scale-105 hover:shadow-lg 
+    before:absolute before:inset-0 before:translate-x-[-100%] before:bg-gradient-to-r 
+    before:from-[var(--color-contrast-main)] before:to-[var(--color-contrast-secondary)] 
+    before:opacity-0 hover:before:translate-x-0 hover:before:opacity-100 before:transition-all before:duration-500`}
             type="submit"
             disabled={loading}
           >
-            {loading ? "Ingresando..." : "Iniciar sesión"}
+            <span className="relative z-10">
+              {loading ? "Ingresando..." : "Iniciar sesión"}
+            </span>
           </button>
         </form>
 
