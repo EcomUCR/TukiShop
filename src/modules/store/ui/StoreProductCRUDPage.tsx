@@ -64,7 +64,7 @@ export default function StoreProductCRUDPage() {
   const [form, setForm] = useState<ProductForm>({
     name: "",
     description: "",
-    details: "", 
+    details: "",
     price: 0,
     discount_price: 0,
     stock: 0,
@@ -108,7 +108,7 @@ export default function StoreProductCRUDPage() {
             ? product.categories.map((cat: any) => cat.id)
             : [],
           status: product.status || "ACTIVE",
-          details: (product as any).details || "", 
+          details: (product as any).details || "",
         });
         setPreviews(loadedImages);
       }
@@ -181,7 +181,7 @@ export default function StoreProductCRUDPage() {
       image_3: form.images[2],
       name: form.name,
       description: form.description,
-      details: form.details, 
+      details: form.details,
       stock: form.stock,
       status: form.status,
       categories: form.categories,
@@ -210,11 +210,12 @@ export default function StoreProductCRUDPage() {
           type: "success",
         });
 
+
         // 🔹 Reset del formulario
         setForm({
           name: "",
           description: "",
-          details: "", 
+          details: "",
           price: 0,
           discount_price: 0,
           stock: 0,
@@ -228,6 +229,9 @@ export default function StoreProductCRUDPage() {
           if (ref.current) ref.current.value = "";
         });
       }
+      setTimeout(() => {
+        window.history.back();
+      }, 1500);
     } catch (err: any) {
       console.error("🚨 Error al guardar producto:", err);
 
@@ -292,7 +296,7 @@ export default function StoreProductCRUDPage() {
     previews[0] ||
     (typeof form.images[0] === "string"
       ? form.images[0]
-      : "https://upload.wikimedia.org/wikipedia/commons/1/14/No_Image_Available.jpg");
+      : "https://res.cloudinary.com/dpbghs8ep/image/upload/v1761412207/imagenNoSubida_dymbb7.png");
 
   return (
     <div>
@@ -418,7 +422,7 @@ export default function StoreProductCRUDPage() {
           <div className="flex flex-col sm:flex-row gap-10 justify-between">
             {/* Izquierda */}
             <div className="flex flex-col sm:w-5/12 gap-6">
-             
+
               <label className="flex flex-col w-full gap-2">
                 <p className="font-semibold">Sobre este producto (Descripción)</p>
                 <textarea
@@ -450,8 +454,8 @@ export default function StoreProductCRUDPage() {
                   )}
                 </div>
               </label>
-              
-             
+
+
               <label className="flex flex-col w-full gap-2">
                 <p className="font-semibold">Detalles</p>
                 <textarea
@@ -593,7 +597,7 @@ export default function StoreProductCRUDPage() {
                         image_3: form.images[2],
                         name: form.name,
                         description: form.description,
-                        details: form.details, 
+                        details: form.details,
                         stock: form.stock,
                         categories: form.categories,
                         is_featured: form.is_featured,

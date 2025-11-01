@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams, useLocation } from "react-router-dom";
+import { useParams, useLocation, Link } from "react-router-dom";
 import Footer from "../../../components/layout/Footer";
 import NavBar from "../../../components/layout/NavBar";
 import StoreNavBar from "./components/StoreNavBar";
@@ -11,7 +11,7 @@ import StoreSearchComponent from "./StoreSearchComponent";
 import { getStore } from "../infrastructure/storeService";
 import type { Store } from "../../users/infrastructure/useUser";
 import { SkeletonStoreHeader } from "../../../components/ui/AllSkeletons";
-import { IconEdit } from "@tabler/icons-react";
+import { IconEdit, IconSquarePlus } from "@tabler/icons-react";
 import { useAuth } from "../../../hooks/context/AuthContext";
 import { uploadImage } from "../../users/infrastructure/imageService";
 import { updateStore } from "../infrastructure/storeService";
@@ -52,13 +52,10 @@ export default function StorePage() {
     try {
       setChangingBanner(true);
 
-      // 🖼️ Subir imagen
       const bannerUrl = await uploadImage(file);
 
-      // 🗂️ Actualizar en el backend
       await updateStore(store.id, { banner: bannerUrl });
 
-      // 🔄 Refrescar datos de la tienda
       const updated = await getStore(store.id);
       setStore(updated);
       await refreshUser?.();
@@ -80,7 +77,7 @@ export default function StorePage() {
     <div className="flex flex-col w-full">
       <NavBar />
       <div className="mx-auto w-full max-w-[80rem] px-4 sm:px-6 lg:px-10">
-        <header className="flex flex-col justify-center w-full gap-3 py-5 sm:px-5">
+        <header className="flex flex-col justify-center w-full gap-3 py-5 sm:px-5 relative">
           {loading ? (
             <SkeletonStoreHeader />
           ) : (
@@ -128,6 +125,26 @@ export default function StorePage() {
             <StoreReviewsComponent />
           ) : null}
         </div>
+        {user?.store && user.store.id === store?.id && (
+          <Link to="/crudProduct" className="relative group" onClick={()=> window.scrollTo({top:0,behavior:'smooth'})}>
+            <button
+              className="fixed flex items-center bg-main text-white p-4 rounded-full shadow-lg 
+      hover:scale-110 transition-all duration-300 z-50 overflow-hidden 
+      bottom-6 right-6 sm:bottom-8 sm:right-8 md:bottom-10 md:right-10 group-hover:bg-contrast-secondary"
+              title="Agregar nuevo producto"
+            >
+              <IconSquarePlus size={28} className="group-hover:rotate-180 transition-all duration-300"/>
+              <span
+                className="whitespace-nowrap overflow-hidden w-0 opacity-0 transition-all duration-500 ease-in-out 
+        group-hover:w-[12rem] group-hover:opacity-100"
+              >
+                Agregar nuevo producto
+              </span>
+            </button>
+          </Link>
+        )}
+
+
       </div>
       <Footer />
     </div>
