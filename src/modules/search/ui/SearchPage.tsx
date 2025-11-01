@@ -51,39 +51,49 @@ export default function SearchedProductPage() {
   const searchParams = new URLSearchParams(location.search);
   const query = searchParams.get("q");
   const mode = searchParams.get("mode");
+  const { getPaginatedProducts } = useProducts();
+  const [totalPages, setTotalPages] = useState(1);
 
-  useEffect(() => {
+   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
-      let data: Product[] = [];
-
       try {
+        // 🔸 1. Si hay búsqueda o filtros especiales, no usar paginación
         if (categoryId) {
-          data = await getProductsByCategory(Number(categoryId));
-        } else if (mode === "explore" || mode === "best-sellers") {
-          data = await getProducts();
+          const res = await getProductsByCategory(Number(categoryId));
+          setProducts(res);
+          setTotalPages(1);
         } else if (mode === "offers") {
-          // ✅ usa el endpoint real
-          data = await getOffers();
+          const res = await getOffers();
+          setProducts(res);
+          setTotalPages(1);
         } else if (query) {
           const all = await getProducts();
-          data = all.filter((p) =>
+          const filtered = all.filter((p) =>
             p.name.toLowerCase().includes(query.toLowerCase())
           );
+          setProducts(filtered);
+          setTotalPages(1);
+        } else {
+          // 🔸 2. Si es modo "explore" o sin filtros → usar paginación del backend
+          const res = await getPaginatedProducts(page, limit);
+          setProducts(res.data);
+          setTotalPages(res.last_page);
         }
-      } catch (err) {
-        console.error("Error al cargar productos:", err);
+      } catch (e) {
+        console.error("❌ Error al cargar productos:", e);
+        setProducts([]);
+        setTotalPages(1);
+      } finally {
+        setLoading(false);
       }
-
-      setProducts(data);
-      setLoading(false);
-      setPage(1);
     };
 
     fetchData();
-  }, [categoryId, query, mode]);
+  }, [page, categoryId, query, mode]);
 
-  const paginated = products.slice((page - 1) * limit, page * limit);
+
+  const paginated = products;
 
   const getTitle = () => {
     if (loading) return "Cargando productos...";
@@ -129,59 +139,48 @@ export default function SearchedProductPage() {
             </div>
 
             {/* Paginación */}
-            {products.length > limit && (
+            {totalPages > 1 && (
               <Pagination className="mt-10">
                 <PaginationContent className="flex flex-wrap items-center justify-center gap-2 sm:gap-1 font-quicksand">
-                  {/* Prev */}
                   <PaginationItem>
                     <PaginationPrevious
-                      onClick={() => {
-                        setPage(page - 1);
-                        window.scrollTo({ top: 0, behavior: "smooth" });
-                      }}
-                      className={`${page === 1
+                      onClick={() => page > 1 && setPage(page - 1)}
+                      className={`${
+                        page === 1
                           ? "opacity-50 pointer-events-none bg-gray-200 text-gray-500"
                           : "hover:bg-main-dark/10 hover:text-main-dark cursor-pointer"
-                        } rounded-full px-3 py-2 transition-all duration-300 text-sm sm:text-base`}
+                      } rounded-full px-3 py-2 transition-all duration-300 text-sm sm:text-base`}
                     />
                   </PaginationItem>
 
-                  {/* Números */}
-                  {Array.from({ length: Math.ceil(products.length / limit) }).map(
-                    (_, index) => {
-                      const current = index + 1;
-                      const isActive = current === page;
-                      return (
-                        <PaginationItem key={current}>
-                          <PaginationLink
-                            onClick={() => {
-                              setPage(current);
-                              window.scrollTo({ top: 0, behavior: "smooth" });
-                            }}
-                            isActive={isActive}
-                            className={`rounded-full w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center text-xs sm:text-sm font-semibold transition-all duration-300 ${isActive
+                  {Array.from({ length: totalPages }).map((_, i) => {
+                    const current = i + 1;
+                    const isActive = current === page;
+                    return (
+                      <PaginationItem key={current}>
+                        <PaginationLink
+                          onClick={() => setPage(current)}
+                          isActive={isActive}
+                          className={`rounded-full w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center text-xs sm:text-sm font-semibold transition-all duration-300 ${
+                            isActive
                               ? "bg-contrast-secondary text-white shadow-md scale-105 cursor-pointer"
                               : "bg-main-dark/10 text-main-dark hover:bg-main-dark/20 cursor-pointer"
-                              }`}
-                          >
-                            {current}
-                          </PaginationLink>
-                        </PaginationItem>
-                      );
-                    }
-                  )}
+                          }`}
+                        >
+                          {current}
+                        </PaginationLink>
+                      </PaginationItem>
+                    );
+                  })}
 
-                  {/* Next */}
                   <PaginationItem>
                     <PaginationNext
-                      onClick={() => {
-                        setPage(page + 1);
-                        window.scrollTo({ top: 0, behavior: "smooth" });
-                      }}
-                      className={`${page >= Math.ceil(products.length / limit)
-                        ? "opacity-50 pointer-events-none bg-gray-200 text-gray-500"
-                        : "hover:bg-main-dark/10 hover:text-main-dark cursor-pointer"
-                        } rounded-full px-3 py-2 transition-all duration-300 text-sm sm:text-base`}
+                      onClick={() => page < totalPages && setPage(page + 1)}
+                      className={`${
+                        page >= totalPages
+                          ? "opacity-50 pointer-events-none bg-gray-200 text-gray-500"
+                          : "hover:bg-main-dark/10 hover:text-main-dark cursor-pointer"
+                      } rounded-full px-3 py-2 transition-all duration-300 text-sm sm:text-base`}
                     />
                   </PaginationItem>
                 </PaginationContent>

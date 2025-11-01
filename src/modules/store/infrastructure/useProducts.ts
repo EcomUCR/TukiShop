@@ -17,7 +17,7 @@ export type Product = {
   id?: number;
   name: string;
   description?: string;
-  details?: string; 
+  details?: string;
   price: number;
   discount_price?: number;
   stock: number;
@@ -127,7 +127,7 @@ export function useProducts() {
         sku: `SKU-${Date.now()}`,
         name: product.name,
         description: product.description || "",
-        details: product.details || "", 
+        details: product.details || "",
         price: product.price,
         //Si discount_price es 0, null, undefined o cadena vacía, se envía null
         discount_price:
@@ -237,7 +237,7 @@ export function useProducts() {
       const payload: any = {
         name: product.name,
         description: product.description,
-        details: product.details, 
+        details: product.details,
         price: product.price,
         // Si el descuento es 0, null, undefined o vacío → se envía null
         discount_price:
@@ -286,6 +286,19 @@ export function useProducts() {
       return [];
     } finally {
       setLoading(false);
+    }
+  };
+  // 🔹 Obtener productos paginados (para exploración general)
+  const getPaginatedProducts = async (page: number = 1, limit: number = 30) => {
+    try {
+      const res = await axios.get(`${BASE_URL}/products`, {
+        params: { page, limit },
+      });
+      // ⚠️ Asegúrate de que tu backend devuelva { data, last_page, total } o ajustá los nombres aquí
+      return res.data;
+    } catch (e: any) {
+      console.error("Error al obtener productos paginados:", e);
+      return { data: [], last_page: 1, total: 0 };
     }
   };
 
@@ -345,6 +358,7 @@ export function useProducts() {
     getProductsForOwner,
     getOffersByStore,
     getOffers,
+    getPaginatedProducts,
     searchProductsByStore,
     loading,
     error,
