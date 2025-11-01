@@ -1,8 +1,8 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-
+import { ChatBot } from "./modules/bot/ui/ChatBot";
 import { AuthProvider } from "./hooks/context/AuthContext";
 import { CartProvider } from "./hooks/context/CartContext";
-
+import { ChatbotProvider } from "./hooks/context/ChatbotContext";
 //admin
 //import AdminPage from "./modules/admin/ui/AdminPage";
 
@@ -45,44 +45,59 @@ function App() {
         <AlertProvider>
           <CartProvider>
             <NotificationProvider>
-              <Routes>
-                <Route path="/" element={<HomePage />} />
-                <Route path="/loginRegister" element={<LoginRegisterPage />} />
-                <Route
-                  path="/registerSeller"
-                  element={<RegisterSellerPage />}
-                />
-                <Route path="/beSellerPage" element={<BeSellerPage />} />
-                <Route path="/store/:id" element={<StorePage />} />
-                <Route path="/profile" element={<ProfilePage />} />
-                <Route path="/shoppingCart" element={<CartPage />} />
-                <Route path="/wishlist" element={<WishListPage />} />
-                <Route
-                  path="/wishlist/public/:slug"
-                  element={<WishListPage />}
-                />
-                <Route path="/product/:id" element={<ProductPage />} />
-                <Route path="/resetPassword" element={<ResetPasswordPage />} />
-                <Route
-                  path="/forgotPassword"
-                  element={<ForgotPasswordPage />}
-                />
-                <Route path="/crudProduct" element={<StoreProductCRUDPage />} />
-                <Route
-                  path="/search/:categoryId"
-                  element={<SearchPage />}
-                />
-                <Route path="/search" element={<SearchPage />} />
-                <Route path="/search/stores" element={<StoresListPage />} />
-                <Route path="/about" element={<AboutUsPage />} />
-                <Route path="/help" element={<HelpPage />} />
-                <Route path="/editProduct/:id" element={<StoreProductCRUDPage />} />
-                <Route path="/store/:id/search" element={<StorePage />} />
-                <Route path="/reportProblem" element={<ReportProblemPage />} />
-                <Route path="/contact" element={<ContactPage />} />
-                <Route path="*" element={<NotFoundPage />} />
-                <Route path="/notAuthorized" element={<NotAuthorize />} />
-              </Routes>
+              <ChatbotProvider>
+                <Routes>
+                  <Route path="/" element={<HomePage />} />
+                  <Route
+                    path="/loginRegister"
+                    element={<LoginRegisterPage />}
+                  />
+                  <Route
+                    path="/registerSeller"
+                    element={<RegisterSellerPage />}
+                  />
+                  <Route path="/beSellerPage" element={<BeSellerPage />} />
+                  <Route path="/store/:id" element={<StorePage />} />
+                  <Route path="/profile" element={<ProfilePage />} />
+                  <Route path="/shoppingCart" element={<CartPage />} />
+                  <Route path="/wishlist" element={<WishListPage />} />
+                  <Route
+                    path="/wishlist/public/:slug"
+                    element={<WishListPage />}
+                  />
+                  <Route path="/product/:id" element={<ProductPage />} />
+                  <Route
+                    path="/resetPassword"
+                    element={<ResetPasswordPage />}
+                  />
+                  <Route
+                    path="/forgotPassword"
+                    element={<ForgotPasswordPage />}
+                  />
+                  <Route
+                    path="/crudProduct"
+                    element={<StoreProductCRUDPage />}
+                  />
+                  <Route path="/search/:categoryId" element={<SearchPage />} />
+                  <Route path="/search" element={<SearchPage />} />
+                  <Route path="/search/stores" element={<StoresListPage />} />
+                  <Route path="/about" element={<AboutUsPage />} />
+                  <Route path="/help" element={<HelpPage />} />
+                  <Route
+                    path="/editProduct/:id"
+                    element={<StoreProductCRUDPage />}
+                  />
+                  <Route path="/store/:id/search" element={<StorePage />} />
+                  <Route
+                    path="/reportProblem"
+                    element={<ReportProblemPage />}
+                  />
+                  <Route path="/contact" element={<ContactPage />} />
+                  <Route path="*" element={<NotFoundPage />} />
+                  <Route path="/notAuthorized" element={<NotAuthorize />} />
+                </Routes>
+                <ChatBot />
+              </ChatbotProvider>
             </NotificationProvider>
           </CartProvider>
         </AlertProvider>
