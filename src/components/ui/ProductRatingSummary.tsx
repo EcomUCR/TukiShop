@@ -6,7 +6,8 @@ import { useAlert } from "../../hooks/context/AlertContext";
 import { useNavigate } from "react-router-dom";
 
 
-const useProductRatingsMock = (productId: number) => {
+// ✅ Hook corregido y limpio
+const useProductRatingsMock = () => {
     const [loading, setLoading] = useState(true);
 
     const summary = {
@@ -16,24 +17,16 @@ const useProductRatingsMock = (productId: number) => {
     };
 
     const createReview = async (review: any) => {
-       
+        console.log("Mock creando review:", review);
         return new Promise((resolve) => setTimeout(resolve, 500));
     };
 
-    const refreshSummary = async () => {
-        return new Promise((resolve) => {
-            setTimeout(() => {
-                setLoading(false);
-                resolve(true);
-            }, 300);
-        });
-    }
-
+    // Simula carga inicial
     useState(() => {
-        setTimeout(() => setLoading(false), 10); 
+        setTimeout(() => setLoading(false), 10);
     });
 
-    return { summary, loading, refreshSummary, createReview };
+    return { summary, loading, createReview };
 };
 
 
@@ -49,14 +42,12 @@ interface ProductRatingSummaryProps {
 
 export default function ProductRatingSummary({
     onSaveReview,
-    productId,
     barColor = "#ff7e47",
 }: ProductRatingSummaryProps) {
     const { user } = useAuth();
-    const { summary, loading, refreshSummary, createReview } =
-        useProductRatingsMock(productId); 
+    const { summary, loading, createReview } = useProductRatingsMock();
 
-    const [mode, setMode] = useState<"view" | "write">("write"); 
+    const [mode, setMode] = useState<"view" | "write">("write");
     const [rating, setRating] = useState(0);
     const [hover, setHover] = useState(0);
     const [comment, setComment] = useState("");
@@ -90,7 +81,6 @@ export default function ProductRatingSummary({
 
         try {
             await createReview({
-                product_id: productId, 
                 user_id: user.id,
                 rating,
                 comment: comment.trim(),
@@ -106,9 +96,7 @@ export default function ProductRatingSummary({
                 comment: comment.trim(),
                 rating,
             });
-            
-            // await refreshSummary();
-            // setMode("view"); 
+
             setComment("");
             setRating(0);
             setHover(0);
@@ -120,10 +108,7 @@ export default function ProductRatingSummary({
             });
 
         } catch (err: any) {
-            console.error(
-                "Error al guardar la reseña:",
-                err?.response?.data || err?.message
-            );
+            console.error("Error al guardar la reseña:", err?.response?.data || err?.message);
             showAlert({
                 title: "Error inesperado",
                 message: "Ocurrió un error al enviar la reseña.",
@@ -150,17 +135,13 @@ export default function ProductRatingSummary({
             <div className="flex gap-1 justify-center">
                 {Array.from({ length: 5 }).map((_, i) => {
                     const index = i + 1;
-                    const fillPercent = Math.max(
-                        0,
-                        Math.min(1, activeValue - (index - 1))
-                    );
+                    const fillPercent = Math.max(0, Math.min(1, activeValue - (index - 1)));
                     const widthPct = `${fillPercent * 100}%`;
 
                     return (
                         <div
                             key={i}
-                            className={`relative ${interactive ? "cursor-pointer" : "cursor-default"
-                                }`}
+                            className={`relative ${interactive ? "cursor-pointer" : "cursor-default"}`}
                             role={interactive ? "button" : undefined}
                             aria-label={interactive ? `${index} estrellas` : undefined}
                             tabIndex={interactive ? 0 : -1}
@@ -181,10 +162,7 @@ export default function ProductRatingSummary({
                                 }
                             }}
                         >
-                            <IconStar
-                                size={size}
-                                className="text-gray-300 pointer-events-none"
-                            />
+                            <IconStar size={size} className="text-gray-300 pointer-events-none" />
                             <div
                                 className="absolute left-0 top-0 overflow-hidden pointer-events-none"
                                 style={{ width: widthPct, height: size }}
@@ -199,11 +177,11 @@ export default function ProductRatingSummary({
     };
 
     if (loading) return <SkeletonRatingSummary show />;
+
     return (
         <div className="p-4 w-full font-quicksand transition-all duration-300">
             {mode === "view" ? (
                 <>
-                    
                     <div className="flex justify-between items-start mb-4">
                         <div className="flex flex-col items-start w-1/3">
                             <h2 className="text-5xl font-bold mb-1">
@@ -211,27 +189,21 @@ export default function ProductRatingSummary({
                             </h2>
                             <StarGroup size={20} value={summary.average} />
                             <p className="text-sm text-gray-500 mt-1">
-                                {summary.total} opiniones de **producto**
+                                {summary.total} opiniones de <strong>producto</strong>
                             </p>
                         </div>
-                      
                     </div>
 
                     <button
-                        onClick={() => {
-                           
-                            setMode("write");
-                        }}
+                        onClick={() => setMode("write")}
                         className="w-full py-3 text-white font-semibold rounded-lg transition duration-200"
                         style={{ backgroundColor: barColor }}
                     >
                         Escribir opinión
                     </button>
-
                 </>
             ) : (
                 <>
-                    {/* SECCIÓN PRINCIPAL: MODO ESCRITURA */}
                     <div className="flex flex-col items-center mb-4 transition-all duration-300">
                         <h2 className="text-6xl font-bold mb-3">
                             {displayRating.toFixed(1)}
