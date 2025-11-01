@@ -18,7 +18,7 @@ import {
 export default function SearchedProductPage() {
   const { categoryId } = useParams<{ categoryId: string }>();
   const location = useLocation();
-  const { getProductsByCategory, getProducts } = useProducts();
+  const { getProductsByCategory, getProducts, getOffers } = useProducts(); // ✅ agregado getOffers
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
@@ -63,17 +63,8 @@ export default function SearchedProductPage() {
         } else if (mode === "explore" || mode === "best-sellers") {
           data = await getProducts();
         } else if (mode === "offers") {
-          const all = await getProducts();
-          data = all
-            .filter((p) => {
-              const discount = Number(p.discount_price ?? 0);
-              return discount > 0 && discount < p.price;
-            })
-            .sort((a, b) => {
-              const discountA = a.price - Number(a.discount_price ?? a.price);
-              const discountB = b.price - Number(b.discount_price ?? b.price);
-              return discountB - discountA;
-            });
+          // ✅ usa el endpoint real
+          data = await getOffers();
         } else if (query) {
           const all = await getProducts();
           data = all.filter((p) =>
@@ -98,7 +89,7 @@ export default function SearchedProductPage() {
     if (loading) return "Cargando productos...";
     if (categoryId) return `Resultados de "${categories[categoryId]}"`;
     if (mode === "explore") return "Explorar productos";
-    if (mode === "offers") return "Ofertas especiales";
+    if (mode === "offers") return "Ofertas especiales 💸";
     if (mode === "best-sellers") return "Lo más vendido";
     if (query) return `Resultados para: "${query}"`;
     return "Productos";
@@ -119,7 +110,7 @@ export default function SearchedProductPage() {
           <SkeletonProduct count={30} />
         ) : products.length > 0 ? (
           <>
-            {/* Grilla de productos responsive */}
+            {/* Grilla de productos */}
             <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 sm:gap-6">
               {paginated.map((prod) => (
                 <ProductCard
@@ -185,7 +176,7 @@ export default function SearchedProductPage() {
                     <PaginationNext
                       onClick={() => {
                         setPage(page + 1);
-                        window.scrollTo({ top: 0, behavior: "smooth" }); // 👈 también aquí
+                        window.scrollTo({ top: 0, behavior: "smooth" });
                       }}
                       className={`${page >= Math.ceil(products.length / limit)
                         ? "opacity-50 pointer-events-none bg-gray-200 text-gray-500"

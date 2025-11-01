@@ -8,7 +8,7 @@ import {
 } from "../../../components/ui/AllSkeletons";
 import audifonos from "../../../img/resources/audifonos.jpg";
 import FeaturedProductsSlider from "../../../components/data-display/FeaturedProductsSlider";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useProducts } from "../../store/infrastructure/useProducts";
 import type { Product } from "../../store/infrastructure/useProducts";
 import CategorySlider from "../../../components/data-display/CategorySlider";
@@ -36,7 +36,7 @@ type AnyBanner = {
 };
 
 export default function HomePage() {
-  const { getProducts, getFeaturedProducts } = useProducts();
+  const { getProducts, getFeaturedProducts, getOffers } = useProducts();
   const {
     banners,
     fetchBanners,
@@ -60,16 +60,20 @@ export default function HomePage() {
 
   const [modalOpen, setModalOpen] = useState(false);
   const [editingSide, setEditingSide] = useState<"LEFT" | "RIGHT" | null>(null);
+  const hasFetched = useRef(false);
 
-  /** 🔹 Cargar productos normales */
   useEffect(() => {
+    if (hasFetched.current) return;
+    hasFetched.current = true;
     (async () => {
-      const prods = await getProducts();
-      const discounted = prods.filter((p) => (p.discount_price ?? 0) > 0);
-      setOfferProducts(discounted.slice(0, 6));
-      setExploreProducts(prods.slice(0, 10));
-      setLoadingOffers(false);
-      setLoadingExplore(false);
+      try {
+        const prods = await getProducts();
+        setExploreProducts(prods.slice(0, 10));
+      } catch (err) {
+        console.error("Error al cargar productos:", err);
+      } finally {
+        setLoadingExplore(false);
+      }
     })();
   }, []);
 
@@ -109,6 +113,19 @@ export default function HomePage() {
 
     if (banners.length > 0) loadPageBanners();
   }, [banners]);
+  /** 🔹 Cargar productos en oferta */
+  useEffect(() => {
+    (async () => {
+      try {
+        const prods = await getOffers(); // ✅ llamada al nuevo método global
+        setOfferProducts(prods.slice(0, 10)); // puedes ajustar el límite
+      } catch (error) {
+        console.error("Error al cargar ofertas:", error);
+      } finally {
+        setLoadingOffers(false);
+      }
+    })();
+  }, []);
 
   // 🔹 Abrir modal
   const handleOpenModal = (side: "LEFT" | "RIGHT") => {
@@ -185,8 +202,9 @@ export default function HomePage() {
           </h2>
           {loadingCategories && <SkeletonCategory count={4} />}
           <div
-            className={`${loadingCategories ? "opacity-0" : "opacity-100"
-              } transition-opacity duration-500`}
+            className={`${
+              loadingCategories ? "opacity-0" : "opacity-100"
+            } transition-opacity duration-500`}
           >
             <CategorySlider onLoaded={() => setLoadingCategories(false)} />
           </div>
@@ -199,7 +217,10 @@ export default function HomePage() {
               Ofertas
             </h2>
             <div className="flex items-center gap-1 text-sm sm:text-base">
-              <a href="#" className="font-quicksand font-semibold">
+              <a
+                href="/offers" // 👉 futuro enlace a página de todas las ofertas
+                className="font-quicksand font-semibold cursor-pointer"
+              >
                 Ver todo
               </a>
               <IconChevronRight className="inline w-4 h-4 sm:w-5 sm:h-5" />
@@ -208,8 +229,13 @@ export default function HomePage() {
 
           {loadingOffers ? (
             <SkeletonProduct count={5} />
+          ) : offerProducts.length === 0 ? (
+            <p className="text-center text-gray-500 my-8">
+              No hay productos en oferta actualmente 🛍️
+            </p>
           ) : (
             <>
+              {/* 🔹 Vista móvil */}
               <div className="grid grid-cols-2 gap-4 my-6 sm:hidden">
                 {offerProducts.slice(0, 6).map((prod) => (
                   <ProductCard
@@ -224,13 +250,14 @@ export default function HomePage() {
                         : undefined
                     }
                     img={prod.image_1_url || audifonos}
-                    edit={"NONE"}
+                    edit="NONE"
                   />
                 ))}
               </div>
 
+              {/* 🔹 Vista escritorio */}
               <div className="hidden sm:grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 my-10 gap-5">
-                {offerProducts.slice(0, 5).map((prod) => (
+                {offerProducts.slice(0, 10).map((prod) => (
                   <ProductCard
                     key={prod.id}
                     id={prod.id!}
@@ -243,7 +270,7 @@ export default function HomePage() {
                         : undefined
                     }
                     img={prod.image_1_url || audifonos}
-                    edit={"NONE"}
+                    edit="NONE"
                   />
                 ))}
               </div>

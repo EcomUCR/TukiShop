@@ -318,7 +318,19 @@ export function useProducts() {
       setLoading(false);
     }
   };
-
+  const getOffers = async (): Promise<Product[]> => {
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await axios.get(`${BASE_URL}/products/offers`);
+      return res.data.map(normalizeProduct);
+    } catch {
+      setError("No se pudieron cargar los productos en oferta");
+      return [];
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return {
     getProductById,
@@ -332,6 +344,7 @@ export function useProducts() {
     updateProduct,
     getProductsForOwner,
     getOffersByStore,
+    getOffers,
     searchProductsByStore,
     loading,
     error,
