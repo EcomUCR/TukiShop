@@ -1,11 +1,31 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import Footer from "../../../components/layout/Footer";
 import NavBar from "../../../components/layout/NavBar";
 import ProductWishlistCard from "../../../components/data-display/ProductWishlistCard";
 import ShareComponent from "../../../components/data-display/ShareComponent";
 import { useWishlist } from "../infrastructure/useWishList";
-import { SkeletonWishlistPage } from "../../../components/ui/AllSkeletons"; 
+import { SkeletonWishlistPage } from "../../../components/ui/AllSkeletons";
+import { useAuth } from "../../../hooks/context/AuthContext";
+import { useBanner } from "../../admin/infrastructure/useBanner";
+import BannerComponent from "../../../components/data-display/BannerComponent";
+import BannerSelectModal from "../../home/ui/BannerSelectModal";
+import { IconEdit } from "@tabler/icons-react";
+
+type AnyBanner = {
+  id?: number;
+  title?: string;
+  subtitle?: string;
+  character?: string | File;
+  image: string | File;
+  link?: string;
+  btn_text?: string;
+  btn_color?: "MORADO" | "AMARILLO" | "NARANJA" | "GRADIENTE";
+  type: "LARGE" | "SHORT" | "SLIDER";
+  orientation?: "LEFT" | "RIGHT" | "RIGTH";
+  position?: number;
+  is_active?: boolean;
+};
 
 export default function WishListPage() {
   const { slug } = useParams();
@@ -18,18 +38,86 @@ export default function WishListPage() {
     loading,
   } = useWishlist();
 
+  const { user } = useAuth();
+  const {
+    banners,
+    fetchBanners,
+    fetchPageBanners,
+    savePageBanner,
+    loading: loadingBanners,
+  } = useBanner();
+
+  const [bannerSlot1, setBannerSlot1] = useState<AnyBanner | null>(null);
+  const [bannerSlot2, setBannerSlot2] = useState<AnyBanner | null>(null);
+
+  const [modalOpen, setModalOpen] = useState(false);
+  const [editingSide, setEditingSide] = useState<"LEFT" | "RIGHT" | null>(null);
+
   const isPublicMode = Boolean(slug);
 
+  /** 🔹 Cargar datos base */
   useEffect(() => {
-    if (isPublicMode && slug) {
-      getPublicWishlist(slug);
-    } else {
-      fetchWishlist();
-    }
+    fetchBanners();
+
+    if (isPublicMode && slug) getPublicWishlist(slug);
+    else fetchWishlist();
   }, [slug]);
 
-  
-  if (loading)
+  /** 🔹 Cargar banners persistentes de esta página */
+  useEffect(() => {
+    const loadPageBanners = async () => {
+      const pageBanners = await fetchPageBanners("wishlistpage");
+
+      if (pageBanners.length > 0) {
+        const slot1 = pageBanners.find((pb) => pb.slot_number === 1)?.banner;
+        const slot2 = pageBanners.find((pb) => pb.slot_number === 2)?.banner;
+        if (slot1) setBannerSlot1(slot1);
+        if (slot2) setBannerSlot2(slot2);
+      } else {
+        const shortActivos = banners.filter(
+          (b: AnyBanner) => b.is_active && b.type === "SHORT"
+        );
+        setBannerSlot1(shortActivos[0] || null);
+        setBannerSlot2(shortActivos[1] || null);
+      }
+    };
+
+    if (banners.length > 0) loadPageBanners();
+  }, [banners]);
+
+  // 🔹 Abrir modal
+  const handleOpenModal = (side: "LEFT" | "RIGHT") => {
+    setEditingSide(side);
+    setModalOpen(true);
+  };
+
+  // 🔹 Seleccionar banner y guardarlo en la BD
+  const handleSelectBanner = async (selectedBanner: AnyBanner) => {
+    if (!selectedBanner.id) return;
+    try {
+      if (editingSide === "LEFT") {
+        setBannerSlot1(selectedBanner);
+        await savePageBanner("wishlistpage", 1, selectedBanner.id);
+      }
+      if (editingSide === "RIGHT") {
+        setBannerSlot2(selectedBanner);
+        await savePageBanner("wishlistpage", 2, selectedBanner.id);
+      }
+    } catch (err) {
+      console.error("Error al guardar banner de wishlist:", err);
+    } finally {
+      setModalOpen(false);
+    }
+  };
+
+  // 🔧 Helpers
+  const asUrl = (v?: string | File) =>
+    v ? (typeof v === "string" ? v : URL.createObjectURL(v)) : undefined;
+
+  const normalizeOrientation = (o?: AnyBanner["orientation"]) =>
+    o === "RIGHT" ? "RIGTH" : o;
+
+  if (loading || loadingBanners)
     return (
       <div>
         <NavBar />
@@ -65,8 +153,10 @@ export default function WishListPage() {
           )}
         </div>
 
+
+
         {/* Lista de productos */}
-        <section className="mt-6 flex flex-col gap-4">
+        <section className="mt-10 flex flex-col gap-4">
           {wishlist?.items?.length ? (
             wishlist.items.map((item) => (
               <ProductWishlistCard
@@ -119,7 +209,76 @@ export default function WishListPage() {
             </div>
           </section>
         )}
+
+        <section className="mt-6 sm:mt-8 pb-10">
+          {loadingBanners ? (
+            <p className="text-gray-500 text-center">Cargando banners...</p>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 sm:gap-10 justify-center items-end">
+              {/* 🟣 Banner 1 */}
+              <div className="flex flex-col items-center">
+                {user?.role === "ADMIN" && (
+                  <button
+                    onClick={() => handleOpenModal("LEFT")}
+                    className="cursor-pointer font-quicksand flex items-center gap-1 text-sm border-main border-2 rounded-full px-3 py-1 text-main font-semibold mb-2 hover:bg-main hover:text-white hover:scale-105 transition-all duration-300"
+                  >
+                    <IconEdit size={16} /> Editar banner
+                  </button>
+                )}
+                {bannerSlot1 ? (
+                  <BannerComponent
+                    {...bannerSlot1}
+                    orientation={normalizeOrientation(bannerSlot1.orientation)}
+                    image={asUrl(bannerSlot1.image)!}
+                    character={asUrl(bannerSlot1.character)}
+                  />
+                ) : (
+                  <div className="text-gray-500 text-sm">
+                    Sin banner seleccionado
+                  </div>
+                )}
+              </div>
+
+              {/* 🟣 Banner 2 */}
+              <div className="flex flex-col items-center">
+                {user?.role === "ADMIN" && (
+                  <button
+                    onClick={() => handleOpenModal("RIGHT")}
+                    className="cursor-pointer font-quicksand flex items-center gap-1 text-sm border-main border-2 rounded-full px-3 py-1 text-main font-semibold mb-2 hover:bg-main hover:text-white hover:scale-105 transition-all duration-300"
+                  >
+                    <IconEdit size={16} /> Editar banner
+                  </button>
+                )}
+                {bannerSlot2 ? (
+                  <BannerComponent
+                    {...bannerSlot2}
+                    orientation={normalizeOrientation(bannerSlot2.orientation)}
+                    image={asUrl(bannerSlot2.image)!}
+                    character={asUrl(bannerSlot2.character)}
+                  />
+                ) : (
+                  <div className="text-gray-500 text-sm">
+                    Sin banner seleccionado
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+        </section>
       </div>
+      {/* 🔹 BANNERS DESPUÉS DEL BOTÓN */}
+
+
+      {/* 🔹 Modal solo visible para ADMIN */}
+      {modalOpen && user?.role === "ADMIN" && (
+        <BannerSelectModal
+          banners={banners}
+          onSelect={handleSelectBanner}
+          onClose={() => setModalOpen(false)}
+          loading={loadingBanners}
+        />
+      )}
+
       <Footer />
     </div>
   );

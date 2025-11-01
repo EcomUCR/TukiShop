@@ -449,6 +449,32 @@ export const SkeletonHeaderSlider: React.FC<{ show?: boolean }> = ({
   </FadeWrapper>
 );
 
+export const SkeletonShortBanner: React.FC<{ show?: boolean }> = ({
+  show = true,
+}) => (
+  <FadeWrapper show={show}>
+    <div className="relative w-full h-[180px] sm:h-[220px] md:h-[260px] rounded-2xl overflow-hidden bg-gray-300/60 shadow-md animate-pulse font-quicksand">
+      {/* Fondo simulado */}
+      <Skeleton className="absolute inset-0 w-full h-full bg-gray-400/70" />
+
+      {/* Contenido "glass" central */}
+      <div className="relative z-10 flex flex-col sm:flex-row items-center justify-between h-full px-6 sm:px-10 py-5 sm:py-6 bg-white/20 backdrop-blur-md border border-white/30 rounded-2xl">
+        {/* Texto */}
+        <div className="flex flex-col gap-3 sm:gap-4 w-full sm:w-2/3 text-center sm:text-left">
+          <Skeleton className="w-3/4 h-[20px] sm:h-[24px] rounded-md bg-gray-400/70 mx-auto sm:mx-0" />
+          <Skeleton className="w-1/2 h-[16px] sm:h-[18px] rounded-md bg-gray-400/70 mx-auto sm:mx-0" />
+          <Skeleton className="w-[120px] h-[36px] sm:h-[40px] rounded-full bg-gray-400/70 mx-auto sm:mx-0 mt-2" />
+        </div>
+
+        {/* Imagen/personaje simulado */}
+        <div className="flex items-end justify-center w-1/2 sm:w-1/3 mt-5 sm:mt-0">
+          <Skeleton className="w-[100px] h-[100px] sm:w-[140px] sm:h-[140px] md:w-[160px] md:h-[160px] rounded-xl bg-gray-400/70" />
+        </div>
+      </div>
+    </div>
+  </FadeWrapper>
+);
+
 export const SkeletonPersonalProduct = ({
   count = 5,
   show = true,
@@ -578,6 +604,20 @@ export const SkeletonWishlistPage = () => (
         <Skeleton className="w-[200px] h-[24px] mb-3 rounded-md bg-gray-400/70" />
         <Skeleton className="w-full sm:w-[400px] h-[48px] rounded-full mt-2 bg-gray-400/70" />
       </section>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 sm:gap-10 justify-center items-end">
+        {/* Skeletons del banner corto (SHORT) */}
+        <div className="flex flex-col items-center">
+          <div className="mb-2 w-full">
+            <SkeletonShortBanner />
+          </div>
+        </div>
+
+        <div className="flex flex-col items-center">
+          <div className="mb-2 w-full">
+            <SkeletonShortBanner />
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 );

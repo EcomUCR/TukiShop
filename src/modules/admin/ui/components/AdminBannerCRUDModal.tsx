@@ -20,6 +20,7 @@ export default function AdminBannerCRUDModal({
 }: AdminBannerCRUDModalProps) {
   const {
     saveBanner,
+    deleteBanner,
     fetchBannerImages,
     bannerImages,
     saveBannerImage,
@@ -96,6 +97,30 @@ export default function AdminBannerCRUDModal({
     } catch (err) {
       console.error("❌ Error al guardar banner:", err);
       alert("No se pudo guardar el banner.");
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!newBanner.id) return;
+
+    if (newBanner.is_active) {
+      alert("⚠️ No puedes eliminar un banner que está activo. Desactívalo primero.");
+      return;
+    }
+
+    const confirmDelete = confirm(
+      "¿Estás seguro de que deseas eliminar este banner permanentemente?"
+    );
+    if (!confirmDelete) return;
+
+    try {
+      await deleteBanner(newBanner.id);
+      alert("✅ Banner eliminado correctamente.");
+      if (onSaveSuccess) onSaveSuccess();
+      onClose();
+    } catch (err) {
+      console.error("❌ Error al eliminar banner:", err);
+      alert("No se pudo eliminar el banner.");
     }
   };
 
@@ -472,21 +497,32 @@ export default function AdminBannerCRUDModal({
         </div>
 
         {/* 🧭 Botones inferiores */}
-        <div className="mt-6 sm:mt-8 flex flex-col sm:flex-row justify-end gap-3">
-          <ButtonComponent
-            text="Cancelar"
-            style="bg-gray-300 text-black rounded-full px-4 py-2 hover:bg-gray-400 transition-all duration-300 w-full sm:w-auto"
-            onClick={onClose}
-          />
-          <ButtonComponent
-            text={loading || uploading ? "Guardando..." : "Guardar"}
-            style={`${
-              loading || uploading
-                ? "bg-gray-400 cursor-not-allowed"
-                : "bg-main-dark hover:bg-main"
-            } text-white rounded-full px-4 py-2 transition-all duration-300 w-full sm:w-auto`}
-            onClick={handleSave}
-          />
+        <div className="mt-6 sm:mt-8 flex flex-col sm:flex-row justify-between items-center gap-3">
+          {/* 🗑️ Botón eliminar (solo si existe el banner) */}
+          {newBanner.id && (
+            <ButtonComponent
+              text="Eliminar"
+              style="bg-red-500 hover:bg-red-600 text-white rounded-full px-4 py-2 transition-all duration-300 w-full sm:w-auto"
+              onClick={handleDelete}
+            />
+          )}
+
+          <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto justify-end">
+            <ButtonComponent
+              text="Cancelar"
+              style="bg-gray-300 text-black rounded-full px-4 py-2 hover:bg-gray-400 transition-all duration-300 w-full sm:w-auto"
+              onClick={onClose}
+            />
+            <ButtonComponent
+              text={loading || uploading ? "Guardando..." : "Guardar"}
+              style={`${
+                loading || uploading
+                  ? "bg-gray-400 cursor-not-allowed"
+                  : "bg-main-dark hover:bg-main"
+              } text-white rounded-full px-4 py-2 transition-all duration-300 w-full sm:w-auto`}
+              onClick={handleSave}
+            />
+          </div>
         </div>
       </div>
     </div>

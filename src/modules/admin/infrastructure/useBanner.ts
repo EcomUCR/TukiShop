@@ -26,6 +26,14 @@ interface BannerImage {
   alt_text?: string;
 }
 
+interface PageBanner {
+  id?: number;
+  page_name: string;
+  slot_number: number;
+  banner_id: number;
+  banner?: Banner;
+}
+
 export function useBanner() {
   const [banners, setBanners] = useState<Banner[]>([]);
   const [bannerImages, setBannerImages] = useState<BannerImage[]>([]);
@@ -76,14 +84,15 @@ export function useBanner() {
       };
 
       // ✅ Crear o actualizar según corresponda
+      const token = localStorage.getItem("access_token");
       if (banner.id) {
         const { data } = await axios.put(`/banners/${banner.id}`, payload, {
-          headers: { Authorization: `Bearer ${localStorage.getItem("access_token")}` },
+          headers: { Authorization: `Bearer ${token}` },
         });
         return data;
       } else {
         const { data } = await axios.post(`/banners`, payload, {
-          headers: { Authorization: `Bearer ${localStorage.getItem("access_token")}` },
+          headers: { Authorization: `Bearer ${token}` },
         });
         return data;
       }
@@ -100,8 +109,9 @@ export function useBanner() {
   const deleteBanner = async (id: number) => {
     try {
       setLoading(true);
+      const token = localStorage.getItem("access_token");
       await axios.delete(`/banners/${id}`, {
-        headers: { Authorization: `Bearer ${localStorage.getItem("access_token")}` },
+        headers: { Authorization: `Bearer ${token}` },
       });
       setBanners((prev) => prev.filter((b) => b.id !== id));
     } catch (err) {
@@ -149,8 +159,9 @@ export function useBanner() {
         alt_text: imageData.alt_text ?? "",
       };
 
+      const token = localStorage.getItem("access_token");
       const { data } = await axios.post(`/banner-images`, payload, {
-        headers: { Authorization: `Bearer ${localStorage.getItem("access_token")}` },
+        headers: { Authorization: `Bearer ${token}` },
       });
 
       setBannerImages((prev) => [...prev, data.banner]);
@@ -168,8 +179,9 @@ export function useBanner() {
   const deleteBannerImage = async (id: number) => {
     try {
       setLoading(true);
+      const token = localStorage.getItem("access_token");
       await axios.delete(`/banner-images/${id}`, {
-        headers: { Authorization: `Bearer ${localStorage.getItem("access_token")}` },
+        headers: { Authorization: `Bearer ${token}` },
       });
       setBannerImages((prev) => prev.filter((b) => b.id !== id));
     } catch (err) {
@@ -181,11 +193,86 @@ export function useBanner() {
   };
 
   // ======================================================
+  // 📄 PAGE BANNERS (por página y slot)
+  // ======================================================
+
+  // 🔹 Obtener banners asignados a una página
+  const fetchPageBanners = async (pageName: string): Promise<PageBanner[]> => {
+    try {
+      setLoading(true);
+      const { data } = await axios.get("/page-banners");
+      return data.filter((pb: PageBanner) => pb.page_name === pageName);
+    } catch (err) {
+      console.error("Error al obtener page banners:", err);
+      return [];
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // 🔹 Guardar o actualizar un banner en un slot específico
+  const savePageBanner = async (
+    pageName: string,
+    slotNumber: number,
+    bannerId: number
+  ) => {
+    try {
+      setLoading(true);
+      const token = localStorage.getItem("access_token");
+
+      const { data } = await axios.post(
+        `/page-banners`,
+        {
+          page_name: pageName,
+          slot_number: slotNumber,
+          banner_id: bannerId,
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      return data;
+    } catch (err: any) {
+      // Si ya existe, actualiza el registro existente
+      if (err.response?.status === 422) {
+        try {
+          const existing = await axios.get(`/page-banners`);
+          const record = existing.data.find(
+            (pb: PageBanner) =>
+              pb.page_name === pageName && pb.slot_number === slotNumber
+          );
+
+          if (record) {
+            const { data } = await axios.put(
+              `/page-banners/${record.id}`,
+              { banner_id: bannerId },
+              {
+                headers: {
+                  Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+                },
+              }
+            );
+            return data;
+          }
+        } catch (updateErr) {
+          console.error("Error al actualizar page banner existente:", updateErr);
+        }
+      }
+
+      console.error("Error al guardar el page banner:", err);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // ======================================================
   // 🔁 Retorno
   // ======================================================
 
   return {
-    // banners existentes
+    // banners principales
     banners,
     loading,
     error,
@@ -193,10 +280,18 @@ export function useBanner() {
     saveBanner,
     deleteBanner,
 
-    // nuevas imágenes de banner
+    // imágenes de banner
     bannerImages,
     fetchBannerImages,
     saveBannerImage,
     deleteBannerImage,
+
+    // page banners
+    fetchPageBanners,
+    savePageBanner,
+
+    // utilidades
+    getBannerById: (id: number) => banners.find((b) => b.id === id) || null,
+    refreshBanners: async () => await fetchBanners(),
   };
 }
