@@ -4,6 +4,7 @@ import axios from "axios";
 
 axios.defaults.baseURL = import.meta.env.VITE_API_URL;
 
+// 🛍️ Tipos de datos
 interface Product {
   id: number;
   name: string;
@@ -13,10 +14,22 @@ interface Product {
   store_name: string;
 }
 
+interface Store {
+  id: number;
+  name: string;
+  image?: string;
+  banner?: string;
+  rating?: number;
+  category_name?: string;
+}
+
 export interface Message {
   role: "user" | "bot";
   content: string;
   products?: Product[];
+  stores?: Store[];
+  link?: string;
+  navigate?: boolean; // ✅ agregado
 }
 
 interface ChatbotContextType {
@@ -26,11 +39,12 @@ interface ChatbotContextType {
   isLoading: boolean;
   sendMessage: (e: React.FormEvent) => void;
   streamingMessage: string;
-messagesEndRef: React.RefObject<HTMLDivElement | null>;
+  messagesEndRef: React.RefObject<HTMLDivElement | null>;
   toggleVisible: () => void;
   visible: boolean;
 }
 
+// 🎯 Contexto
 const ChatbotContext = createContext<ChatbotContextType | undefined>(undefined);
 
 export function ChatbotProvider({ children }: { children: ReactNode }) {
@@ -41,10 +55,12 @@ export function ChatbotProvider({ children }: { children: ReactNode }) {
   const [visible, setVisible] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
+  // 🔹 Auto-scroll al final
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, streamingMessage]);
 
+  // 🚀 Enviar mensaje al backend
   const sendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!input.trim() || isLoading) return;
@@ -58,7 +74,15 @@ export function ChatbotProvider({ children }: { children: ReactNode }) {
       const res = await axios.post("/chatbot", { message: userMessage });
       const data = res.data;
       const botReply = data.message || "No tengo respuesta en este momento.";
-      gradualDisplay(botReply, data.results);
+
+      // 🔹 Pasar también productos, tiendas y link si existen
+      gradualDisplay(
+        botReply,
+        data.results,
+        data.link,
+        data.stores,
+        data.navigate
+      );
     } catch (err) {
       console.error("❌ Error en chatbot:", err);
       setMessages((prev) => [
@@ -70,22 +94,35 @@ export function ChatbotProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const gradualDisplay = (text: string, products?: Product[]) => {
+  // 💬 Mostrar texto del bot con efecto gradual + adjuntar resultados
+  const gradualDisplay = (
+    text: string,
+    products?: Product[],
+    link?: string,
+    stores?: Store[],
+    navigate?: boolean // ✅ agregado
+  ) => {
     let index = 0;
     setStreamingMessage("");
     const words = text.split(" ");
     const interval = setInterval(() => {
       if (index < words.length) {
-        setStreamingMessage((prev) => prev + (index > 0 ? " " : "") + words[index]);
+        setStreamingMessage(
+          (prev) => prev + (index > 0 ? " " : "") + words[index]
+        );
         index++;
       } else {
         clearInterval(interval);
-        setMessages((prev) => [...prev, { role: "bot", content: text, products }]);
+        setMessages((prev) => [
+          ...prev,
+          { role: "bot", content: text, products, stores, link, navigate }, // ✅ se guarda navigate
+        ]);
         setStreamingMessage("");
       }
     }, 50);
   };
 
+  // 🎛️ Alternar visibilidad
   const toggleVisible = () => setVisible((v) => !v);
 
   return (
@@ -107,8 +144,10 @@ export function ChatbotProvider({ children }: { children: ReactNode }) {
   );
 }
 
+// 🧠 Hook para usar el contexto fácilmente
 export const useChatbot = () => {
   const context = useContext(ChatbotContext);
-  if (!context) throw new Error("useChatbot debe usarse dentro de un ChatbotProvider");
+  if (!context)
+    throw new Error("useChatbot debe usarse dentro de un ChatbotProvider");
   return context;
 };

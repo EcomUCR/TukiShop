@@ -99,7 +99,7 @@ export default function SearchedProductPage() {
     if (loading) return "Cargando productos...";
     if (categoryId) return `Resultados de "${categories[categoryId]}"`;
     if (mode === "explore") return "Explorar productos";
-    if (mode === "offers") return "Ofertas especiales 💸";
+    if (mode === "offers") return "Productos en oferta";
     if (mode === "best-sellers") return "Lo más vendido";
     if (query) return `Resultados para: "${query}"`;
     return "Productos";

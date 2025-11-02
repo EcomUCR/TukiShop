@@ -3,6 +3,7 @@ import { useChatbot } from "../../../hooks/context/ChatbotContext";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
 import { IconBubbleTextFilled } from "@tabler/icons-react";
+import TypingBubbles from "./TypingBubbles";
 
 export function Chatbot() {
   const {
@@ -33,6 +34,27 @@ export function Chatbot() {
     window.scrollTo({ top: 0, behavior: "smooth" });
     toggleVisible();
   };
+  useEffect(() => {
+    const lastMsg = messages[messages.length - 1];
+    const link: string | undefined = lastMsg?.link;
+    const shouldNavigate: boolean | undefined = lastMsg?.navigate;
+
+    if (
+      lastMsg?.role === "bot" &&
+      typeof link === "string" &&
+      link.trim() !== "" &&
+      shouldNavigate // ✅ solo si navigate: true
+    ) {
+      if (lastNavigatedLink.current !== link) {
+        lastNavigatedLink.current = link;
+        const timer = setTimeout(() => {
+          navigate(link);
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        }, 1800);
+        return () => clearTimeout(timer);
+      }
+    }
+  }, [messages, navigate, toggleVisible]);
 
   // 👂 Cerrar si se hace click fuera
   useEffect(() => {
@@ -49,6 +71,29 @@ export function Chatbot() {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [visible, toggleVisible]);
+  const lastNavigatedLink = useRef<string | null>(null);
+
+  useEffect(() => {
+    // 🔹 Solo redirige si hay un link nuevo y válido
+    const lastMsg = messages[messages.length - 1];
+    const link: string | undefined = lastMsg?.link;
+
+    if (
+      lastMsg?.role === "bot" &&
+      typeof link === "string" &&
+      link.trim() !== "" &&
+      lastNavigatedLink.current !== link
+    ) {
+      lastNavigatedLink.current = link; // guardar el último link usado
+
+      const timer = setTimeout(() => {
+        navigate(link as string); // ✅ TS ahora sabe que link no es undefined
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }, 1800);
+
+      return () => clearTimeout(timer);
+    }
+  }, [messages, navigate, toggleVisible]);
 
   return (
     <>
@@ -145,10 +190,11 @@ export function Chatbot() {
               {messages.map((m, i) => (
                 <div
                   key={i}
-                  className={`p-3 rounded-2xl shadow-sm ${m.role === "user"
+                  className={`p-3 rounded-2xl shadow-sm ${
+                    m.role === "user"
                       ? "bg-blue-500 text-white self-end ml-auto max-w-[85%]"
                       : "bg-gray-100 text-gray-800 self-start mr-auto max-w-[85%]"
-                    }`}
+                  }`}
                 >
                   <p>{m.content}</p>
                   {m.products && m.products.length > 0 && (
@@ -177,6 +223,52 @@ export function Chatbot() {
                       ))}
                     </div>
                   )}
+                  {m.stores && m.stores.length > 0 && (
+                    <div className="mt-3 grid grid-cols-2 gap-3">
+                      {m.stores.map((s) => (
+                        <div
+                          key={s.id}
+                          onClick={() => {
+                            navigate(`/store/${s.id}`);
+                            window.scrollTo({ top: 0, behavior: "smooth" });
+                            toggleVisible();
+                          }}
+                          className="cursor-pointer border border-gray-200 rounded-lg p-2 bg-white text-center hover:shadow-lg hover:scale-[1.02] transition-all active:scale-95"
+                        >
+                          <img
+                            src={
+                              s.image ||
+                              "https://res.cloudinary.com/dpbghs8ep/image/upload/v1761412207/imagenNoSubida_dymbb7.png"
+                            }
+                            alt={s.name}
+                            className="w-16 h-16 object-cover rounded-full mx-auto mb-2"
+                          />
+                          <p className="font-semibold text-sm truncate">
+                            {s.name}
+                          </p>
+                          {typeof s.rating === "number" && !isNaN(s.rating) && (
+                            <p className="text-yellow-500 text-xs mt-1">
+                              ⭐ {Number(s.rating).toFixed(1)}
+                            </p>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  {m.role === "bot" && m.link && m.navigate === false && (
+                    <div className="mt-3 flex justify-center">
+                      <button
+                        onClick={() => {
+                          navigate(m.link as string);
+                          window.scrollTo({ top: 0, behavior: "smooth" });
+                          toggleVisible();
+                        }}
+                        className="bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold px-4 py-2 rounded-full shadow-md transition-all"
+                      >
+                        Ir a esta sección
+                      </button>
+                    </div>
+                  )}
                 </div>
               ))}
 
@@ -185,6 +277,12 @@ export function Chatbot() {
                   {streamingMessage}
                 </div>
               )}
+              {isLoading && !streamingMessage && (
+                <div className="p-3">
+                  <TypingBubbles />
+                </div>
+              )}
+
               <div ref={messagesEndRef} />
             </div>
 
