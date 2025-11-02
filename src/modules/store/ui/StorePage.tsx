@@ -128,12 +128,12 @@ export default function StorePage() {
         {user?.store && user.store.id === store?.id && (
           <Link to="/crudProduct" className="relative group" onClick={()=> window.scrollTo({top:0,behavior:'smooth'})}>
             <button
-              className="fixed flex items-center bg-main text-white p-4 rounded-full shadow-lg 
-      hover:scale-110 transition-all duration-300 z-50 overflow-hidden 
-      bottom-6 right-6 sm:bottom-8 sm:right-8 md:bottom-10 md:right-10 group-hover:bg-contrast-secondary"
+              className="fixed flex items-center bg-main text-white p-5 rounded-full shadow-lg 
+      transition-all duration-300 z-50 overflow-hidden 
+      bottom-25 right-4 sm:bottom-8 sm:right-8 md:bottom-25 md:right-10 group-hover:bg-contrast-secondary"
               title="Agregar nuevo producto"
             >
-              <IconSquarePlus size={28} className="group-hover:rotate-180 transition-all duration-300"/>
+              <IconSquarePlus className="group-hover:rotate-180 transition-all duration-300"/>
               <span
                 className="whitespace-nowrap overflow-hidden w-0 opacity-0 transition-all duration-500 ease-in-out 
         group-hover:w-[12rem] group-hover:opacity-100"
