@@ -83,6 +83,14 @@ export default function SideBar({ type, onSelect, selected }: SideBarProps) {
                                         <IconFileCheck size={18} />
                                         <span>Estado de pedidos</span>
                                     </li>
+                                    <li
+                                        className={`${baseItem} ${selected === "coupons" ? active : inactive
+                                            }`}
+                                        onClick={() => onSelect("coupons")}
+                                    >
+                                        <IconTag size={18} />
+                                        <span>Cupones</span>
+                                    </li>
                                 </>
                             )}
                         </>

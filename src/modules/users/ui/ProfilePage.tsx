@@ -19,6 +19,7 @@ import StoreOrderList from "../../store/ui/components/StoreOrderList";
 import { SkeletonUserPage } from "../../../components/ui/AllSkeletons";
 import AdminSupportList from "../../admin/ui/AdminSupportList";
 import { Navigate } from "react-router-dom";
+import SellerCouponsList from "./components/SellerCouponsList";
 export default function UserPage() {
   const [selected, setSelected] = useState("profile");
   const { user, loading } = useAuth();
@@ -151,12 +152,16 @@ export default function UserPage() {
                   <OrdersList />
                 ))}
 
+
               {selected === "products" && user.role === "SELLER" && (
                 <StoreProductsList />
               )}
               {selected === "orderStatus" && user.role === "SELLER" && (
                 <OrderStatusList />
               )}
+                {selected === "coupons" && user.role === "SELLER" && (
+                  <SellerCouponsList />
+                )}
               {selected === "users" && user.role === "ADMIN" && (
                 <AdminUsersList />
               )}
