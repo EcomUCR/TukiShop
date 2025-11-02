@@ -22,17 +22,22 @@ interface OrderModalProps {
         price?: number;
         discount_price?: number | null;
         store_id?: number;
+        store?: {                // ✅ agregado
+          id: number;
+          name: string;
+        };
       };
     }[];
   } | null;
   onClose: () => void;
 }
 
+
 export default function OrderModal({ order, onClose }: OrderModalProps) {
   const { user } = useAuth();
   if (!order) return null;
 
-  // Bloquear scroll del fondo mientras el modal está abierto
+  // 🧩 Bloquear scroll del fondo mientras el modal está abierto
   useEffect(() => {
     document.body.style.overflow = "hidden";
     return () => {
@@ -40,36 +45,41 @@ export default function OrderModal({ order, onClose }: OrderModalProps) {
     };
   }, []);
 
-  // Productos filtrados según el rol
+  // 🧠 Productos filtrados según el rol
   const products = useMemo(() => {
-    if (!order.items) return [];
+  if (!order.items) return [];
 
-    // Si es un vendedor, filtrar solo productos de su tienda
-    if (user?.role === "SELLER" && user?.store && user.store.id) {
-      return order.items
-        .filter((item) => item.store_id === user.store!.id)
-        .map((item) => ({
-          id: item.product.id,
-          name: item.product.name,
-          image_url:
-            item.product.image_1_url ||
-            "https://electrogenpro.com/wp-content/themes/estore/images/placeholder-shop.jpg",
-          price: item.product.discount_price ?? item.unit_price ?? 0,
-          quantity: item.quantity,
-        }));
-    }
+  // Si es un vendedor, filtrar solo productos de su tienda
+  if (user?.role === "SELLER" && user?.store && user.store.id) {
+    return order.items
+      .filter((item) => item.store_id === user.store!.id)
+      .map((item) => ({
+        id: item.product.id,
+        name: item.product.name,
+        image_url:
+          item.product.image_1_url ||
+          "https://electrogenpro.com/wp-content/themes/estore/images/placeholder-shop.jpg",
+        price: item.product.discount_price ?? item.unit_price ?? 0,
+        quantity: item.quantity,
+        store_id: item.product.store_id ?? item.store_id ?? 0,
+        store_name: item.product.store?.name ?? "Tienda", // ✅ agregado
+      }));
+  }
 
-    // Si es cliente, mostrar todos los productos
-    return order.items.map((item) => ({
-      id: item.product.id,
-      name: item.product.name,
-      image_url:
-        item.product.image_1_url ||
-        "https://electrogenpro.com/wp-content/themes/estore/images/placeholder-shop.jpg",
-      price: item.product.discount_price ?? item.unit_price ?? 0,
-      quantity: item.quantity,
-    }));
-  }, [order, user]);
+  // Si es cliente, mostrar todos los productos
+  return order.items.map((item) => ({
+    id: item.product.id,
+    name: item.product.name,
+    image_url:
+      item.product.image_1_url ||
+      "https://electrogenpro.com/wp-content/themes/estore/images/placeholder-shop.jpg",
+    price: item.product.discount_price ?? item.unit_price ?? 0,
+    quantity: item.quantity,
+    store_id: item.product.store_id ?? item.store_id ?? 0,
+    store_name: item.product.store?.name ?? "Tienda", // ✅ agregado
+  }));
+}, [order, user]);
+
 
   return (
     <AnimatePresence>
@@ -85,8 +95,8 @@ export default function OrderModal({ order, onClose }: OrderModalProps) {
           initial={{ y: 100, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: 100, opacity: 0 }}
-          transition={{ duration: 0.3, ease: "easeOut" }}
-          onClick={(e) => e.stopPropagation()} // Evita cerrar al hacer click dentro
+          transition={{ duration: 0.3, ease: 'easeOut' }}
+          onClick={(e) => e.stopPropagation()} // evita cerrar al click interno
         >
           {/* Header */}
           <div className="flex justify-between items-center p-4 sm:p-5 border-b border-gray-200 sticky top-0 bg-white z-10">
