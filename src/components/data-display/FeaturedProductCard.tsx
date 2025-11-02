@@ -143,7 +143,10 @@ export default function FeaturedProductCard(props: FeaturedProductCardProps) {
             </Link>
           )
           }
+          <div className="flex items-center gap-2">
           <RaitingComponent value={props.rating} size={12} />
+          <p className="text-xs">{props.rating}"</p>
+          </div>
           <div className="mt-1">
             {hasDiscount ? (
               <>
