@@ -41,22 +41,31 @@ export default function UserPage() {
   }, [storeToOpen, user]);
 
 
-  if (loading) return (
+  // 🌀 Mientras carga la sesión
+if (loading) {
+  return (
     <div>
       <NavBar />
       <SkeletonUserPage />
       <Footer />
     </div>
   );
+}
 
-  if (
-    !user ||
-    (user.role !== "SELLER" &&
-      user.role !== "CUSTOMER" &&
-      user.role !== "ADMIN")
-  ) {
-    return <Navigate to="/notAuthorized" replace />;
-  }
+// 🚀 Si no hay usuario (por logout o no autenticado)
+if (!user) {
+  return <Navigate to="/loginRegister" replace />;
+}
+
+// 🧩 Si el usuario existe pero tiene rol no permitido
+if (
+  user.role !== "SELLER" &&
+  user.role !== "CUSTOMER" &&
+  user.role !== "ADMIN"
+) {
+  return <Navigate to="/notAuthorized" replace />;
+}
+
 
   return (
     <div className="relative">

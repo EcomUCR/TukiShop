@@ -50,64 +50,64 @@ export default function StoreHomeComponent() {
     <div>
       {/* 🔹 Ofertas */}
       <section className="mx-0 sm:mx-10 my-6 sm:my-10">
-          <div className="flex justify-between items-center">
-            <h2 className="text-lg sm:text-2xl font-semibold font-quicksand">
-              Ofertas
-            </h2>
-            <div className="flex items-center gap-1 text-sm sm:text-base">
-              <a href="#" className="font-quicksand font-semibold">
-                Ver todo
-              </a>
-              <IconChevronRight className="inline w-4 h-4 sm:w-5 sm:h-5" />
-            </div>
+        <div className="flex justify-between items-center">
+          <h2 className="text-lg sm:text-2xl font-semibold font-quicksand">
+            Ofertas
+          </h2>
+          <div className="flex items-center gap-1 text-sm sm:text-base">
+            <a href="#" className="font-quicksand font-semibold">
+              Ver todo
+            </a>
+            <IconChevronRight className="inline w-4 h-4 sm:w-5 sm:h-5" />
           </div>
+        </div>
 
-          {loading ? (
-            <SkeletonProduct count={5} />
-          ) : (
-            <>
-              {/* Mobile: muestra solo 6 productos */}
-              <div className="grid grid-cols-2 gap-4 my-6 sm:hidden">
-                {offers.slice(0, 6).map((prod) => (
-                  <ProductCard
-                    key={prod.id}
-                    id={prod.id!}
-                    shop={prod.store?.name || "No hay tienda"}
-                    title={prod.name}
-                    price={prod.price}
-                    discountPrice={
-                      prod.discount_price != null && prod.discount_price !== 0
-                        ? prod.discount_price
-                        : undefined
-                    }
-                    img={prod.image_1_url ? prod.image_1_url : audifonos}
-                    edit={"NONE"}
-                  />
-                ))}
-              </div>
+        {loading ? (
+          <SkeletonProduct count={5} />
+        ) : (
+          <>
+            {/* Mobile: muestra solo 6 productos */}
+            <div className="grid grid-cols-2 gap-4 my-6 sm:hidden">
+              {offers.slice(0, 6).map((prod) => (
+                <ProductCard
+                  key={prod.id}
+                  id={prod.id!}
+                  shop={prod.store?.name || "No hay tienda"}
+                  title={prod.name}
+                  price={prod.price}
+                  discountPrice={
+                    prod.discount_price != null && prod.discount_price !== 0
+                      ? prod.discount_price
+                      : undefined
+                  }
+                  img={prod.image_1_url ? prod.image_1_url : audifonos}
+                  edit={"NONE"}
+                />
+              ))}
+            </div>
 
-              {/* Escritorio: diseño original */}
-              <div className="hidden sm:grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 my-10 gap-5">
-                {offers.slice(0, 5).map((prod) => (
-                  <ProductCard
-                    key={prod.id}
-                    id={prod.id!}
-                    shop={prod.store?.name || "No hay tienda"}
-                    title={prod.name}
-                    price={prod.price}
-                    discountPrice={
-                      prod.discount_price != null && prod.discount_price !== 0
-                        ? prod.discount_price
-                        : undefined
-                    }
-                    img={prod.image_1_url ? prod.image_1_url : audifonos}
-                    edit={"NONE"}
-                  />
-                ))}
-              </div>
-            </>
-          )}
-        </section>
+            {/* Escritorio: diseño original */}
+            <div className="hidden sm:grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 my-10 gap-5">
+              {offers.slice(0, 5).map((prod) => (
+                <ProductCard
+                  key={prod.id}
+                  id={prod.id!}
+                  shop={prod.store?.name || "No hay tienda"}
+                  title={prod.name}
+                  price={prod.price}
+                  discountPrice={
+                    prod.discount_price != null && prod.discount_price !== 0
+                      ? prod.discount_price
+                      : undefined
+                  }
+                  img={prod.image_1_url ? prod.image_1_url : audifonos}
+                  edit={"NONE"}
+                />
+              ))}
+            </div>
+          </>
+        )}
+      </section>
 
       {/* 🔹 Productos destacados */}
       <section className="mx-4 sm:mx-4 my-6 sm:my-10">
@@ -132,10 +132,17 @@ export default function StoreHomeComponent() {
                     id: prod.id!,
                     shop: prod.store?.name || "Tienda",
                     title: prod.name,
-                    price: prod.price.toLocaleString("es-CRC"),
+                    price: prod.price.toLocaleString("es-CR", {
+                      style: "currency",
+                      currency: "CRC",
+                    }),
                     discountPrice: prod.discount_price
-                      ? prod.discount_price.toLocaleString("es-CRC")
+                      ? prod.discount_price.toLocaleString("es-CR", {
+                          style: "currency",
+                          currency: "CRC",
+                        })
                       : "",
+
                     rating: prod.rating || 0,
                     img: prod.image_1_url || audifonos,
                   }))}
