@@ -35,7 +35,8 @@ type BorderColors = {
 
 export default function ProductPage() {
   const { id } = useParams();
-  const { getProductById, getProductsByCategory, getProductsByStore } = useProducts();
+  const { getProductById, getProductsByCategory, getProductsByStore } =
+    useProducts();
 
   const { addToCart } = useCart();
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
@@ -58,7 +59,9 @@ export default function ProductPage() {
         setProduct(prod);
         if (prod?.store_id) {
           const storeProducts = await getProductsByStore(prod.store_id);
-          setProdStore(storeProducts.filter((p) => p.id !== prod.id).slice(0, 10));
+          setProdStore(
+            storeProducts.filter((p) => p.id !== prod.id).slice(0, 10)
+          );
         } else {
           setProdStore([]);
         }
@@ -87,7 +90,8 @@ export default function ProductPage() {
           allRelated.push(...products);
         }
         const unique = allRelated.filter(
-          (p, i, arr) => p.id !== product.id && arr.findIndex((x) => x.id === p.id) === i
+          (p, i, arr) =>
+            p.id !== product.id && arr.findIndex((x) => x.id === p.id) === i
         );
         setSimilarProducts(unique.slice(0, 10));
       } catch (err) {
@@ -139,7 +143,6 @@ export default function ProductPage() {
     <div className="min-h-screen flex flex-col">
       <NavBar />
 
-
       <AnimatePresence>
         {isZoomed && (
           <motion.div
@@ -149,11 +152,8 @@ export default function ProductPage() {
             exit={{ opacity: 0 }}
             onClick={closeZoom}
           >
-
             <div className="relative w-full h-full max-w-4xl max-h-4xl">
-
               <button
-
                 className="absolute top-4 right-4 z-10 bg-white/30 text-white rounded-full p-2  flex items-center justify-center cursor-pointer "
                 onClick={(e) => {
                   e.stopPropagation();
@@ -164,7 +164,11 @@ export default function ProductPage() {
                 <IconX className="w-8 h-8 text-black" />
               </button>
               <img
-                src={selectedImage || product?.image_1_url || "https://via.placeholder.com/400"}
+                src={
+                  selectedImage ||
+                  product?.image_1_url ||
+                  "https://via.placeholder.com/400"
+                }
                 alt={product?.name || "Producto en zoom"}
                 className="block object-contain w-full h-full mx-auto"
                 onClick={(e) => e.stopPropagation()}
@@ -173,7 +177,6 @@ export default function ProductPage() {
           </motion.div>
         )}
       </AnimatePresence>
-
 
       <div className="mx-auto max-w-[80rem] w-full">
         {/*  Volver */}
@@ -190,11 +193,15 @@ export default function ProductPage() {
           <>
             <SkeletonProductPageMain show={loading} />
             <section className="my-10 px-10">
-              <h2 className="text-2xl font-semibold font-quicksand">Más de la tienda</h2>
+              <h2 className="text-2xl font-semibold font-quicksand">
+                Más de la tienda
+              </h2>
               <SkeletonFeaturedSlider show={loading} />
             </section>
             <section className="my-10 px-10">
-              <h2 className="text-2xl font-semibold font-quicksand">Productos similares</h2>
+              <h2 className="text-2xl font-semibold font-quicksand">
+                Productos similares
+              </h2>
               <SkeletonSimilarProducts show={loading} />
             </section>
           </>
@@ -211,11 +218,17 @@ export default function ProductPage() {
                     {/* 🔹 Título, tienda, rating */}
                     <div className="flex flex-col gap-3">
                       <h2 className="text-xl font-bold">{product.name}</h2>
-                      <Link to={`/store/${product.store_id}`} className="text-xs font-bold">
+                      <Link
+                        to={`/store/${product.store_id}`}
+                        className="text-xs font-bold"
+                      >
                         Visitar la tienda {product.store?.name || ""}
                       </Link>
                       <div className="flex gap-2">
-                        <StarRatingComponent value={product.rating || 0} size={12} />
+                        <StarRatingComponent
+                          value={product.rating || 0}
+                          size={12}
+                        />
                         <p className="text-xs">({product.rating || 0}")</p>
                       </div>
                     </div>
@@ -224,11 +237,17 @@ export default function ProductPage() {
                     <div className="font-comme mt-4">
                       {product.discount_price && product.discount_price > 0 ? (
                         <>
-                          <p className="text-xs line-through">₡{product.price}</p>
-                          <p className="text-2xl font-bold text-main">₡{product.discount_price}</p>
+                          <p className="text-xs line-through">
+                            ₡{product.price}
+                          </p>
+                          <p className="text-2xl font-bold text-main">
+                            ₡{product.discount_price}
+                          </p>
                         </>
                       ) : (
-                        <p className="text-2xl font-bold text-main">₡{product.price}</p>
+                        <p className="text-2xl font-bold text-main">
+                          ₡{product.price}
+                        </p>
                       )}
                     </div>
 
@@ -241,53 +260,68 @@ export default function ProductPage() {
                           aria-label="Hacer zoom a la imagen del producto"
                         >
                           <img
-                            src={selectedImage || product.image_1_url || "https://via.placeholder.com/400"}
+                            src={
+                              selectedImage ||
+                              product.image_1_url ||
+                              "https://via.placeholder.com/400"
+                            }
                             alt={product.name}
                             className="absolute inset-0 w-full h-full object-contain transition-all duration-300 rounded-2xl"
                           />
                         </button>
                       </div>
                       <div className="flex gap-3 justify-center flex-wrap pb-5">
-                        {[product.image_1_url, product.image_2_url, product.image_3_url]
+                        {[
+                          product.image_1_url,
+                          product.image_2_url,
+                          product.image_3_url,
+                        ]
                           .filter(Boolean)
                           .map((img, index) => (
                             <button
                               key={index}
                               onClick={() => setSelectedImage(img!)}
-                              className={`w-20 h-20 rounded-xl overflow-hidden border-1 transition-all duration-300 ${selectedImage === img ? "border-main scale-105" : "border-transparent hover:scale-105"
-                                }`}
+                              className={`w-20 h-20 rounded-xl overflow-hidden border-1 transition-all duration-300 ${
+                                selectedImage === img
+                                  ? "border-main scale-105"
+                                  : "border-transparent hover:scale-105"
+                              }`}
                             >
-                              <img src={img!} alt={`Miniatura ${index + 1}`} className="w-full h-full object-cover object-center" />
+                              <img
+                                src={img!}
+                                alt={`Miniatura ${index + 1}`}
+                                className="w-full h-full object-cover object-center"
+                              />
                             </button>
                           ))}
                       </div>
-
-
                     </div>
 
                     {/* Tabs de descripción / calificaciones / detalles */}
                     <div
-                      className={`relative flex justify-between items-center my-10 p-2 rounded-full overflow-hidden text-sm font-quicksand transition-colors duration-500 z-0 ${activeTab === "description"
-                        ? "border-1 border-main"
-                        : activeTab === "reviews"
+                      className={`relative flex justify-between items-center my-10 p-2 rounded-full overflow-hidden text-sm font-quicksand transition-colors duration-500 z-0 ${
+                        activeTab === "description"
+                          ? "border-1 border-main"
+                          : activeTab === "reviews"
                           ? "border-1 border-contrast-secondary"
                           : "border-1 border-contrast-main"
-                        }`}
+                      }`}
                     >
                       <div
-                        className={`absolute top-[4px] left-[4px] h-[calc(100%-8px)] w-1/3 rounded-full shadow-md transition-all duration-500 ease-in-out z-0 ${activeTab === "description"
-                          ? "bg-main"
-                          : activeTab === "reviews"
+                        className={`absolute top-[4px] left-[4px] h-[calc(100%-8px)] w-1/3 rounded-full shadow-md transition-all duration-500 ease-in-out z-0 ${
+                          activeTab === "description"
+                            ? "bg-main"
+                            : activeTab === "reviews"
                             ? "bg-contrast-secondary"
                             : "bg-contrast-main"
-                          }`}
+                        }`}
                         style={{
                           transform:
                             activeTab === "description"
                               ? "translateX(0%)"
                               : activeTab === "reviews"
-                                ? "translateX(96%)"
-                                : "translateX(193%)",
+                              ? "translateX(96%)"
+                              : "translateX(193%)",
                         }}
                       />
                       {["description", "reviews", "details"].map((tab) => (
@@ -297,12 +331,17 @@ export default function ProductPage() {
                             tab === "description"
                               ? "Descripción"
                               : tab === "reviews"
-                                ? "Calificaciones"
-                                : "Detalles"
+                              ? "Calificaciones"
+                              : "Detalles"
                           }
-                          onClick={() => setActiveTab(tab as keyof BorderColors)}
-                          style={`relative z-10 flex-1 py-3 rounded-full transition-all ${activeTab === tab ? "text-white font-bold" : "text-main-dark/50 hover:text-main"
-                            }`}
+                          onClick={() =>
+                            setActiveTab(tab as keyof BorderColors)
+                          }
+                          style={`relative z-10 flex-1 py-3 rounded-full transition-all ${
+                            activeTab === tab
+                              ? "text-white font-bold"
+                              : "text-main-dark/50 hover:text-main"
+                          }`}
                         />
                       ))}
                     </div>
@@ -332,7 +371,10 @@ export default function ProductPage() {
                             transition={{ duration: 0.35 }}
                             className="absolute inset-0 overflow-y-auto "
                           >
-                            <ProductRatingSummary productId={product.id || 0} barColor="#FF7E47" />
+                            <ProductRatingSummary
+                              productId={product.id || 0}
+                              barColor="#FF7E47"
+                            />
                             <ProductReviewList productId={product.id || 0} />
                           </motion.div>
                         )}
@@ -347,8 +389,8 @@ export default function ProductPage() {
                             transition={{ duration: 0.35 }}
                             className="absolute inset-0 whitespace-pre-line overflow-y-auto p-6"
                           >
-
-                            {product?.details || "No se han agregado detalles adicionales para este producto."}
+                            {product?.details ||
+                              "No se han agregado detalles adicionales para este producto."}
                           </motion.p>
                         )}
                       </AnimatePresence>
@@ -366,14 +408,20 @@ export default function ProductPage() {
                         </div>
 
                         <div className="relative">
-                          <ShareComponent positionClass="absolute right-30 top-25" shareUrl={""} />
+                          <ShareComponent
+                            positionClass="absolute right-30 top-25"
+                            shareUrl={""}
+                          />
                         </div>
                       </div>
                     </div>
 
                     {/* Mobile */}
                     <div className="order-6 mt-6 sm:pt-0 pt-15 lg:hidden">
-                      <ShoppingForm variant="product" onAddToCart={() => handleAddToCart(product.id!)} />
+                      <ShoppingForm
+                        variant="product"
+                        onAddToCart={() => handleAddToCart(product.id!)}
+                      />
                     </div>
                   </div>
 
@@ -386,23 +434,38 @@ export default function ProductPage() {
                           aria-label="Hacer zoom a la imagen del producto"
                         >
                           <img
-                            src={selectedImage || product.image_1_url || "https://via.placeholder.com/400"}
+                            src={
+                              selectedImage ||
+                              product.image_1_url ||
+                              "https://via.placeholder.com/400"
+                            }
                             alt={product.name}
                             className="absolute inset-0 w-full h-full object-contain transition-all duration-300 rounded-2xl"
                           />
                         </button>
                       </div>
                       <div className="flex gap-3 justify-center flex-wrap pb-5 ">
-                        {[product.image_1_url, product.image_2_url, product.image_3_url]
+                        {[
+                          product.image_1_url,
+                          product.image_2_url,
+                          product.image_3_url,
+                        ]
                           .filter(Boolean)
                           .map((img, index) => (
                             <button
                               key={index}
                               onClick={() => setSelectedImage(img!)}
-                              className={`w-20 h-20 rounded-xl overflow-hidden border-1 transition-all duration-300 ${selectedImage === img ? "border-main scale-105" : "border-transparent hover:scale-105"
-                                }`}
+                              className={`w-20 h-20 rounded-xl overflow-hidden border-1 transition-all duration-300 ${
+                                selectedImage === img
+                                  ? "border-main scale-105"
+                                  : "border-transparent hover:scale-105"
+                              }`}
                             >
-                              <img src={img!} alt={`Miniatura ${index + 1}`} className="w-full h-full object-cover object-center" />
+                              <img
+                                src={img!}
+                                alt={`Miniatura ${index + 1}`}
+                                className="w-full h-full object-cover object-center"
+                              />
                             </button>
                           ))}
                       </div>
@@ -417,7 +480,10 @@ export default function ProductPage() {
                           </div>
 
                           <div className="relative">
-                            <ShareComponent positionClass="absolute right-21.5 top-25" shareUrl={""} />
+                            <ShareComponent
+                              positionClass="absolute right-21.5 top-25"
+                              shareUrl={""}
+                            />
                           </div>
                         </div>
                       </div>
@@ -426,7 +492,10 @@ export default function ProductPage() {
 
                   {/* Desktop */}
                   <div className="hidden lg:block w-3/12 order-3">
-                    <ShoppingForm variant="product" onAddToCart={() => handleAddToCart(product.id!)} />
+                    <ShoppingForm
+                      variant="product"
+                      onAddToCart={() => handleAddToCart(product.id!)}
+                    />
                   </div>
                 </section>
 
@@ -442,16 +511,25 @@ export default function ProductPage() {
                         id: prod.id!,
                         shop: prod.store?.name || "Tienda",
                         title: prod.name,
-                        price: prod.price.toLocaleString("es-CRC"),
+                        price: prod.price.toLocaleString("es-CR", {
+                          style: "currency",
+                          currency: "CRC",
+                        }),
                         discountPrice: prod.discount_price
-                          ? prod.discount_price.toLocaleString("es-CRC")
+                          ? prod.discount_price.toLocaleString("es-CR", {
+                              style: "currency",
+                              currency: "CRC",
+                            })
                           : "",
+
                         rating: 0,
                         img: prod.image_1_url || audifonos,
                       }))}
                     />
                   ) : (
-                    <p className="text-gray-500 my-5">La tienda no tiene más productos.</p>
+                    <p className="text-gray-500 my-5">
+                      La tienda no tiene más productos.
+                    </p>
                   )}
                 </section>
 
@@ -472,20 +550,27 @@ export default function ProductPage() {
                   </div>
                   <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 my-6 sm:my-10 gap-2 sm:gap-5">
                     {similarProducts.length > 0 ? (
-                      similarProducts.slice(0, 10).map((prod) => (
-                        <ProductCard
-                          key={prod.id}
-                          id={prod.id!}
-                          shop={prod.store?.name || "Sin tienda"}
-                          title={prod.name}
-                          price={prod.price}
-                          discountPrice={
-                            prod.discount_price ? prod.discount_price : undefined
-                          }
-                          img={prod.image_1_url || "https://via.placeholder.com/200"}
-                          edit={"NONE"}
-                        />
-                      ))
+                      similarProducts
+                        .slice(0, 10)
+                        .map((prod) => (
+                          <ProductCard
+                            key={prod.id}
+                            id={prod.id!}
+                            shop={prod.store?.name || "Sin tienda"}
+                            title={prod.name}
+                            price={prod.price}
+                            discountPrice={
+                              prod.discount_price
+                                ? prod.discount_price
+                                : undefined
+                            }
+                            img={
+                              prod.image_1_url ||
+                              "https://via.placeholder.com/200"
+                            }
+                            edit={"NONE"}
+                          />
+                        ))
                     ) : (
                       <p className="col-span-5 text-center text-sm text-gray-500 font-quicksand">
                         No hay productos similares.
