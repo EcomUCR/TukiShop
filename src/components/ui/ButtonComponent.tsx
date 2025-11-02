@@ -7,6 +7,7 @@ interface ButtonProps{
     iconStyle?:string;
     type?:"button" | "submit" | "reset";
     onClick?:()=>void;
+    disabled?: boolean;
 }
 export default function ButtonComponent(props : ButtonProps) {
     const { text, style, icon, iconStyle, onClick } = props;

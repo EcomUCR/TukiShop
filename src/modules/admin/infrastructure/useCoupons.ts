@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
+import { useAuth } from "../../../hooks/context/AuthContext"; // ✅ obtiene token global
 
+// 🧾 Interfaz del cupón
 export interface Coupon {
   id?: number;
   code: string;
@@ -19,22 +21,28 @@ export interface Coupon {
   active: boolean;
 }
 
+// 🪄 Hook de cupones
 export function useCoupons() {
+  const { token } = useAuth(); // 👈 token desde contexto
   const [coupons, setCoupons] = useState<Coupon[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const API_URL = `${import.meta.env.VITE_API_URL}/coupons`;
 
-  /**
-   * 🔍 Obtener todos los cupones
-   */
+  const axiosConfig = {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      Accept: "application/json",
+      "Content-Type": "application/json",
+    },
+  };
+
+  // 🔍 Obtener cupones (admin: todos / seller: propios)
   const fetchCoupons = async () => {
-    console.log("📡 [useCoupons] Cargando cupones desde:", API_URL);
     try {
       setLoading(true);
-      const { data } = await axios.get(API_URL);
-      console.log("✅ [useCoupons] Cupones obtenidos:", data);
+      const { data } = await axios.get(API_URL, axiosConfig);
       setCoupons(data);
     } catch (err) {
       console.error("❌ [useCoupons] Error al obtener cupones:", err);
@@ -44,83 +52,44 @@ export function useCoupons() {
     }
   };
 
-  /**
-   * ➕ Crear nuevo cupón
-   */
+  // ➕ Crear cupón
   const createCoupon = async (coupon: Coupon) => {
-    console.log("📤 [useCoupons] Enviando cupón nuevo:", coupon);
     try {
       setLoading(true);
-      const { data } = await axios.post(API_URL, coupon, {
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-        },
-      });
-      console.log("✅ [useCoupons] Cupón creado correctamente:", data);
+      const { data } = await axios.post(API_URL, coupon, axiosConfig);
       setCoupons((prev) => [...prev, data]);
       return data;
-    } catch (err: any) {
-      console.error("❌ [useCoupons] Error al crear cupón:", err.response?.data || err);
-      throw err;
     } finally {
       setLoading(false);
     }
   };
 
-  /**
-   * ✏️ Actualizar cupón existente
-   */
+  // ✏️ Actualizar cupón
   const updateCoupon = async (id: number, coupon: Coupon) => {
-    console.log(`📤 [useCoupons] Actualizando cupón #${id}:`, coupon);
     try {
       setLoading(true);
-      const { data } = await axios.put(`${API_URL}/${id}`, coupon, {
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-        },
-      });
-      console.log("✅ [useCoupons] Cupón actualizado:", data);
+      const { data } = await axios.put(`${API_URL}/${id}`, coupon, axiosConfig);
       setCoupons((prev) => prev.map((c) => (c.id === id ? data : c)));
       return data;
-    } catch (err: any) {
-      console.error("❌ [useCoupons] Error al actualizar cupón:", err.response?.data || err);
-      throw err;
     } finally {
       setLoading(false);
     }
   };
 
-  /**
-   * 🗑️ Eliminar cupón
-   */
+  // 🗑️ Eliminar cupón
   const deleteCoupon = async (id: number) => {
-    console.warn(`🗑️ [useCoupons] Eliminando cupón #${id}`);
     try {
       setLoading(true);
-      await axios.delete(`${API_URL}/${id}`);
-      console.log("✅ [useCoupons] Cupón eliminado correctamente");
+      await axios.delete(`${API_URL}/${id}`, axiosConfig);
       setCoupons((prev) => prev.filter((c) => c.id !== id));
-    } catch (err: any) {
-      console.error("❌ [useCoupons] Error al eliminar cupón:", err.response?.data || err);
-      throw err;
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchCoupons();
-  }, []);
+    if (token) fetchCoupons(); // solo si el usuario está logueado
+  }, [token]);
 
-  return {
-    coupons,
-    loading,
-    error,
-    fetchCoupons,
-    createCoupon,
-    updateCoupon,
-    deleteCoupon,
-  };
+  return { coupons, loading, error, fetchCoupons, createCoupon, updateCoupon, deleteCoupon };
 }
