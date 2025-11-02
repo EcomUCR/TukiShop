@@ -110,10 +110,10 @@ export default function StoreHomeComponent() {
         </section>
 
       {/* 🔹 Productos destacados */}
-      <section className="mx-4 sm:mx-10 my-6 sm:my-10">
+      <section className="mx-4 sm:mx-4 my-6 sm:my-10">
         {!loading && featuredProducts.length > 0 && (
           <>
-            <h2 className="text-lg sm:text-2xl font-semibold font-quicksand mb-3 sm:mb-5">
+            <h2 className="text-lg sm:text-2xl font-semibold font-quicksand mb-3 sm:mb-5 pl-6">
               Productos destacados
             </h2>
 
@@ -136,7 +136,7 @@ export default function StoreHomeComponent() {
                     discountPrice: prod.discount_price
                       ? prod.discount_price.toLocaleString("es-CRC")
                       : "",
-                    rating: 0,
+                    rating: prod.rating || 0,
                     img: prod.image_1_url || audifonos,
                   }))}
                 />
