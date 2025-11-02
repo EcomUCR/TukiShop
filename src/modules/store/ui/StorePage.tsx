@@ -17,16 +17,15 @@ import { uploadImage } from "../../users/infrastructure/imageService";
 import { updateStore } from "../infrastructure/storeService";
 import { useAlert } from "../../../hooks/context/AlertContext";
 
-
-
-
 export default function StorePage() {
   const { user, refreshUser } = useAuth();
   const { showAlert } = useAlert();
   const { id } = useParams();
   const location = useLocation();
   const [store, setStore] = useState<Store | null>(null);
-  const [view, setView] = useState<"home" | "offers" | "contact" | "reviews">("home");
+  const [view, setView] = useState<"home" | "offers" | "contact" | "reviews">(
+    "home"
+  );
   const [loading, setLoading] = useState(true);
   const [changingBanner, setChangingBanner] = useState(false);
 
@@ -95,10 +94,12 @@ export default function StorePage() {
                     <IconEdit size={25} />
                   </label>
                 </div>
-              )
-              }
+              )}
               <img
-                src={store?.banner || "https://res.cloudinary.com/dpbghs8ep/image/upload/v1761410400/BannerNoSubido_avlp5v.png"}
+                src={
+                  store?.banner ||
+                  "https://res.cloudinary.com/dpbghs8ep/image/upload/v1761410400/BannerNoSubido_avlp5v.png"
+                }
                 alt="Banner Store"
                 className="w-full h-[8rem] sm:h-[15rem] object-cover rounded-xl sm:rounded-2xl"
               />
@@ -126,14 +127,19 @@ export default function StorePage() {
           ) : null}
         </div>
         {user?.store && user.store.id === store?.id && (
-          <Link to="/crudProduct" className="relative group" onClick={()=> window.scrollTo({top:0,behavior:'smooth'})}>
+          <Link
+            to="/crudProduct"
+            className="relative group"
+            onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+          >
             <button
-              className="fixed flex items-center bg-main text-white p-5 rounded-full shadow-lg 
+              className="cursor-pointer
+ fixed flex items-center bg-gradient-to-br from-contrast-main to-contrast-secondary text-white p-5 rounded-full shadow-lg 
       transition-all duration-300 z-50 overflow-hidden 
       bottom-25 right-4 sm:bottom-8 sm:right-8 md:bottom-25 md:right-10 group-hover:bg-contrast-secondary"
               title="Agregar nuevo producto"
             >
-              <IconSquarePlus className="group-hover:rotate-180 transition-all duration-300"/>
+              <IconSquarePlus className="group-hover:rotate-180 transition-all duration-300" />
               <span
                 className="whitespace-nowrap overflow-hidden w-0 opacity-0 transition-all duration-500 ease-in-out 
         group-hover:w-[12rem] group-hover:opacity-100"
@@ -143,8 +149,6 @@ export default function StorePage() {
             </button>
           </Link>
         )}
-
-
       </div>
       <Footer />
     </div>

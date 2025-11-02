@@ -1,9 +1,10 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { useChatbot } from "../../../hooks/context/ChatbotContext";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
 import { IconBubbleTextFilled } from "@tabler/icons-react";
 import TypingBubbles from "./TypingBubbles";
+import { useAuth } from "../../../hooks/context/AuthContext";
 
 export function Chatbot() {
   const {
@@ -17,11 +18,14 @@ export function Chatbot() {
     visible,
     toggleVisible,
   } = useChatbot();
-
+  const { user } = useAuth();
   const navigate = useNavigate();
   const chatRef = useRef<HTMLDivElement>(null);
   const [isMobile, setIsMobile] = useState(false);
-
+  const location = useLocation();
+  const lastNavigatedLink = useRef<{ link: string; timestamp: number } | null>(
+    null
+  );
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth <= 640);
     handleResize();
@@ -34,27 +38,6 @@ export function Chatbot() {
     window.scrollTo({ top: 0, behavior: "smooth" });
     toggleVisible();
   };
-  useEffect(() => {
-    const lastMsg = messages[messages.length - 1];
-    const link: string | undefined = lastMsg?.link;
-    const shouldNavigate: boolean | undefined = lastMsg?.navigate;
-
-    if (
-      lastMsg?.role === "bot" &&
-      typeof link === "string" &&
-      link.trim() !== "" &&
-      shouldNavigate // ✅ solo si navigate: true
-    ) {
-      if (lastNavigatedLink.current !== link) {
-        lastNavigatedLink.current = link;
-        const timer = setTimeout(() => {
-          navigate(link);
-          window.scrollTo({ top: 0, behavior: "smooth" });
-        }, 1800);
-        return () => clearTimeout(timer);
-      }
-    }
-  }, [messages, navigate, toggleVisible]);
 
   // 👂 Cerrar si se hace click fuera
   useEffect(() => {
@@ -71,29 +54,56 @@ export function Chatbot() {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [visible, toggleVisible]);
-  const lastNavigatedLink = useRef<string | null>(null);
+  useEffect(() => {
+    lastNavigatedLink.current = null;
+  }, [location.pathname]);
+
+  // Guardar los mensajes ya redirigidos
+  const navigatedMessages = useRef<Set<number>>(new Set());
 
   useEffect(() => {
-    // 🔹 Solo redirige si hay un link nuevo y válido
     const lastMsg = messages[messages.length - 1];
-    const link: string | undefined = lastMsg?.link;
+    const link = lastMsg?.link;
+    const shouldNavigate = lastMsg?.navigate;
 
+    const lastMessageIndex = messages.length - 1;
+
+    // 🚫 No hacer nada si no hay mensaje válido
     if (
-      lastMsg?.role === "bot" &&
-      typeof link === "string" &&
-      link.trim() !== "" &&
-      lastNavigatedLink.current !== link
+      !lastMsg ||
+      lastMsg.role !== "bot" ||
+      typeof link !== "string" ||
+      !link.trim() ||
+      !shouldNavigate
     ) {
-      lastNavigatedLink.current = link; // guardar el último link usado
-
-      const timer = setTimeout(() => {
-        navigate(link as string); // ✅ TS ahora sabe que link no es undefined
-        window.scrollTo({ top: 0, behavior: "smooth" });
-      }, 1800);
-
-      return () => clearTimeout(timer);
+      return;
     }
-  }, [messages, navigate, toggleVisible]);
+
+    // 🚫 Evitar redirigir si ya estamos en esa ruta
+    if (location.pathname === link) return;
+
+    // 🚫 Evitar redirigir si este mensaje ya fue procesado
+    if (navigatedMessages.current.has(lastMessageIndex)) return;
+
+    // ✅ Marcar este mensaje como procesado
+    navigatedMessages.current.add(lastMessageIndex);
+
+    // ✅ Navegar después de un pequeño delay
+    const timer = setTimeout(() => {
+      navigate(link);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  }, [messages, navigate, location.pathname]);
+
+  // 🔹 Resetear cuando se cierra el chat
+  useEffect(() => {
+    if (!visible) {
+      lastNavigatedLink.current = null;
+    }
+  }, [visible]);
+  if (!user) return null;
 
   return (
     <>
@@ -107,7 +117,8 @@ export function Chatbot() {
             opacity: visible ? 0 : 1,
           }}
           transition={{ duration: 0.3, ease: "easeInOut" }}
-          className="fixed flex items-center bg-blue-600 text-white p-5 rounded-full shadow-2xl 
+          className="cursor-pointer
+ fixed flex items-center bg-gradient-to-br from-contrast-main to-contrast-secondary text-white p-5 rounded-full shadow-2xl 
           transition-all duration-300 z-50 overflow-hidden 
           bottom-6 right-4 sm:bottom-8 sm:right-8 md:bottom-8 md:right-10 group-hover:bg-contrast-secondary"
           title="Abrir chat"
@@ -174,8 +185,13 @@ export function Chatbot() {
           >
             {/* Header */}
             <div className="flex justify-between items-center mb-4">
-              <h2 className="font-bold text-lg font-fugaz text-blue-600">
-                Tuki-Bot
+              <h2
+                className="font-bold text-lg font-fugaz 
+    bg-gradient-to-br from-contrast-main to-contrast-secondary 
+    bg-clip-text text-transparent"
+              >
+                {" "}
+                TukiBot
               </h2>
               <button
                 onClick={toggleVisible}
@@ -192,8 +208,8 @@ export function Chatbot() {
                   key={i}
                   className={`p-3 rounded-2xl shadow-sm ${
                     m.role === "user"
-                      ? "bg-blue-500 text-white self-end ml-auto max-w-[85%]"
-                      : "bg-gray-100 text-gray-800 self-start mr-auto max-w-[85%]"
+                      ? "bg-main text-white self-end ml-auto max-w-[85%]"
+                      : "bg-gray-100 text-main self-start mr-auto max-w-[85%]"
                   }`}
                 >
                   <p>{m.content}</p>
@@ -216,7 +232,7 @@ export function Chatbot() {
                           <p className="text-gray-500 text-[11px] sm:text-xs truncate">
                             {p.store_name}
                           </p>
-                          <p className="text-blue-600 font-bold text-xs sm:text-sm">
+                          <p className="text-main-600 font-bold text-xs sm:text-sm">
                             ₡{p.discount_price || p.price}
                           </p>
                         </div>
@@ -256,14 +272,14 @@ export function Chatbot() {
                     </div>
                   )}
                   {m.role === "bot" && m.link && m.navigate === false && (
-                    <div className="mt-3 flex justify-center">
+                    <div className="mt-3 flex justify-center ">
                       <button
                         onClick={() => {
                           navigate(m.link as string);
                           window.scrollTo({ top: 0, behavior: "smooth" });
                           toggleVisible();
                         }}
-                        className="bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold px-4 py-2 rounded-full shadow-md transition-all"
+                        className="bg-main hover:bg-contrast-secondary text-white text-sm font-semibold px-4 py-2 rounded-full shadow-md transition-all"
                       >
                         Ir a esta sección
                       </button>
@@ -293,7 +309,7 @@ export function Chatbot() {
             >
               <input
                 type="text"
-                className="flex-1 border border-gray-300 rounded-full px-4 py-2 text-sm sm:text-base focus:ring-2 focus:ring-blue-400 outline-none"
+                className="flex-1 border border-gray-300 rounded-full px-4 py-2 text-sm sm:text-base focus:ring-2 focus:ring-contrast-secondary outline-none"
                 placeholder="Escribe tu mensaje..."
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
@@ -301,7 +317,7 @@ export function Chatbot() {
               />
               <button
                 type="submit"
-                className="bg-blue-600 text-white px-4 sm:px-5 py-2 rounded-full text-sm sm:text-base font-semibold hover:bg-blue-700 transition-all disabled:opacity-50"
+                className="bg-gradient-to-br from-contrast-main to-contrast-secondary text-white px-4 sm:px-5 py-2 rounded-full text-sm sm:text-base font-semibold hover:bg-main transition-all disabled:opacity-50"
                 disabled={isLoading}
               >
                 {isLoading ? "..." : "Enviar"}
