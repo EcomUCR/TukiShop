@@ -136,7 +136,7 @@ export default function StorePage() {
               className="cursor-pointer
  fixed flex items-center bg-gradient-to-br from-contrast-main to-contrast-secondary text-white p-5 rounded-full shadow-lg 
       transition-all duration-300 z-50 overflow-hidden 
-      bottom-25 right-4 sm:bottom-8 sm:right-8 md:bottom-25 md:right-10 group-hover:bg-contrast-secondary"
+      bottom-25 right-4 sm:bottom-8 sm:right-8 md:bottom-28 md:right-10 group-hover:bg-contrast-secondary"
               title="Agregar nuevo producto"
             >
               <IconSquarePlus className="group-hover:rotate-180 transition-all duration-300" />
