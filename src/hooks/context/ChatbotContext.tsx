@@ -2,6 +2,8 @@ import { createContext, useContext, useState, useRef, useEffect } from "react";
 import type { ReactNode } from "react";
 import axios from "axios";
 
+axios.defaults.baseURL = import.meta.env.VITE_API_URL;
+
 interface Product {
   id: number;
   name: string;
@@ -53,7 +55,7 @@ export function ChatbotProvider({ children }: { children: ReactNode }) {
     setIsLoading(true);
 
     try {
-      const res = await axios.post("http://127.0.0.1:8000/api/chatbot", { message: userMessage });
+      const res = await axios.post("/chatbot", { message: userMessage });
       const data = res.data;
       const botReply = data.message || "No tengo respuesta en este momento.";
       gradualDisplay(botReply, data.results);
