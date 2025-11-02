@@ -29,7 +29,10 @@ export interface Message {
   products?: Product[];
   stores?: Store[];
   link?: string;
-  navigate?: boolean; // ✅ agregado
+  navigate?: boolean;
+  social?: "facebook" | "instagram" | "tiktok" | "x" | "whatsapp";
+  socials?: { social: "facebook" | "instagram" | "tiktok" | "x" | "whatsapp"; link: string }[];
+  showButton?: boolean;
 }
 
 interface ChatbotContextType {
@@ -75,13 +78,15 @@ export function ChatbotProvider({ children }: { children: ReactNode }) {
       const data = res.data;
       const botReply = data.message || "No tengo respuesta en este momento.";
 
-      // 🔹 Pasar también productos, tiendas y link si existen
       gradualDisplay(
         botReply,
         data.results,
         data.link,
         data.stores,
-        data.navigate
+        data.navigate,
+        data.social,
+        data.socials,
+        data.showButton
       );
     } catch (err) {
       console.error("❌ Error en chatbot:", err);
@@ -100,7 +105,10 @@ export function ChatbotProvider({ children }: { children: ReactNode }) {
     products?: Product[],
     link?: string,
     stores?: Store[],
-    navigate?: boolean // ✅ agregado
+    navigate?: boolean,
+    social?: "facebook" | "instagram" | "tiktok" | "x",
+    socials?: { social: "facebook" | "instagram" | "tiktok" | "x"; link: string }[],
+    showButton?: boolean // ✅
   ) => {
     let index = 0;
     setStreamingMessage("");
@@ -115,7 +123,17 @@ export function ChatbotProvider({ children }: { children: ReactNode }) {
         clearInterval(interval);
         setMessages((prev) => [
           ...prev,
-          { role: "bot", content: text, products, stores, link, navigate }, // ✅ se guarda navigate
+          {
+            role: "bot",
+            content: text,
+            products,
+            stores,
+            link,
+            navigate,
+            social,
+            socials,
+            showButton,
+          },
         ]);
         setStreamingMessage("");
       }

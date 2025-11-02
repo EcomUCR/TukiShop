@@ -2,7 +2,14 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useChatbot } from "../../../hooks/context/ChatbotContext";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
-import { IconBubbleTextFilled } from "@tabler/icons-react";
+import {
+  IconBrandFacebook,
+  IconBrandInstagram,
+  IconBrandTiktok,
+  IconBrandX,
+  IconBubbleTextFilled,
+  IconBrandWhatsapp,
+} from "@tabler/icons-react";
 import TypingBubbles from "./TypingBubbles";
 import { useAuth } from "../../../hooks/context/AuthContext";
 
@@ -285,6 +292,84 @@ export function Chatbot() {
                       </button>
                     </div>
                   )}
+                  {m.role === "bot" && m.social && m.link && (
+  <div className="mt-3 flex justify-center">
+    <a
+      href={m.link}
+      target="_blank"
+      rel="noopener noreferrer"
+      className={`flex items-center gap-2 px-6 py-2 rounded-full font-semibold shadow-md text-white transition-all duration-300 hover:scale-105 active:scale-95
+        ${
+          m.social === "facebook"
+            ? "bg-gradient-to-br from-[#1877F2] to-[#42A5F5]"
+            : m.social === "instagram"
+            ? "bg-gradient-to-br from-[#F58529] to-[#DD2A7B]"
+            : m.social === "tiktok"
+            ? "bg-gradient-to-br from-[#000000] to-[#EE1D52]"
+            : m.social === "x"
+            ? "bg-gradient-to-br from-[#000000] to-[#1DA1F2]"
+            : m.social === "whatsapp"
+            ? "bg-gradient-to-br from-[#075E54] to-[#25D366]"
+            : "bg-gradient-to-br from-contrast-main to-contrast-secondary"
+        }`}
+    >
+      {m.social === "facebook" && <IconBrandFacebook size={20} />}
+      {m.social === "instagram" && <IconBrandInstagram size={20} />}
+      {m.social === "tiktok" && <IconBrandTiktok size={20} />}
+      {m.social === "x" && <IconBrandX size={20} />}
+      {m.social === "whatsapp" && <IconBrandWhatsapp size={20} />}
+      <span>
+        {m.social === "whatsapp"
+          ? "WhatsApp"
+          : `Ir a ${
+              m.social.charAt(0).toUpperCase() + m.social.slice(1)
+            }`}
+      </span>
+    </a>
+  </div>
+)}
+
+{m.socials && m.socials.length > 0 && (
+  <div className="mt-3 flex justify-center gap-3">
+    {m.socials.map((s) => (
+      <a
+        key={s.social}
+        href={s.link}
+        target="_blank"
+        rel="noopener noreferrer"
+        className={`flex items-center justify-center p-3 rounded-full shadow-md hover:scale-105 active:scale-95 transition-all
+          ${
+            s.social === "facebook"
+              ? "bg-gradient-to-br from-[#1877F2] to-[#42A5F5]"
+              : s.social === "instagram"
+              ? "bg-gradient-to-br from-[#F58529] to-[#DD2A7B]"
+              : s.social === "tiktok"
+              ? "bg-gradient-to-br from-[#000000] to-[#EE1D52]"
+              : s.social === "x"
+              ? "bg-gradient-to-br from-[#000000] to-[#1DA1F2]"
+              : s.social === "whatsapp"
+              ? "bg-gradient-to-br from-[#075E54] to-[#25D366]"
+              : "bg-gradient-to-br from-contrast-main to-contrast-secondary"
+          } text-white`}
+      >
+        {s.social === "facebook" && (
+          <IconBrandFacebook className="w-5 h-5" />
+        )}
+        {s.social === "instagram" && (
+          <IconBrandInstagram className="w-5 h-5" />
+        )}
+        {s.social === "tiktok" && (
+          <IconBrandTiktok className="w-5 h-5" />
+        )}
+        {s.social === "x" && <IconBrandX className="w-5 h-5" />}
+        {s.social === "whatsapp" && (
+          <IconBrandWhatsapp className="w-5 h-5" />
+        )}
+      </a>
+    ))}
+  </div>
+)}
+
                 </div>
               ))}
 
