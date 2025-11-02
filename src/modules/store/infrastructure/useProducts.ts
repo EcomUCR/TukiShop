@@ -335,7 +335,9 @@ const searchProducts = async (query: string): Promise<Product[]> => {
     setError(null);
     try {
       const res = await axios.get(`${BASE_URL}/products`);
-      return res.data.map(normalizeProduct);
+const data = Array.isArray(res.data) ? res.data : res.data.data; // ✅ soporta paginación
+return (data || []).map(normalizeProduct);
+
     } catch (e: any) {
       setError("No se pudieron cargar los productos");
       return [];
