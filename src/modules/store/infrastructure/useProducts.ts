@@ -12,6 +12,28 @@ export type Category = {
   name: string;
 };
 
+export type ProductReview = {
+  id: number;
+  product_id: number;
+  user_id: number;
+  rating: number;
+  comment: string;
+  created_at: string;
+  user?: {
+    id: number;
+    first_name?: string;
+    last_name?: string;
+    username?: string;
+    image?: string;
+  };
+};
+
+export type ProductReviewSummary = {
+  average: number;
+  total: number;
+  distribution: { [key: number]: number };
+};
+
 export type Product = {
   store_id?: number;
   id?: number;
@@ -36,7 +58,7 @@ export type Product = {
 };
 
 export function useProducts() {
-  const { user } = useAuth();
+  const { user, token } = useAuth();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
@@ -317,6 +339,57 @@ export function useProducts() {
     }
   };
 
+  const getProductReviews = async (productId: number): Promise<ProductReview[]> => {
+    try {
+      const { data } = await axios.get(`${BASE_URL}/products/${productId}/reviews`);
+      return data;
+    } catch (e: any) {
+      console.error("Error al obtener reseñas:", e);
+      setError("No se pudieron cargar las reseñas del producto");
+      return [];
+    }
+  };
+
+  const getProductReviewSummary = async (
+    productId: number
+  ): Promise<ProductReviewSummary> => {
+    try {
+      const { data } = await axios.get(`${BASE_URL}/products/${productId}/reviews/summary`);
+      return data;
+    } catch (e: any) {
+      console.error("Error al obtener resumen de reseñas:", e);
+      return { average: 0, total: 0, distribution: { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 } };
+    }
+  };
+
+  const createProductReview = async (
+    productId: number,
+    review: { rating: number; comment: string }
+  ): Promise<boolean> => {
+    if (!token) {
+      setError("Debes iniciar sesión para dejar una reseña.");
+      return false;
+    }
+
+    try {
+      await axios.post(
+        `${BASE_URL}/products/${productId}/reviews`,
+        review,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+
+      setSuccess("Reseña creada correctamente");
+      return true;
+    } catch (e: any) {
+      console.error("Error al crear reseña:", e);
+      setError("No se pudo enviar la reseña.");
+      return false;
+    }
+  };
+
 
   const getProductsByStore = async (store_id: number): Promise<Product[]> => {
     setLoading(true);
@@ -346,6 +419,7 @@ export function useProducts() {
   };
 
   return {
+    // 🔹 Productos
     getProductById,
     getProductsByStore,
     getFeaturedProductsByStore,
@@ -360,6 +434,13 @@ export function useProducts() {
     getOffers,
     getPaginatedProducts,
     searchProductsByStore,
+
+    // 🟣 Reseñas
+    getProductReviews,
+    getProductReviewSummary,
+    createProductReview,
+
+    // 🔹 Estado
     loading,
     error,
     success,

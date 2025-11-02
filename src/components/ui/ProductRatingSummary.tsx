@@ -1,62 +1,52 @@
 import { IconStar, IconStarFilled } from "@tabler/icons-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useAuth } from "../../hooks/context/AuthContext";
 import { SkeletonRatingSummary } from "./AllSkeletons";
 import { useAlert } from "../../hooks/context/AlertContext";
 import { useNavigate } from "react-router-dom";
-
-
-// ✅ Hook corregido y limpio
-const useProductRatingsMock = () => {
-    const [loading, setLoading] = useState(true);
-
-    const summary = {
-        average: 0.0,
-        total: 0,
-        distribution: { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 },
-    };
-
-    const createReview = async (review: any) => {
-        console.log("Mock creando review:", review);
-        return new Promise((resolve) => setTimeout(resolve, 500));
-    };
-
-    // Simula carga inicial
-    useState(() => {
-        setTimeout(() => setLoading(false), 10);
-    });
-
-    return { summary, loading, createReview };
-};
-
+import { useProducts, type ProductReviewSummary } from "../../modules/store/infrastructure/useProducts";
 
 interface ProductRatingSummaryProps {
-    onSaveReview: (review: {
-        name: string;
-        comment: string;
-        rating: number;
-    }) => void;
     productId: number;
     barColor?: string;
 }
 
 export default function ProductRatingSummary({
-    onSaveReview,
+    productId,
     barColor = "#ff7e47",
 }: ProductRatingSummaryProps) {
-    const { user } = useAuth();
-    const { summary, loading, createReview } = useProductRatingsMock();
+    const { user, token } = useAuth();
+    const { showAlert } = useAlert();
+    const navigate = useNavigate();
+    const { getProductReviewSummary, createProductReview } = useProducts();
 
-    const [mode, setMode] = useState<"view" | "write">("write");
+    const [loading, setLoading] = useState(true);
+    const [summary, setSummary] = useState<ProductReviewSummary>({
+        average: 0,
+        total: 0,
+        distribution: { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 },
+    });
+
+    const [mode, setMode] = useState<"view" | "write">("view");
     const [rating, setRating] = useState(0);
     const [hover, setHover] = useState(0);
     const [comment, setComment] = useState("");
 
-    const { showAlert } = useAlert();
-    const navigate = useNavigate();
+    // 🔹 Cargar resumen de calificaciones
+    const loadSummary = async () => {
+        setLoading(true);
+        const summaryData = await getProductReviewSummary(productId);
+        setSummary(summaryData);
+        setLoading(false);
+    };
 
+    useEffect(() => {
+        loadSummary();
+    }, [productId]);
+
+    // 🔹 Guardar reseña real en el backend
     const handleSave = async () => {
-        if (!user) {
+        if (!user || !token) {
             showAlert({
                 title: "Inicia sesión",
                 message: "Debes iniciar sesión para dejar una reseña",
@@ -69,6 +59,7 @@ export default function ProductRatingSummary({
             });
             return;
         }
+
         if (rating === 0 || !comment.trim()) {
             showAlert({
                 title: "Campos incompletos",
@@ -79,47 +70,30 @@ export default function ProductRatingSummary({
             return;
         }
 
-        try {
-            await createReview({
-                user_id: user.id,
-                rating,
-                comment: comment.trim(),
-                like: false,
-                dislike: false,
-            });
+        const success = await createProductReview(productId, { rating, comment });
 
-            onSaveReview({
-                name:
-                    user.first_name || user.last_name
-                        ? `${user.first_name ?? ""} ${user.last_name ?? ""}`.trim()
-                        : user.name || user.username || "Usuario",
-                comment: comment.trim(),
-                rating,
-            });
-
-            setComment("");
-            setRating(0);
-            setHover(0);
-
+        if (success) {
             showAlert({
-                title: "Reseña Enviada",
-                message: "Tu calificación ha sido procesada por el Front-end.",
+                title: "Reseña enviada",
+                message: "Tu calificación ha sido registrada correctamente.",
                 type: "success",
             });
 
-        } catch (err: any) {
-            console.error("Error al guardar la reseña:", err?.response?.data || err?.message);
-            showAlert({
-                title: "Error inesperado",
-                message: "Ocurrió un error al enviar la reseña.",
-                confirmText: "Ok",
-                type: "error",
-            });
+            // 🔹 Dispara evento global para actualizar lista de reseñas
+            window.dispatchEvent(new CustomEvent("reviewAdded", { detail: { productId } }));
+
+            // Reiniciar campos y refrescar resumen
+            setRating(0);
+            setHover(0);
+            setComment("");
+            setMode("view");
+            await loadSummary();
         }
     };
 
     const displayRating = hover > 0 ? hover : rating;
 
+    // 🔹 Subcomponente de estrellas reutilizable
     const StarGroup = ({
         interactive = false,
         size = 20,
@@ -130,7 +104,6 @@ export default function ProductRatingSummary({
         value?: number;
     }) => {
         const activeValue = value ?? displayRating;
-
         return (
             <div className="flex gap-1 justify-center">
                 {Array.from({ length: 5 }).map((_, i) => {
@@ -142,29 +115,13 @@ export default function ProductRatingSummary({
                         <div
                             key={i}
                             className={`relative ${interactive ? "cursor-pointer" : "cursor-default"}`}
-                            role={interactive ? "button" : undefined}
-                            aria-label={interactive ? `${index} estrellas` : undefined}
-                            tabIndex={interactive ? 0 : -1}
-                            onPointerDown={() => {
-                                if (interactive) {
-                                    setRating(index);
-                                    setHover(index);
-                                }
-                            }}
-                            onPointerEnter={() => interactive && setHover(index)}
-                            onPointerLeave={() => interactive && setHover(0)}
-                            onKeyDown={(e) => {
-                                if (!interactive) return;
-                                if (e.key === "Enter" || e.key === " ") {
-                                    e.preventDefault();
-                                    setRating(index);
-                                    setHover(index);
-                                }
-                            }}
+                            onClick={() => interactive && setRating(index)}
+                            onMouseEnter={() => interactive && setHover(index)}
+                            onMouseLeave={() => interactive && setHover(0)}
                         >
-                            <IconStar size={size} className="text-gray-300 pointer-events-none" />
+                            <IconStar size={size} className="text-gray-300" />
                             <div
-                                className="absolute left-0 top-0 overflow-hidden pointer-events-none"
+                                className="absolute left-0 top-0 overflow-hidden"
                                 style={{ width: widthPct, height: size }}
                             >
                                 <IconStarFilled size={size} className="text-orange-400" />
@@ -179,16 +136,16 @@ export default function ProductRatingSummary({
     if (loading) return <SkeletonRatingSummary show />;
 
     return (
-        <div className="p-4 w-full font-quicksand transition-all duration-300">
+        <div className="p-4 w-full font-quicksand transition-all duration-300 flex flex-col items-center">
             {mode === "view" ? (
                 <>
-                    <div className="flex justify-between items-start mb-4">
-                        <div className="flex flex-col items-start w-1/3">
+                    <div className="flex justify-between items-center mb-4">
+                        <div className="flex flex-col items-center w-full">
                             <h2 className="text-5xl font-bold mb-1">
                                 {summary.average.toFixed(1)}
                             </h2>
                             <StarGroup size={20} value={summary.average} />
-                            <p className="text-sm text-gray-500 mt-1">
+                            <p className="text-sm text-gray-500 mt-1 w-full text-center">
                                 {summary.total} opiniones de <strong>producto</strong>
                             </p>
                         </div>
@@ -196,7 +153,7 @@ export default function ProductRatingSummary({
 
                     <button
                         onClick={() => setMode("write")}
-                        className="w-full py-3 text-white font-semibold rounded-lg transition duration-200"
+                        className="w-full py-3 text-white font-semibold rounded-full transition duration-200"
                         style={{ backgroundColor: barColor }}
                     >
                         Escribir opinión
@@ -204,18 +161,14 @@ export default function ProductRatingSummary({
                 </>
             ) : (
                 <>
-                    <div className="flex flex-col items-center mb-4 transition-all duration-300">
-                        <h2 className="text-6xl font-bold mb-3">
-                            {displayRating.toFixed(1)}
-                        </h2>
-                        <StarGroup interactive size={40} />
+                    <div className="flex flex-col items-center transition-all duration-300">
+                        <h2 className="text-5xl font-bold mb-3">{displayRating.toFixed(1)}</h2>
+                        <StarGroup interactive size={24} />
                         <p className="text-sm text-gray-500 mt-1">Tu calificación</p>
                     </div>
 
-                    <div className="mt-4 border border-main/40 rounded-lg p-3 bg-white shadow-sm">
-                        <label className="block mb-2 text-sm font-semibold">
-                            Comentario
-                        </label>
+                    <div className="mt-4 border border-main/40 rounded-lg p-3 bg-white shadow-sm w-full">
+                        <label className="block mb-2 text-sm font-semibold">Comentario</label>
                         <textarea
                             value={comment}
                             onChange={(e) => setComment(e.target.value)}
@@ -226,13 +179,13 @@ export default function ProductRatingSummary({
                         <div className="flex justify-end gap-2 mt-3">
                             <button
                                 onClick={() => setMode("view")}
-                                className="px-4 py-2 rounded bg-gray-200 text-sm"
+                                className="px-4 py-2 rounded-full bg-gray-200 text-sm"
                             >
-                                Ver Resumen
+                                Cancelar
                             </button>
                             <button
                                 onClick={handleSave}
-                                className="px-4 py-2 rounded text-white text-sm"
+                                className="px-4 py-2 rounded-full text-white text-sm"
                                 style={{ backgroundColor: barColor }}
                             >
                                 Guardar Reseña

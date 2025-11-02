@@ -25,6 +25,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import ShareComponent from "../../../components/data-display/ShareComponent";
 import { useCart } from "../../../hooks/context/CartContext";
 import ProductRatingSummary from "../../../components/ui/ProductRatingSummary";
+import ProductReviewList from "./components/StoreProductReviewList";
 
 type BorderColors = {
   description: string;
@@ -329,22 +330,13 @@ export default function ProductPage() {
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0, y: -20 }}
                             transition={{ duration: 0.35 }}
-                            className="absolute inset-0 overflow-y-auto"
+                            className="absolute inset-0 overflow-y-auto "
                           >
-                            <ProductRatingSummary
-                              // Usamos product.id como el ID único para esta reseña
-                              productId={product.id || 0}
-
-                              // Función placeholder: Manejar lo que sucede después de que el front-end "guarda" la reseña
-                              onSaveReview={(newReview) => {
-                                console.log("Reseña de producto enviada, ¡pendiente de backend!", newReview);
-                                // Aquí podrías añadir lógica para mostrar un mensaje o recargar la lista de reseñas (una vez implementada)
-                              }}
-
-                              barColor="#FF7E47"
-                            />
+                            <ProductRatingSummary productId={product.id || 0} barColor="#FF7E47" />
+                            <ProductReviewList productId={product.id || 0} />
                           </motion.div>
                         )}
+
                         {/* Contenido de la pestaña de Detalles (Details) */}
                         {activeTab === "details" && (
                           <motion.p
@@ -355,7 +347,7 @@ export default function ProductPage() {
                             transition={{ duration: 0.35 }}
                             className="absolute inset-0 whitespace-pre-line overflow-y-auto p-6"
                           >
-                          
+
                             {product?.details || "No se han agregado detalles adicionales para este producto."}
                           </motion.p>
                         )}
