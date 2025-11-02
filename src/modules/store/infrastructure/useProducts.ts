@@ -63,9 +63,29 @@ export function useProducts() {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const normalizeProduct = (p: any): Product => ({
-    ...p,
-    store: p.store || (p.store_name ? { id: p.store_id, name: p.store_name } : undefined),
-  });
+  ...p,
+  id: Number(p.id),
+  name: p.name || "",
+  description: p.description || "",
+  details: p.details || "",
+  price: p.price !== undefined && p.price !== null ? Number(p.price) : 0,
+  discount_price:
+    p.discount_price !== undefined && p.discount_price !== null
+      ? Number(p.discount_price)
+      : undefined,
+  stock: p.stock !== undefined && p.stock !== null ? Number(p.stock) : 0,
+  status: (p.status as "ACTIVE" | "INACTIVE" | "DRAFT" | "ARCHIVED") || "ACTIVE",
+  is_featured: Boolean(p.is_featured),
+  store:
+    p.store ||
+    (p.store_name
+      ? { id: p.store_id ?? 0, name: p.store_name }
+      : undefined),
+  image_1_url: p.image_1_url || null,
+  image_2_url: p.image_2_url || null,
+  image_3_url: p.image_3_url || null,
+});
+
 
   // Obtener categorías
   const getCategories = async (): Promise<Category[]> => {
@@ -123,6 +143,19 @@ export function useProducts() {
       setLoading(false);
     }
   };
+const searchProducts = async (query: string): Promise<Product[]> => {
+  setLoading(true);
+  setError(null);
+  try {
+    const res = await axios.get(`${BASE_URL}/products/search`, { params: { q: query } });
+    return res.data.map(normalizeProduct);
+  } catch (e: any) {
+    setError("No se pudieron buscar los productos");
+    return [];
+  } finally {
+    setLoading(false);
+  }
+};
 
   // Crear producto
   const createProduct = async (product: any) => {
@@ -312,17 +345,24 @@ export function useProducts() {
   };
   // 🔹 Obtener productos paginados (para exploración general)
   const getPaginatedProducts = async (page: number = 1, limit: number = 30) => {
-    try {
-      const res = await axios.get(`${BASE_URL}/products`, {
-        params: { page, limit },
-      });
-      // ⚠️ Asegúrate de que tu backend devuelva { data, last_page, total } o ajustá los nombres aquí
-      return res.data;
-    } catch (e: any) {
-      console.error("Error al obtener productos paginados:", e);
-      return { data: [], last_page: 1, total: 0 };
-    }
-  };
+  try {
+    const res = await axios.get(`${BASE_URL}/products`, {
+      params: { page, per_page: limit }, // ✅ nombre correcto
+    });
+
+    // ✅ Asegurar estructura limpia
+    return {
+      data: res.data.data?.map(normalizeProduct) ?? [],
+      last_page: res.data.last_page,
+      total: res.data.total,
+      current_page: res.data.current_page,
+    };
+  } catch (e: any) {
+    console.error("Error al obtener productos paginados:", e);
+    return { data: [], last_page: 1, total: 0, current_page: 1 };
+  }
+};
+
 
 
   const getProductById = async (id: number): Promise<Product | null> => {
@@ -434,7 +474,7 @@ export function useProducts() {
     getOffers,
     getPaginatedProducts,
     searchProductsByStore,
-
+    searchProducts,
     // 🟣 Reseñas
     getProductReviews,
     getProductReviewSummary,

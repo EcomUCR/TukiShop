@@ -18,7 +18,8 @@ import {
 export default function SearchedProductPage() {
   const { categoryId } = useParams<{ categoryId: string }>();
   const location = useLocation();
-  const { getProductsByCategory, getProducts, getOffers } = useProducts(); // ✅ agregado getOffers
+  const { getProductsByCategory, getOffers, searchProducts } =
+    useProducts(); // ✅ agregado getOffers
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
@@ -54,7 +55,7 @@ export default function SearchedProductPage() {
   const { getPaginatedProducts } = useProducts();
   const [totalPages, setTotalPages] = useState(1);
 
-   useEffect(() => {
+  useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
       try {
@@ -68,14 +69,12 @@ export default function SearchedProductPage() {
           setProducts(res);
           setTotalPages(1);
         } else if (query) {
-          const all = await getProducts();
-          const filtered = all.filter((p) =>
-            p.name.toLowerCase().includes(query.toLowerCase())
-          );
-          setProducts(filtered);
+          // ✅ Buscar directamente desde el backend (usa tu endpoint /products/search)
+          const res = await searchProducts(query);
+          setProducts(res);
           setTotalPages(1);
         } else {
-          // 🔸 2. Si es modo "explore" o sin filtros → usar paginación del backend
+          // 🔸 Modo explorar o sin filtros → usa paginación
           const res = await getPaginatedProducts(page, limit);
           setProducts(res.data);
           setTotalPages(res.last_page);
@@ -91,7 +90,6 @@ export default function SearchedProductPage() {
 
     fetchData();
   }, [page, categoryId, query, mode]);
-
 
   const paginated = products;
 

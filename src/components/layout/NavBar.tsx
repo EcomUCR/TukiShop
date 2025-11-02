@@ -15,8 +15,9 @@ import { useAuth } from "../../hooks/context/AuthContext";
 import { useProducts } from "../../modules/store/infrastructure/useProducts";
 import { useWishlist } from "../../modules/users/infrastructure/useWishList";
 import NotificationDropdown from "../data-display/NotificationDropDown";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import CategoryDropdown from "../data-display/CategoryDropdown";
+import axios from "axios";
 
 import { motion, AnimatePresence } from "framer-motion";
 import { useCart } from "../../hooks/context/CartContext";
@@ -27,10 +28,21 @@ export default function NavBar() {
   const { user, logout } = useAuth();
   const { itemCount, refreshCart } = useCart();
   const { wishlist, fetchWishlist } = useWishlist();
+  const [suggestions, setSuggestions] = useState<
+    { id: number; name: string; image_1_url: string; store_name: string }[]
+  >([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const debounceRef = useRef<NodeJS.Timeout | null>(null);
 
   const { getCategories } = useProducts();
   const navigate = useNavigate();
   const location = useLocation();
+// 🔁 Mantiene el texto del buscador sincronizado con el parámetro ?q=
+useEffect(() => {
+  const params = new URLSearchParams(location.search);
+  const q = params.get("q") || "";
+  setSearchQuery(q);
+}, [location.search]);
 
   const [categories, setCategories] = useState<Category[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
@@ -49,7 +61,35 @@ export default function NavBar() {
     }
     return false;
   };
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setSearchQuery(value);
 
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+
+    if (value.trim().length < 2) {
+      setSuggestions([]);
+      return;
+    }
+
+    debounceRef.current = setTimeout(async () => {
+      try {
+        const { data } = await axios.get(
+          `/products/search?q=${encodeURIComponent(value)}`
+        );
+        setSuggestions(data);
+        setShowSuggestions(true);
+      } catch (err) {
+        console.error("Error cargando sugerencias", err);
+      }
+    }, 300); // ⏳ debounce 300ms
+  };
+
+  const handleSelectSuggestion = (productId: number) => {
+    navigate(`/product/${productId}`);
+    setShowSuggestions(false);
+    setSearchQuery("");
+  };
   useEffect(() => {
     if (user) fetchWishlist();
   }, [user]);
@@ -98,11 +138,11 @@ export default function NavBar() {
     return () => document.removeEventListener("click", handleClickOutside);
   }, []);
 
-
   const navLinkClass = (isActive: boolean) =>
-    `transition-all duration-200 cursor-pointer relative ${isActive
-      ? "font-semibold before:content-[''] before:absolute before:bottom-0 before:left-0 before:w-full before:h-[2px] before:bg-white"
-      : ""
+    `transition-all duration-200 cursor-pointer relative ${
+      isActive
+        ? "font-semibold before:content-[''] before:absolute before:bottom-0 before:left-0 before:w-full before:h-[2px] before:bg-white"
+        : ""
     } hover:translate-y-[-2px] `;
 
   const mobileLinkClass = (isActive: boolean) =>
@@ -121,22 +161,52 @@ export default function NavBar() {
           <span className="sm:block">TukiShop</span>
         </Link>
 
-        {/* Barra de búsqueda */}
-        <div className="hidden md:flex items-center bg-white rounded-full px-0.5 w-1/3">
-          <input
-            type="text"
-            className="w-full h-10 p-3 rounded-full focus:outline-none"
-            placeholder="Buscar productos..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+        <div className="hidden md:flex items-center bg-white rounded-full px-0.5 w-1/3 relative">
+  {/* Campo de búsqueda con sugerencias */}
+  <input
+    type="text"
+    className="w-full h-10 p-3 rounded-full focus:outline-none"
+    placeholder="Buscar productos..."
+    value={searchQuery}
+    onChange={handleInputChange}
+    onFocus={() => setShowSuggestions(true)}
+    onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
+    onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+  />
+
+  {/* 🔍 Botón de búsqueda */}
+  <div className="absolute right-1 top-1/2 -translate-y-1/2">
+    <ButtonComponent
+      style="bg-gradient-to-br cursor-pointer from-contrast-main to-contrast-secondary rounded-full w-10 h-9 flex items-center justify-center"
+      icon={<IconSearch className="text-white h-5 w-5 stroke-3" />}
+      onClick={handleSearch}
+    />
+  </div>
+
+  {/* 📋 Sugerencias desplegables */}
+  {showSuggestions && suggestions.length > 0 && (
+    <ul className="absolute top-11 left-0 right-0 bg-white border border-gray-200 rounded-xl shadow-lg z-50 max-h-60 overflow-y-auto">
+      {suggestions.map((p) => (
+        <li
+          key={p.id}
+          className="flex items-center gap-2 px-3 py-2 hover:bg-gray-100 cursor-pointer transition-all"
+          onMouseDown={() => handleSelectSuggestion(p.id)}
+        >
+          <img
+            src={p.image_1_url}
+            alt={p.name}
+            className="w-8 h-8 object-cover rounded-md"
           />
-          <ButtonComponent
-            style="bg-gradient-to-br cursor-pointer from-contrast-main to-contrast-secondary rounded-full w-12 h-9 flex items-center justify-center"
-            icon={<IconSearch className="text-white h-5 w-5 stroke-3" />}
-            onClick={handleSearch}
-          />
-        </div>
+          <div className="flex flex-col">
+            <span className="text-sm font-medium text-gray-800">{p.name}</span>
+            <span className="text-xs text-gray-500">{p.store_name}</span>
+          </div>
+        </li>
+      ))}
+    </ul>
+  )}
+</div>
+
 
         {/* Íconos desktop */}
         <div className="hidden md:flex text-white items-center w-1/3 justify-end">
@@ -276,7 +346,6 @@ export default function NavBar() {
         </div>
       </div>
 
-
       <div className="hidden md:block">
         <ul className="flex justify-center gap-10 p-4 text-white text-sm">
           <li>
@@ -370,14 +439,18 @@ export default function NavBar() {
               <Link
                 to="/search?mode=explore"
                 onClick={() => setMenuOpen(false)}
-                className={mobileLinkClass(isActiveLink("/search", "mode=explore"))}
+                className={mobileLinkClass(
+                  isActiveLink("/search", "mode=explore")
+                )}
               >
                 Explorar
               </Link>
               <Link
                 to="/search?mode=offers"
                 onClick={() => setMenuOpen(false)}
-                className={mobileLinkClass(isActiveLink("/search", "mode=offers"))}
+                className={mobileLinkClass(
+                  isActiveLink("/search", "mode=offers")
+                )}
               >
                 Ofertas
               </Link>

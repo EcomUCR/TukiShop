@@ -105,7 +105,6 @@ export default function FeaturedProductCard(props: FeaturedProductCardProps) {
             />
           </div>
         ) : (
-
           <Link
             to={`/product/${props.id}`}
             onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
@@ -141,26 +140,23 @@ export default function FeaturedProductCard(props: FeaturedProductCardProps) {
                 {props.title}
               </h3>
             </Link>
-          )
-          }
+          )}
           <div className="flex items-center gap-2">
-          <RaitingComponent value={props.rating} size={12} />
-          <p className="text-xs">{props.rating}"</p>
+            <RaitingComponent value={props.rating} size={12} />
+            <p className="text-xs">{props.rating}"</p>
           </div>
           <div className="mt-1">
             {hasDiscount ? (
               <>
                 <p className="line-through font-comme text-xs sm:text-sm text-black/30">
-                  ₡ {props.price}
+                  {props.price}
                 </p>
                 <p className="font-comme text-base sm:text-lg">
-                  ₡ {props.discountPrice}
+                  {props.discountPrice}
                 </p>
               </>
             ) : (
-              <p className="font-comme text-base sm:text-lg">
-                ₡ {props.price}
-              </p>
+              <p className="font-comme text-base sm:text-lg"> {props.price}</p>
             )}
           </div>
 
@@ -175,15 +171,17 @@ export default function FeaturedProductCard(props: FeaturedProductCardProps) {
                 animate={
                   added
                     ? {
-                      background: "linear-gradient(90deg, var(--color-contrast-secondary), var(--color-main))",
-                      scale: [1, 1.05, 1],
-                      boxShadow: "0 0 15px rgba(150, 80, 220, 0.6)",
-                    }
+                        background:
+                          "linear-gradient(90deg, var(--color-contrast-secondary), var(--color-main))",
+                        scale: [1, 1.05, 1],
+                        boxShadow: "0 0 15px rgba(150, 80, 220, 0.6)",
+                      }
                     : {
-                      background: "linear-gradient(90deg, var(--color-contrast-main), var(--color-contrast-secondary))",
-                      scale: 1,
-                      boxShadow: "0 0 0 rgba(0,0,0,0)",
-                    }
+                        background:
+                          "linear-gradient(90deg, var(--color-contrast-main), var(--color-contrast-secondary))",
+                        scale: 1,
+                        boxShadow: "0 0 0 rgba(0,0,0,0)",
+                      }
                 }
                 transition={{
                   duration: 0.1,
@@ -219,7 +217,11 @@ export default function FeaturedProductCard(props: FeaturedProductCardProps) {
                         <motion.div
                           initial={{ rotate: -120, scale: 0.8 }}
                           animate={{ rotate: 0, scale: 1 }}
-                          transition={{ type: "spring", stiffness: 400, damping: 15 }}
+                          transition={{
+                            type: "spring",
+                            stiffness: 400,
+                            damping: 15,
+                          }}
                           className="flex items-center"
                         >
                           <IconCheck className="mr-2 text-white" size={18} />
@@ -239,9 +241,17 @@ export default function FeaturedProductCard(props: FeaturedProductCardProps) {
                         animate={{
                           y: 0,
                           opacity: 1,
-                          transition: { type: "spring", stiffness: 300, damping: 18 },
+                          transition: {
+                            type: "spring",
+                            stiffness: 300,
+                            damping: 18,
+                          },
                         }}
-                        exit={{ y: 20, opacity: 0, transition: { duration: 0.2 } }}
+                        exit={{
+                          y: 20,
+                          opacity: 0,
+                          transition: { duration: 0.2 },
+                        }}
                         className="absolute inset-0 flex items-center justify-center"
                       >
                         Añadir al carrito
@@ -250,7 +260,6 @@ export default function FeaturedProductCard(props: FeaturedProductCardProps) {
                   </AnimatePresence>
                 </div>
               </motion.button>
-
 
               <HeartButton productId={props.id} variant="filled" />
             </div>
@@ -269,15 +278,17 @@ export default function FeaturedProductCard(props: FeaturedProductCardProps) {
             animate={
               added
                 ? {
-                  background: "linear-gradient(90deg, var(--color-contrast-secondary), var(--color-main))",
-                  scale: [1, 1.05, 1],
-                  boxShadow: "0 0 15px rgba(150, 80, 220, 0.6)",
-                }
+                    background:
+                      "linear-gradient(90deg, var(--color-contrast-secondary), var(--color-main))",
+                    scale: [1, 1.05, 1],
+                    boxShadow: "0 0 15px rgba(150, 80, 220, 0.6)",
+                  }
                 : {
-                  background: "linear-gradient(90deg, var(--color-contrast-main), var(--color-contrast-secondary))",
-                  scale: 1,
-                  boxShadow: "0 0 0 rgba(0,0,0,0)",
-                }
+                    background:
+                      "linear-gradient(90deg, var(--color-contrast-main), var(--color-contrast-secondary))",
+                    scale: 1,
+                    boxShadow: "0 0 0 rgba(0,0,0,0)",
+                  }
             }
             transition={{
               duration: 0.1,
@@ -313,7 +324,11 @@ export default function FeaturedProductCard(props: FeaturedProductCardProps) {
                     <motion.div
                       initial={{ rotate: -120, scale: 0.8 }}
                       animate={{ rotate: 0, scale: 1 }}
-                      transition={{ type: "spring", stiffness: 400, damping: 15 }}
+                      transition={{
+                        type: "spring",
+                        stiffness: 400,
+                        damping: 15,
+                      }}
                       className="flex items-center"
                     >
                       <IconCheck className="mr-2 text-white" size={18} />
@@ -333,7 +348,11 @@ export default function FeaturedProductCard(props: FeaturedProductCardProps) {
                     animate={{
                       y: 0,
                       opacity: 1,
-                      transition: { type: "spring", stiffness: 300, damping: 18 },
+                      transition: {
+                        type: "spring",
+                        stiffness: 300,
+                        damping: 18,
+                      },
                     }}
                     exit={{ y: 20, opacity: 0, transition: { duration: 0.2 } }}
                     className="absolute inset-0 flex items-center justify-center"
@@ -348,7 +367,6 @@ export default function FeaturedProductCard(props: FeaturedProductCardProps) {
           <HeartButton productId={props.id} variant="filled" />
         </div>
       )}
-
     </figure>
   );
 }

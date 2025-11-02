@@ -183,10 +183,11 @@ export default function HomePage() {
                   id: prod.id!,
                   shop: prod.store?.name || "Sin tienda",
                   title: prod.name,
-                  price: prod.price.toLocaleString("es-CRC"),
-                  discountPrice: prod.discount_price
-                    ? prod.discount_price.toLocaleString("es-CRC")
-                    : "",
+                 price: prod.price.toLocaleString("es-CR", { style: "currency", currency: "CRC" }),
+discountPrice: prod.discount_price
+  ? prod.discount_price.toLocaleString("es-CR", { style: "currency", currency: "CRC" })
+  : "",
+
                   rating: 0,
                   img: prod.image_1_url || audifonos,
                 }))}

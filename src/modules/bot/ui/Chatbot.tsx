@@ -239,9 +239,18 @@ export function Chatbot() {
                           <p className="text-gray-500 text-[11px] sm:text-xs truncate">
                             {p.store_name}
                           </p>
-                          <p className="text-main-600 font-bold text-xs sm:text-sm">
-                            ₡{p.discount_price || p.price}
-                          </p>
+                          {p.discount_price && p.discount_price > 0 ? (
+                            <p className="text-main-600 font-bold text-xs sm:text-sm">
+                              ₡{p.discount_price}
+                              <span className="line-through text-gray-400 text-[11px] ml-1">
+                                ₡{p.price}
+                              </span>
+                            </p>
+                          ) : (
+                            <p className="text-main-600 font-bold text-xs sm:text-sm">
+                              ₡{p.price}
+                            </p>
+                          )}
                         </div>
                       ))}
                     </div>
@@ -293,12 +302,12 @@ export function Chatbot() {
                     </div>
                   )}
                   {m.role === "bot" && m.social && m.link && (
-  <div className="mt-3 flex justify-center">
-    <a
-      href={m.link}
-      target="_blank"
-      rel="noopener noreferrer"
-      className={`flex items-center gap-2 px-6 py-2 rounded-full font-semibold shadow-md text-white transition-all duration-300 hover:scale-105 active:scale-95
+                    <div className="mt-3 flex justify-center">
+                      <a
+                        href={m.link}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className={`flex items-center gap-2 px-6 py-2 rounded-full font-semibold shadow-md text-white transition-all duration-300 hover:scale-105 active:scale-95
         ${
           m.social === "facebook"
             ? "bg-gradient-to-br from-[#1877F2] to-[#42A5F5]"
@@ -312,32 +321,39 @@ export function Chatbot() {
             ? "bg-gradient-to-br from-[#075E54] to-[#25D366]"
             : "bg-gradient-to-br from-contrast-main to-contrast-secondary"
         }`}
-    >
-      {m.social === "facebook" && <IconBrandFacebook size={20} />}
-      {m.social === "instagram" && <IconBrandInstagram size={20} />}
-      {m.social === "tiktok" && <IconBrandTiktok size={20} />}
-      {m.social === "x" && <IconBrandX size={20} />}
-      {m.social === "whatsapp" && <IconBrandWhatsapp size={20} />}
-      <span>
-        {m.social === "whatsapp"
-          ? "WhatsApp"
-          : `Ir a ${
-              m.social.charAt(0).toUpperCase() + m.social.slice(1)
-            }`}
-      </span>
-    </a>
-  </div>
-)}
+                      >
+                        {m.social === "facebook" && (
+                          <IconBrandFacebook size={20} />
+                        )}
+                        {m.social === "instagram" && (
+                          <IconBrandInstagram size={20} />
+                        )}
+                        {m.social === "tiktok" && <IconBrandTiktok size={20} />}
+                        {m.social === "x" && <IconBrandX size={20} />}
+                        {m.social === "whatsapp" && (
+                          <IconBrandWhatsapp size={20} />
+                        )}
+                        <span>
+                          {m.social === "whatsapp"
+                            ? "WhatsApp"
+                            : `Ir a ${
+                                m.social.charAt(0).toUpperCase() +
+                                m.social.slice(1)
+                              }`}
+                        </span>
+                      </a>
+                    </div>
+                  )}
 
-{m.socials && m.socials.length > 0 && (
-  <div className="mt-3 flex justify-center gap-3">
-    {m.socials.map((s) => (
-      <a
-        key={s.social}
-        href={s.link}
-        target="_blank"
-        rel="noopener noreferrer"
-        className={`flex items-center justify-center p-3 rounded-full shadow-md hover:scale-105 active:scale-95 transition-all
+                  {m.socials && m.socials.length > 0 && (
+                    <div className="mt-3 flex justify-center gap-3">
+                      {m.socials.map((s) => (
+                        <a
+                          key={s.social}
+                          href={s.link}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className={`flex items-center justify-center p-3 rounded-full shadow-md hover:scale-105 active:scale-95 transition-all
           ${
             s.social === "facebook"
               ? "bg-gradient-to-br from-[#1877F2] to-[#42A5F5]"
@@ -351,25 +367,26 @@ export function Chatbot() {
               ? "bg-gradient-to-br from-[#075E54] to-[#25D366]"
               : "bg-gradient-to-br from-contrast-main to-contrast-secondary"
           } text-white`}
-      >
-        {s.social === "facebook" && (
-          <IconBrandFacebook className="w-5 h-5" />
-        )}
-        {s.social === "instagram" && (
-          <IconBrandInstagram className="w-5 h-5" />
-        )}
-        {s.social === "tiktok" && (
-          <IconBrandTiktok className="w-5 h-5" />
-        )}
-        {s.social === "x" && <IconBrandX className="w-5 h-5" />}
-        {s.social === "whatsapp" && (
-          <IconBrandWhatsapp className="w-5 h-5" />
-        )}
-      </a>
-    ))}
-  </div>
-)}
-
+                        >
+                          {s.social === "facebook" && (
+                            <IconBrandFacebook className="w-5 h-5" />
+                          )}
+                          {s.social === "instagram" && (
+                            <IconBrandInstagram className="w-5 h-5" />
+                          )}
+                          {s.social === "tiktok" && (
+                            <IconBrandTiktok className="w-5 h-5" />
+                          )}
+                          {s.social === "x" && (
+                            <IconBrandX className="w-5 h-5" />
+                          )}
+                          {s.social === "whatsapp" && (
+                            <IconBrandWhatsapp className="w-5 h-5" />
+                          )}
+                        </a>
+                      ))}
+                    </div>
+                  )}
                 </div>
               ))}
 
