@@ -286,8 +286,8 @@ export default function ProductPage() {
                             activeTab === "description"
                               ? "translateX(0%)"
                               : activeTab === "reviews"
-                                ? "translateX(100%)"
-                                : "translateX(200%)",
+                                ? "translateX(96%)"
+                                : "translateX(193%)",
                         }}
                       />
                       {["description", "reviews", "details"].map((tab) => (
