@@ -143,11 +143,10 @@ export function Chatbot() {
               {messages.map((m, i) => (
                 <div
                   key={i}
-                  className={`p-3 rounded-2xl shadow-sm ${
-                    m.role === "user"
+                  className={`p-3 rounded-2xl shadow-sm ${m.role === "user"
                       ? "bg-blue-500 text-white self-end ml-auto max-w-[85%]"
                       : "bg-gray-100 text-gray-800 self-start mr-auto max-w-[85%]"
-                  }`}
+                    }`}
                 >
                   <p>{m.content}</p>
                   {m.products && m.products.length > 0 && (
