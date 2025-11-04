@@ -151,9 +151,8 @@ export default function AdminStoreProductListModal({
                         </h3>
                         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 justify-items-center gap-6 px-0 sm:px-4">
                             {normalProducts.map((product) => (
-                                <div onClick={() => openEditModal(product.id ?? 0)} className="cursor-pointer">
+                                <div key={product.id} onClick={() => openEditModal(product.id ?? 0)} className="cursor-pointer">
                                     <ProductCard
-                                        key={product.id}
                                         shop={storeName}
                                         title={product.name}
                                         price={product.price}
@@ -178,14 +177,13 @@ export default function AdminStoreProductListModal({
                         </h3>
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 justify-items-center px-0 sm:px-4">
                             {featuredProducts.map((product) => (
-                                <div onClick={() => openEditModal(product.id ?? 0)} className="cursor-pointer">
+                                <div key={product.id} onClick={() => openEditModal(product.id ?? 0)} className="cursor-pointer">
                                     <FeaturedProductCard
-                                        key={product.id}
                                         shop={storeName}
                                         img={product.image_1_url ?? "https://upload.wikimedia.org/wikipedia/commons/1/14/No_Image_Available.jpg"}
                                         title={product.name}
-                                        price={product.price.toString()}
-                                        discountPrice={product.discount_price ? product.discount_price.toString() : undefined}
+                                        price={product.price}
+                                        discountPrice={product.discount_price}
                                         rating={product.rating ?? 0}
                                         edit="EDIT"
                                         id={product.id ?? 0}

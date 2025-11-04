@@ -13,8 +13,8 @@ type ProductForm = Omit<
     Product,
     "price" | "discount_price" | "image" | "image_1_url" | "image_2_url" | "image_3_url"
 > & {
-    price: string | number;
-    discount_price: string | number;
+    price: number;
+    discount_price: number;
     images: (File | string | null)[];
 };
 
@@ -57,7 +57,7 @@ export default function AdminProductCRUDModal({
     const [form, setForm] = useState<ProductForm>({
         name: "",
         description: "",
-        details: "", 
+        details: "",
         price: 0,
         discount_price: 0,
         stock: 0,
@@ -112,12 +112,13 @@ export default function AdminProductCRUDModal({
             setForm({
                 ...(product as any),
                 images: loadedImages,
-                price: product.price?.toString() ?? "0",
-                discount_price: product.discount_price?.toString() ?? "0",
+                price: Number(product.price) ?? 0,
+                discount_price: Number(product.discount_price) ?? 0,
                 categories: Array.isArray(product.categories) ? product.categories.map((c: any) => c.id) : [],
                 status: product.status || "ACTIVE",
-                details: product.details || "", 
+                details: product.details || "",
             });
+
 
             setPreviews(loadedImages);
         })();
@@ -168,7 +169,7 @@ export default function AdminProductCRUDModal({
             image_3: form.images[2],
             name: form.name,
             description: form.description,
-            details: form.details, 
+            details: form.details,
             stock: form.stock,
             status: form.status,
             categories: form.categories,
@@ -333,9 +334,9 @@ export default function AdminProductCRUDModal({
                                     Precio <span className="text-red-500">*</span>
                                 </p>
                                 <input
-                                    type="text"
+                                    type="number"
                                     value={form.price}
-                                    onChange={(e) => setForm({ ...form, price: e.target.value })}
+                                    onChange={(e) => setForm({ ...form, price: Number(e.target.value) })}
                                     placeholder="Precio"
                                     className="bg-main-dark/20 rounded-2xl p-2 w-full"
                                 />
@@ -344,9 +345,9 @@ export default function AdminProductCRUDModal({
                             <label className="flex flex-col w-full gap-2">
                                 <p className="font-semibold">Precio de oferta</p>
                                 <input
-                                    type="text"
+                                    type="number"
                                     value={form.discount_price}
-                                    onChange={(e) => setForm({ ...form, discount_price: e.target.value })}
+                                    onChange={(e) => setForm({ ...form, discount_price: Number(e.target.value) })}
                                     placeholder="Precio de oferta"
                                     className="bg-main-dark/20 rounded-2xl p-2 w-full"
                                 />
@@ -515,13 +516,14 @@ export default function AdminProductCRUDModal({
                                     <FeaturedProductCard
                                         shop="Preview"
                                         title={form.name || "Nombre del producto"}
-                                        price={form.price ? String(form.price) : "0"}
-                                        discountPrice={form.discount_price ? String(form.discount_price) : undefined}
+                                        price={Number(form.price) || 0}
+                                        discountPrice={Number(form.discount_price) || 0}
                                         img={mainPreview}
                                         rating={0}
                                         edit="EDITING"
                                         id={0}
                                     />
+
                                 ) : (
                                     <ProductCard
                                         shop="Preview"
