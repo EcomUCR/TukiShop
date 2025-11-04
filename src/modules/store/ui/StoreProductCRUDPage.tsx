@@ -60,6 +60,7 @@ export default function StoreProductCRUDPage() {
     React.useRef<HTMLInputElement>(null),
     React.useRef<HTMLInputElement>(null),
   ];
+  const [imageErrors, setImageErrors] = useState<(string | null)[]>([null, null, null]);
 
   const [form, setForm] = useState<ProductForm>({
     name: "",
@@ -255,6 +256,26 @@ export default function StoreProductCRUDPage() {
   ) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
+      const maxSize = 2 * 1024 * 1024; // 2 MB
+
+      if (file.size > maxSize) {
+        // 🔹 Guardar error en el estado
+        const newErrors = [...imageErrors];
+        newErrors[index] = "La imagen no puede superar los 2 MB.";
+        setImageErrors(newErrors);
+
+        // Limpiar input
+        if (fileInputRefs[index].current) {
+          fileInputRefs[index].current!.value = "";
+        }
+        return;
+      }
+
+      // 🔹 Si es válida, limpiar el error y mostrar preview
+      const newErrors = [...imageErrors];
+      newErrors[index] = null;
+      setImageErrors(newErrors);
+
       const fileURL = URL.createObjectURL(file);
 
       setForm((prevForm) => {
@@ -270,6 +291,7 @@ export default function StoreProductCRUDPage() {
       });
     }
   };
+
 
   const handleRemoveImage = (index: number) => {
     if (fileInputRefs[index].current) {
@@ -458,25 +480,6 @@ export default function StoreProductCRUDPage() {
                 </div>
               </label>
 
-              {/* 🔹 Detalles técnicos */}
-              <label className="flex flex-col w-full gap-2">
-                <p className="font-semibold text-main-dark">Detalles técnicos</p>
-                <div className="bg-main-dark/20 rounded-xl px-3 py-2 w-full">
-                  <textarea
-                    placeholder={`Ejemplo:
-- Peso: 500g
-- Material: Acero inoxidable
-- Medidas: 20x10cm`} value={form.details}
-                    onChange={(e) => setForm({ ...form, details: e.target.value })}
-                    rows={5}
-                    className="bg-transparent w-full resize-none outline-none text-sm sm:text-base placeholder-gray-500"
-                  />
-                </div>
-                <span className="text-xs text-gray-500 mt-1">
-                  Incluí especificaciones técnicas o información adicional útil.
-                </span>
-              </label>
-
               <div className="flex flex-col gap-4">
                 <p className="font-semibold text-lg text-main">
                   Agregar imágenes
@@ -522,6 +525,12 @@ export default function StoreProductCRUDPage() {
                         className="flex-1 text-sm file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-main-dark/20 file:text-main file:cursor-pointer hover:file:bg-main-dark/30 transition max-sm:w-full max-sm:text-xs"
                       />
                     </div>
+                    <div className="flex flex-col gap-1 mt-2 text-xs text-gray-500">
+                      <p>Límite máximo por imagen: <span className="font-semibold text-main">2 MB</span></p>
+                      {imageErrors[index] && (
+                        <p className="text-red-500 font-medium">{imageErrors[index]}</p>
+                      )}
+                    </div>
                   </div>
                 ))}
               </div>
@@ -529,6 +538,24 @@ export default function StoreProductCRUDPage() {
 
             {/* Derecha */}
             <div className="flex flex-col items-center sm:w-6/12 gap-6">
+              {/* 🔹 Detalles técnicos */}
+              <label className="flex flex-col w-full gap-2">
+                <p className="font-semibold text-main-dark">Detalles técnicos</p>
+                <div className="bg-main-dark/20 rounded-xl px-3 py-2 w-full">
+                  <textarea
+                    placeholder={`Ejemplo:
+- Peso: 500g
+- Material: Acero inoxidable
+- Medidas: 20x10cm`} value={form.details}
+                    onChange={(e) => setForm({ ...form, details: e.target.value })}
+                    rows={5}
+                    className="bg-transparent w-full resize-none outline-none text-sm sm:text-base placeholder-gray-500"
+                  />
+                </div>
+                <span className="text-xs text-gray-500 mt-1">
+                  Incluí especificaciones técnicas o información adicional útil.
+                </span>
+              </label>
               <label className="flex items-center gap-2">
                 <p className="font-semibold">Destacar producto</p>
                 <input
