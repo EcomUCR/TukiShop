@@ -10,7 +10,7 @@ import { useCart } from "../../../hooks/context/CartContext";
 import { SkeletonCartPage } from "../../../components/ui/AllSkeletons";
 import { useAuth } from "../../../hooks/context/AuthContext";
 import BannerSelectModal from "../../home/ui/BannerSelectModal";
-import {useAlert} from "../../../hooks/context/AlertContext";
+import { useAlert } from "../../../hooks/context/AlertContext";
 
 type AnyBanner = {
   id?: number;
@@ -107,26 +107,41 @@ export default function CartPage() {
   };
 
   const handleClearCart = async () => {
-  const confirmed = await showAlert({
-    type: "warning",
-    title: "Vaciar carrito",
-    message: "¿Deseas vaciar el carrito?",
-    confirmText: "Vaciar",
-    cancelText: "Cancelar",
-  });
+    const confirmed = await showAlert({
+      type: "warning",
+      title: "Vaciar carrito",
+      message:
+        "¿Estás seguro de que deseas vaciar tu carrito? Esta acción no se puede deshacer.",
+      confirmText: "Vaciar",
+      cancelText: "Cancelar",
+    });
 
-  if (!confirmed) return;
+    if (!confirmed) return;
 
-  try {
-    setClearing(true);
-    await clearCart();
-    await refreshCart();
-  } catch (err) {
-    console.error("Error al vaciar el carrito:", err);
-  } finally {
-    setClearing(false);
-  }
-};
+    try {
+      setClearing(true);
+      await clearCart();
+      await refreshCart();
+
+      await showAlert({
+        type: "success",
+        title: "Carrito vaciado",
+        message: "Tu carrito se ha vaciado correctamente.",
+        confirmText: "Aceptar",
+      });
+    } catch (err) {
+      console.error("Error al vaciar el carrito:", err);
+      await showAlert({
+        type: "error",
+        title: "Error",
+        message: "Ocurrió un problema al vaciar el carrito. Inténtalo nuevamente.",
+        confirmText: "Aceptar",
+      });
+    } finally {
+      setClearing(false);
+    }
+  };
+
 
 
   // 🔧 Helper: convertir File|string → URL
@@ -167,16 +182,42 @@ export default function CartPage() {
                 <button
                   onClick={handleClearCart}
                   disabled={clearing}
-                  className={`mb-4 px-6 py-2 rounded-full border-2 border-[#ff7e47] text-[#ff7e47] font-medium transition-all duration-200 
-                  ${
-                    clearing
+                  className={`mb-4 px-6 py-2 rounded-full border-2 border-[#ff7e47] text-[#ff7e47] font-medium flex items-center justify-center gap-2 transition-all duration-200
+      ${clearing
                       ? "opacity-60 cursor-not-allowed"
                       : "hover:bg-[#ff7e47] hover:text-white"
-                  }`}
+                    }`}
                 >
-                  {clearing ? "Vaciando..." : "Vaciar"}
+                  {clearing ? (
+                    <>
+                      <svg
+                        className="animate-spin h-4 w-4 text-[#ff7e47]"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                      >
+                        <circle
+                          className="opacity-25"
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          strokeWidth="4"
+                        ></circle>
+                        <path
+                          className="opacity-75"
+                          fill="currentColor"
+                          d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                        ></path>
+                      </svg>
+                      <span>Vaciando...</span>
+                    </>
+                  ) : (
+                    "Vaciar"
+                  )}
                 </button>
               </div>
+
             )}
 
             {hasItems ? (
