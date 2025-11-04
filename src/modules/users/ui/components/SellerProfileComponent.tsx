@@ -439,16 +439,36 @@ export default function SellerProfileComponent({ setAlert }: SellerProfileCompon
               />
             </label>
             <label className="flex flex-col w-full">
-              Teléfono
-              <input
-                type="tel"
-                placeholder="Teléfono"
-                value={editableUser.phone_number}
-                onChange={(e) =>
-                  setEditableUser((prev) => ({ ...prev, phone_number: e.target.value }))}
-                className="bg-main-dark/20 rounded-xl px-3 py-2 w-full text-sm sm:text-base"
-              />
+              Teléfono personal
+              <div className="bg-main-dark/20 rounded-xl px-3 flex items-center gap-2 w-full">
+                <input
+                  type="tel"
+                  placeholder="Ej. 8888 8888"
+                  value={editableUser.phone_number}
+                  onChange={(e) => {
+                    let digits = e.target.value.replace(/\D/g, "");
+                    if (digits.length > 8) digits = digits.slice(0, 8);
+                    const formatted =
+                      digits.length > 4
+                        ? `${digits.slice(0, 4)} ${digits.slice(4)}`
+                        : digits;
+                    setEditableUser((prev) => ({
+                      ...prev,
+                      phone_number: formatted,
+                    }));
+                  }}
+                  maxLength={9}
+                  inputMode="numeric"
+                  pattern="^\\d{4}\\s\\d{4}$"
+                  title="Debe tener el formato 8888 8888"
+                  className="w-full py-2 bg-transparent focus:outline-none text-sm sm:text-base"
+                />
+              </div>
+              <span className="text-xs text-gray-500 mt-1">
+                Este número es personal y no será visible para otros usuarios.
+              </span>
             </label>
+
           </div>
         </div>
 
@@ -724,33 +744,37 @@ export default function SellerProfileComponent({ setAlert }: SellerProfileCompon
               </div>
 
               <section className="flex flex-col sm:flex-row gap-5 sm:gap-10">
-                <div className="w-full">
-                  Número telefónico
-                  <label className="bg-main-dark/20 rounded-xl px-3 flex items-center gap-2 w-full">
+                <label className="flex flex-col w-full">
+                  Teléfono de atención al cliente
+                  <div className="bg-main-dark/20 rounded-xl px-3 flex items-center gap-2 w-full">
                     <IconPhone className="text-contrast-secondary" />
                     <input
                       name="support_phone"
                       type="tel"
+                      placeholder="Ej. 8888 8888"
                       value={editableStore.support_phone || ""}
                       onChange={(e) => {
-                        let digits = e.target.value.replace(/\D/g, ""); // solo números
+                        let digits = e.target.value.replace(/\D/g, "");
                         if (digits.length > 8) digits = digits.slice(0, 8);
                         const formatted =
                           digits.length > 4
                             ? `${digits.slice(0, 4)} ${digits.slice(4)}`
                             : digits;
-                        setEditableStore((prev) => (prev ? { ...prev, support_phone: formatted } : prev));
+                        setEditableStore((prev) =>
+                          prev ? { ...prev, support_phone: formatted } : prev
+                        );
                       }}
                       maxLength={9}
                       inputMode="numeric"
                       pattern="^\\d{4}\\s\\d{4}$"
                       title="Debe tener el formato 8888 8888"
-                      placeholder="Número telefónico"
-                      className="w-full py-2 focus:outline-none text-sm sm:text-base"
+                      className="w-full py-2 bg-transparent focus:outline-none text-sm sm:text-base"
                     />
-
-                  </label>
-                </div>
+                  </div>
+                  <span className="text-xs text-gray-500 mt-1">
+                    Número visible para clientes en tu tienda.
+                  </span>
+                </label>
                 <label className="flex flex-col w-full">
                   Correo de la tienda
                   <input
