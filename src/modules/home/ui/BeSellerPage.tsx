@@ -17,7 +17,7 @@ export default function BeSellerPage() {
                     btn_color="GRADIENTE"
                     btn_text="Registrarse"
                     character={character}
-                    link="sdasda"
+                    link="/registerSeller"
                 />
 
                 <section className="flex flex-col justify-center items-center text-center w-full sm:w-3/4 lg:w-2/4 mx-auto pb-10 px-3 font-quicksand text-gray-800 leading-relaxed">
