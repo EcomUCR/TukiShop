@@ -4,7 +4,7 @@ import { useCartTotals } from "./useCartTotals";
 import { useProducts } from "../../modules/store/infrastructure/useProducts";
 import { useCheckout } from "../../modules/cart/infraestructure/useCheckout";
 import { useCoupons } from "../../modules/admin/infrastructure/useCoupons";
-import { IconMapPin, IconMinus, IconPlus, IconTicket } from "@tabler/icons-react";
+import { IconMapPin, IconMinus, IconPlus, IconTicket, IconDeviceFloppy } from "@tabler/icons-react";
 import { Button } from "../ui/button";
 import { useAlert } from "../../hooks/context/AlertContext";
 import { Elements } from "@stripe/react-stripe-js";
@@ -15,7 +15,7 @@ import { useNavigate, useParams } from "react-router-dom";
 
 const stripePromise = loadStripe(
   import.meta.env.VITE_STRIPE_PUBLIC_KEY ||
-    "pk_test_51SJQBqLl2yLxOyLIFdLhdGoXjNKpBn2WFxWjMhInw72TUbRe7DVmYLa17tBOfswYlYqe0E3J3bqYWFyuJaEFYMLI00aJOZAoJY"
+  "pk_test_51SJQBqLl2yLxOyLIFdLhdGoXjNKpBn2WFxWjMhInw72TUbRe7DVmYLa17tBOfswYlYqe0E3J3bqYWFyuJaEFYMLI00aJOZAoJY"
 );
 
 interface TotalsType {
@@ -50,8 +50,18 @@ export default function ShoppingForm({
   const params = useParams();
 
   const [addresses, setAddresses] = useState<any[]>([]);
-  const [addressText, setAddressText] = useState("");
   const [selectedAddressId, setSelectedAddressId] = useState<number | null>(null);
+
+  // 🏠 Campos de dirección manual
+  const [street, setStreet] = useState("");
+  const [city, setCity] = useState("");
+  const [state, setState] = useState("");
+  const [country, setCountry] = useState("");
+  const [zipCode, setZipCode] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
+
+  const [savingAddress, setSavingAddress] = useState(false);
+
   const [localTotals, setLocalTotals] = useState<TotalsType>({
     subtotal: 0,
     taxes: 0,
@@ -98,7 +108,7 @@ export default function ShoppingForm({
           if (isMounted && cartRes) setLocalTotals(cartRes);
         }
       } catch (err) {
-        console.error("❌ Error al cargar totales:", err);
+        console.error(" Error al cargar totales:", err);
       }
     };
     loadTotals();
@@ -112,36 +122,106 @@ export default function ShoppingForm({
   }, [totals, variant]);
 
   // ============================
-  // 🔹 Direcciones
+  // 🔹 Direcciones guardadas
   // ============================
   useEffect(() => {
     const fetchAddresses = async () => {
       try {
-        const { data } = await axios.get("/user/addresses", {
+        const { data } = await axios.get("/addresses", {
           headers: { Authorization: `Bearer ${token}` },
         });
         setAddresses(data.addresses || []);
-      } catch (err) {
-        console.error("❌ Error al obtener direcciones:", err);
+      } catch (error) {
+        console.error(" Error al obtener direcciones:", error);
       }
     };
-    if (token && variant === "checkout") fetchAddresses();
-  }, [token, variant]);
+
+    if (user) fetchAddresses();
+  }, [user, token]);
+
+  // ============================
+  // 💾 Guardar nueva dirección
+  // ============================
+  const handleSaveAddress = async () => {
+    if (!street || !city || !country) {
+      showAlert({
+        title: "Campos incompletos",
+        message: "Debes completar al menos la calle, ciudad y país.",
+        type: "warning",
+      });
+      return;
+    }
+
+    try {
+      // Verificar si ya existe una dirección similar
+      const existe = addresses.some(
+        (a) =>
+          a.street?.trim().toLowerCase() === street.trim().toLowerCase() &&
+          a.city?.trim().toLowerCase() === city.trim().toLowerCase()
+      );
+      if (existe) {
+        showAlert({
+          title: "Dirección duplicada",
+          message: "Ya tienes una dirección guardada con la misma calle y ciudad.",
+          type: "warning",
+        });
+        return;
+      }
+
+      setSavingAddress(true);
+      const { data } = await axios.post(
+        "/addresses",
+        {
+          street,
+          city,
+          state,
+          country,
+          zip_code: zipCode,
+          phone_number: phoneNumber,
+        },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      showAlert({
+        title: "Dirección guardada ",
+        message: "La nueva dirección se ha guardado correctamente.",
+        type: "success",
+      });
+
+      setAddresses((prev) => [...prev, data.address]);
+      setSelectedAddressId(data.address.id);
+    } catch (error) {
+      console.error(" Error al guardar dirección:", error);
+      showAlert({
+        title: "Error al guardar",
+        message: "No se pudo guardar la dirección. Inténtalo de nuevo.",
+        type: "error",
+      });
+    } finally {
+      setSavingAddress(false);
+    }
+  };
 
   // ============================
   // 💳 Pago con Stripe
   // ============================
   const handlePayment = async (paymentIntent: any) => {
-    const parts = addressText.split(",").map((p) => p.trim());
-    const [street, city, state, country, zip_code, phone_number] = parts;
     const selected = addresses.find((a) => a.id === selectedAddressId);
+
     const finalAddress = selected
       ? selected
-      : { street, city, state, country, zip_code, phone_number };
+      : {
+        street,
+        city,
+        state,
+        country,
+        zip_code: zipCode,
+        phone_number: phoneNumber,
+      };
 
     if (!finalAddress.street || !finalAddress.city) {
       showAlert({
-        title: "Dirección requerida 🏠",
+        title: "Dirección requerida ",
         message:
           "Debes seleccionar una dirección guardada o escribir una nueva antes de continuar.",
         type: "warning",
@@ -150,41 +230,6 @@ export default function ShoppingForm({
     }
 
     await processCheckout(paymentIntent, totals, finalAddress);
-  };
-
-  // ============================
-  // 🎟️ Cupón
-  // ============================
-  const handleApplyCoupon = async () => {
-    if (!couponCode.trim()) return;
-    try {
-      const result = await validateCoupon(couponCode, localTotals.total, user?.id);
-      if (!result.valid) {
-        setCouponMessage(result.message || "Cupón inválido o expirado.");
-        setAppliedCoupon(null);
-        setDiscount(0);
-        return;
-      }
-      setAppliedCoupon(result.coupon);
-      setDiscount(result.discount);
-      setLocalTotals((prev) => ({
-        ...prev,
-        total: prev.total - result.discount,
-        shipping:
-          result.coupon?.type === "FREE_SHIPPING" ? 0 : prev.shipping ?? 0,
-      }));
-      setCouponMessage(`Cupón aplicado: ${result.coupon.code}`);
-    } catch (err) {
-      console.error("❌ Error al aplicar cupón:", err);
-      setCouponMessage("Error al aplicar el cupón.");
-    }
-  };
-
-  const handleRemoveCoupon = () => {
-    setAppliedCoupon(null);
-    setDiscount(0);
-    setCouponMessage("");
-    getTotals().then((res) => res && setLocalTotals(res));
   };
 
   // ============================
@@ -199,7 +244,7 @@ export default function ShoppingForm({
       {variant === "checkout" && (!user || !token) ? (
         <div className="mt-6 p-5 border border-red-300 bg-red-50 rounded-lg text-center text-red-700">
           <p className="font-semibold mb-3">
-            ⚠️ Debes iniciar sesión para ver los detalles de tu compra.
+            Debes iniciar sesión para ver los detalles de tu compra.
           </p>
           <Button
             onClick={() => navigate("/loginRegister")}
@@ -214,25 +259,20 @@ export default function ShoppingForm({
         <p className="text-red-500 mt-5">{error}</p>
       ) : (
         <>
+          {/* 💰 Totales */}
           <div className="flex flex-col gap-6 pt-6">
             <div className="border-t pt-5 flex justify-between">
               <p>Subtotal:</p>
-              <p className="text-[#7E22CE] font-semibold">
-                ₡{format(localTotals?.subtotal)}
-              </p>
+              <p className="text-[#7E22CE] font-semibold">₡{format(localTotals?.subtotal)}</p>
             </div>
             <div className="border-t pt-5 flex justify-between">
               <p>Impuestos (13%):</p>
-              <p className="text-[#7E22CE] font-semibold">
-                ₡{format(localTotals?.taxes)}
-              </p>
+              <p className="text-[#7E22CE] font-semibold">₡{format(localTotals?.taxes)}</p>
             </div>
             {variant === "checkout" && (localTotals?.shipping ?? 0) > 0 && (
               <div className="border-t pt-5 flex justify-between">
                 <p>Envío:</p>
-                <p className="text-[#7E22CE] font-semibold">
-                  ₡{format(localTotals.shipping)}
-                </p>
+                <p className="text-[#7E22CE] font-semibold">₡{format(localTotals.shipping)}</p>
               </div>
             )}
             {discount > 0 && (
@@ -243,9 +283,7 @@ export default function ShoppingForm({
             )}
             <div className="border-t pt-5 flex justify-between">
               <p className="font-bold">Total:</p>
-              <p className="font-bold text-[#5B21B6]">
-                ₡{format(localTotals?.total)}
-              </p>
+              <p className="font-bold text-[#5B21B6]">₡{format(localTotals?.total)}</p>
             </div>
           </div>
 
@@ -267,14 +305,54 @@ export default function ShoppingForm({
                 />
                 {!appliedCoupon ? (
                   <Button
-                    onClick={handleApplyCoupon}
+                    onClick={async () => {
+                      if (!localTotals?.total || localTotals.total <= 0) {
+                        setCouponMessage("No se puede aplicar un cupón sin productos en el carrito.");
+                        setAppliedCoupon(null);
+                        setDiscount(0);
+                        return;
+                      }
+
+                      const result = await validateCoupon(couponCode, localTotals.total, user?.id);
+
+                      if (!result.valid) {
+                        const backendMsg = result.message || "";
+                        // Si Laravel devolvió "The total field is required"
+                        if (backendMsg.includes("total")) {
+                          setCouponMessage("No se puede aplicar un cupón sin productos en el carrito.");
+                        } else {
+                          setCouponMessage(backendMsg || "Cupón inválido o expirado.");
+                        }
+                        setAppliedCoupon(null);
+                        setDiscount(0);
+                        return;
+                      }
+
+                      // ✅ Cupón válido
+                      setAppliedCoupon(result.coupon);
+                      setDiscount(result.discount);
+                      setLocalTotals((prev) => ({
+                        ...prev,
+                        total: prev.total - result.discount,
+                        shipping:
+                          result.coupon?.type === "FREE_SHIPPING" ? 0 : prev.shipping ?? 0,
+                      }));
+                      setCouponMessage(`Cupón aplicado: ${result.coupon.code}`);
+                    }}
                     className="bg-contrast-secondary hover:bg-main text-white rounded-xl px-6 h-10"
                   >
                     Aplicar
                   </Button>
+
                 ) : (
                   <Button
-                    onClick={handleRemoveCoupon}
+                    onClick={async () => {
+                      setAppliedCoupon(null);
+                      setDiscount(0);
+                      setCouponMessage("");
+                      const res = await getTotals();
+                      if (res) setLocalTotals(res);
+                    }}
                     className="bg-gray-300 hover:bg-gray-400 text-main rounded-full px-6"
                   >
                     Quitar
@@ -283,9 +361,8 @@ export default function ShoppingForm({
               </div>
               {couponMessage && (
                 <p
-                  className={`mt-2 text-sm ${
-                    discount > 0 ? "text-green-600" : "text-red-500"
-                  }`}
+                  className={`mt-2 text-sm ${discount > 0 ? "text-green-600" : "text-red-500"
+                    }`}
                 >
                   {couponMessage}
                 </p>
@@ -293,7 +370,7 @@ export default function ShoppingForm({
             </div>
           )}
 
-          {/* Dirección + Stripe */}
+          {/* 🏠 Dirección + Stripe */}
           {variant === "checkout" && user && token && (
             <>
               <div className="pt-10 flex flex-col gap-3 text-[#4C1D95]">
@@ -301,40 +378,65 @@ export default function ShoppingForm({
                   <IconMapPin className="text-[#6B21A8]" />
                   Dirección de envío
                 </label>
+
                 <select
                   className="border border-[#C4B5FD] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#7C3AED]"
                   onChange={(e) => {
-                    const selected = addresses.find(
-                      (a) => a.id === Number(e.target.value)
-                    );
+                    const id = Number(e.target.value);
+                    const selected = addresses.find((a) => a.id === id);
                     if (selected) {
                       setSelectedAddressId(selected.id);
-                      setAddressText(
-                        `${selected.street}, ${selected.city}, ${selected.state || ""}, ${selected.country}, ${selected.zip_code || ""}, ${selected.phone_number || ""}`
-                      );
+                      setStreet(selected.street || "");
+                      setCity(selected.city || "");
+                      setState(selected.state || "");
+                      setCountry(selected.country || "");
+                      setZipCode(selected.zip_code || "");
+                      setPhoneNumber(selected.phone_number || "");
                     } else {
                       setSelectedAddressId(null);
-                      setAddressText("");
+                      setStreet("");
+                      setCity("");
+                      setState("");
+                      setCountry("");
+                      setZipCode("");
+                      setPhoneNumber("");
                     }
                   }}
                   value={selectedAddressId ?? ""}
                 >
-                  <option value="">Seleccionar dirección guardada...</option>
+                  <option value="">Escribir nueva dirección...</option>
                   {addresses.map((addr) => (
                     <option key={addr.id} value={addr.id}>
-                      {addr.street} - {addr.city}{" "}
-                      {addr.zip_code ? `(${addr.zip_code})` : ""}
+                      {addr.street} - {addr.city}
                     </option>
                   ))}
                 </select>
+
+                {/* Campos manuales */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
+                  <input type="text" value={street} onChange={(e) => setStreet(e.target.value)} placeholder="Calle" className="border border-[#C4B5FD] rounded-lg px-3 py-2" />
+                  <input type="text" value={city} onChange={(e) => setCity(e.target.value)} placeholder="Ciudad" className="border border-[#C4B5FD] rounded-lg px-3 py-2" />
+                  <input type="text" value={state} onChange={(e) => setState(e.target.value)} placeholder="Provincia" className="border border-[#C4B5FD] rounded-lg px-3 py-2" />
+                  <input type="text" value={country} onChange={(e) => setCountry(e.target.value)} placeholder="País" className="border border-[#C4B5FD] rounded-lg px-3 py-2" />
+                  <input type="text" value={zipCode} onChange={(e) => setZipCode(e.target.value)} placeholder="Código postal" className="border border-[#C4B5FD] rounded-lg px-3 py-2" />
+                  <input type="text" value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)} placeholder="Teléfono" className="border border-[#C4B5FD] rounded-lg px-3 py-2" />
+                </div>
+
+                {/* 💾 Botón guardar */}
+                <Button
+                  onClick={handleSaveAddress}
+                  disabled={savingAddress}
+                  className="mt-4 bg-contrast-secondary hover:bg-main text-white flex items-center gap-2 rounded-full px-5 py-2 w-fit"
+                >
+                  <IconDeviceFloppy size={18} />
+                  {savingAddress ? "Guardando..." : "Guardar nueva dirección"}
+                </Button>
               </div>
 
+              {/* 💳 Stripe */}
               <div className="pt-10">
                 <Elements stripe={stripePromise}>
-                  <StripePaymentForm
-                    total={localTotals?.total || 0}
-                    onPaymentSuccess={handlePayment}
-                  />
+                  <StripePaymentForm total={localTotals?.total || 0} onPaymentSuccess={handlePayment} />
                 </Elements>
               </div>
             </>
@@ -342,51 +444,48 @@ export default function ShoppingForm({
 
           {/* 🧍 Variante producto */}
           {variant === "product" && product && (
-  <div className="pt-10 flex flex-col gap-4">
-    <label className="text-md font-semibold text-main text-center">
-      Cantidad
-    </label>
+            <div className="pt-10 flex flex-col gap-4">
+              <label className="text-md font-semibold text-main text-center">Cantidad</label>
 
-    <div className="flex items-center justify-center">
-      <div className="flex items-center justify-between w-48 bg-white border-2 border-main rounded-full px-2 py-1 shadow-sm">
-        <button
-          onClick={() => setQty((q) => Math.max(1, q - 1))}
-          className="w-8 h-8 flex items-center justify-center rounded-full bg-main text-white font-bold transition-all hover:bg-[#4A1F70] disabled:opacity-40"
-          disabled={qty <= 1}
-        >
-          <IconMinus size={16} />
-        </button>
+              <div className="flex items-center justify-center">
+                <div className="flex items-center justify-between w-48 bg-white border-2 border-main rounded-full px-2 py-1 shadow-sm">
+                  <button
+                    onClick={() => setQty((q) => Math.max(1, q - 1))}
+                    className="w-8 h-8 flex items-center justify-center rounded-full bg-main text-white font-bold transition-all hover:bg-[#4A1F70] disabled:opacity-40"
+                    disabled={qty <= 1}
+                  >
+                    <IconMinus size={16} />
+                  </button>
 
-        <span className="text-lg font-quicksand font-semibold text-main w-10 text-center select-none">
-          {qty}
-        </span>
+                  <span className="text-lg font-quicksand font-semibold text-main w-10 text-center select-none">
+                    {qty}
+                  </span>
 
-        <button
-          onClick={() => setQty((q) => q + 1)}
-          className="w-8 h-8 flex items-center justify-center rounded-full bg-main text-white font-bold transition-all hover:bg-[#4A1F70] disabled:opacity-40"
-          disabled={qty >= product.stock}
-        >
-          <IconPlus size={16} />
-        </button>
-      </div>
-    </div>
+                  <button
+                    onClick={() => setQty((q) => q + 1)}
+                    className="w-8 h-8 flex items-center justify-center rounded-full bg-main text-white font-bold transition-all hover:bg-[#4A1F70] disabled:opacity-40"
+                    disabled={qty >= product.stock}
+                  >
+                    <IconPlus size={16} />
+                  </button>
+                </div>
+              </div>
 
-    <Button
-      onClick={async () => {
-        try {
-          await onAddToCart?.(qty);
-          navigate("/shoppingCart");
-        } catch (err) {
-          console.error("❌ Error al añadir al carrito:", err);
-        }
-      }}
-      className="w-full bg-contrast-secondary hover:bg-main text-white shadow-md rounded-full transition-all mt-2"
-    >
-      Añadir {qty > 1 ? `${qty} productos` : "al carrito"}
-    </Button>
-  </div>
-)}
-
+              <Button
+                onClick={async () => {
+                  try {
+                    await onAddToCart?.(qty);
+                    navigate("/shoppingCart");
+                  } catch (err) {
+                    console.error("❌ Error al añadir al carrito:", err);
+                  }
+                }}
+                className="w-full bg-contrast-secondary hover:bg-main text-white shadow-md rounded-full transition-all mt-2"
+              >
+                Añadir {qty > 1 ? `${qty} productos` : "al carrito"}
+              </Button>
+            </div>
+          )}
         </>
       )}
     </div>

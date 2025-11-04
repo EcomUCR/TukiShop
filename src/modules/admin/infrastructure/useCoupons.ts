@@ -22,7 +22,7 @@ export interface Coupon {
 }
 
 export function useCoupons() {
-  const { token } = useAuth();
+  const { token, user } = useAuth(); // 👈 Agregamos user aquí
   const [coupons, setCoupons] = useState<Coupon[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -37,7 +37,7 @@ export function useCoupons() {
     },
   };
 
-  // 🔍 Obtener cupones (admin / seller)
+  // 🔍 Obtener cupones (solo admin / seller)
   const fetchCoupons = async () => {
     if (!token) return;
     try {
@@ -92,12 +92,7 @@ export function useCoupons() {
     try {
       const { data } = await axios.post(
         `${import.meta.env.VITE_API_URL}/coupons/validate`,
-        {
-          code,
-          total,
-          user_id: userId,
-          store_id: storeId,
-        },
+        { code, total, user_id: userId, store_id: storeId },
         { headers: { Accept: "application/json", "Content-Type": "application/json" } }
       );
       return data;
@@ -110,9 +105,12 @@ export function useCoupons() {
     }
   };
 
+  // 🧠 Solo cargar cupones si el usuario es admin o vendedor
   useEffect(() => {
-    if (token) fetchCoupons();
-  }, [token]);
+    if (token && (user?.role === "ADMIN" || user?.role === "SELLER")) {
+      fetchCoupons();
+    }
+  }, [token, user]);
 
   return {
     coupons,

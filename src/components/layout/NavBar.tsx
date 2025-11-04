@@ -158,7 +158,7 @@ useEffect(() => {
           className="text-white font-fugaz w-1/3 text-2xl flex items-center gap-2 p-1"
         >
           <img src={logo} alt="Logo" className="h-9 w-auto" />
-          <span className="sm:block">TukiShop</span>
+          <span className="sm:block text-3xl">TukiShop</span>
         </Link>
 
         <div className="hidden md:flex items-center bg-white rounded-full px-0.5 w-1/3 relative">
