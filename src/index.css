@@ -149,3 +149,16 @@
   }
 
 }
+
+/* Evita el botón de mostrar contraseña en Microsoft Edge */
+@layer base {
+  input::-ms-reveal,
+  input::-ms-clear {
+    display: none !important;
+  }
+
+  input::-webkit-credentials-auto-fill-button,
+  input::-webkit-textfield-decoration-container {
+    display: none !important;
+  }
+}
