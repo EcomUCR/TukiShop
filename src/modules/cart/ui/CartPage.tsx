@@ -9,7 +9,8 @@ import { useBanner } from "../../admin/infrastructure/useBanner";
 import { useCart } from "../../../hooks/context/CartContext";
 import { SkeletonCartPage } from "../../../components/ui/AllSkeletons";
 import { useAuth } from "../../../hooks/context/AuthContext";
-import BannerSelectModal from "../../home/ui/BannerSelectModal"; // ✅ mismo modal
+import BannerSelectModal from "../../home/ui/BannerSelectModal";
+import {useAlert} from "../../../hooks/context/AlertContext";
 
 type AnyBanner = {
   id?: number;
@@ -36,6 +37,7 @@ export default function CartPage() {
     loading: loadingBanners,
   } = useBanner();
   const { user } = useAuth();
+  const { showAlert } = useAlert();
 
   const [clearing, setClearing] = useState(false);
 
@@ -105,21 +107,27 @@ export default function CartPage() {
   };
 
   const handleClearCart = async () => {
-    const confirmClear = window.confirm(
-      "¿Estás seguro de que deseas vaciar tu carrito? 🗑️"
-    );
-    if (!confirmClear) return;
+  const confirmed = await showAlert({
+    type: "warning",
+    title: "Vaciar carrito",
+    message: "¿Deseas vaciar el carrito?",
+    confirmText: "Vaciar",
+    cancelText: "Cancelar",
+  });
 
-    try {
-      setClearing(true);
-      await clearCart();
-      await refreshCart();
-    } catch (err) {
-      console.error("Error al vaciar el carrito:", err);
-    } finally {
-      setClearing(false);
-    }
-  };
+  if (!confirmed) return;
+
+  try {
+    setClearing(true);
+    await clearCart();
+    await refreshCart();
+  } catch (err) {
+    console.error("Error al vaciar el carrito:", err);
+  } finally {
+    setClearing(false);
+  }
+};
+
 
   // 🔧 Helper: convertir File|string → URL
   const asUrl = (v?: string | File) =>
