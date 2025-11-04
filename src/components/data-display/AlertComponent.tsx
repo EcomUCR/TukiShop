@@ -34,7 +34,7 @@ export default function AlertComponent({
                     transition={{ duration: 0.3, ease: "easeOut" }}
                 >
                     <motion.div
-                        className="w-[90%] max-w-md rounded-2xl border border-white/20 bg-gradient-to-br from-contrast-main/50 via-contrast-secondary/50 to-main/50 backdrop-blur-lg shadow-2xl p-6 text-white font-quicksand relative"
+                        className="w-[90%] max-w-md rounded-2xl border border-white/20 bg-gradient-to-br from-contrast-main/60 via-contrast-secondary/60 to-main/60 backdrop-blur-lg shadow-2xl p-6 text-white font-quicksand relative"
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
