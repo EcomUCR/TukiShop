@@ -172,6 +172,39 @@ export default function CustomerProfileComponent({
     }
   };
 
+  const handleDeleteAddress = async (id: number) => {
+    try {
+      // Confirmación visual
+      const confirmDelete = window.confirm("¿Seguro que deseas eliminar esta dirección?");
+      if (!confirmDelete) return;
+
+      // Eliminar en backend
+      await axios.delete(`/addresses/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      // Actualizar la lista local
+      setAddresses((prev) => prev.filter((addr) => addr.id !== id));
+
+      // Mostrar alerta de éxito
+      setAlert({
+        show: true,
+        title: "Dirección eliminada",
+        message: "La dirección se eliminó correctamente.",
+        type: "success",
+      });
+    } catch (error) {
+      console.error("❌ Error al eliminar dirección:", error);
+      setAlert({
+        show: true,
+        title: "Error al eliminar",
+        message: "No se pudo eliminar la dirección. Intenta nuevamente.",
+        type: "error",
+      });
+    }
+  };
+
+
   const handleAddAddress = async () => {
     try {
       // 📨 1️⃣ Crear la nueva dirección en el backend
@@ -309,18 +342,27 @@ export default function CustomerProfileComponent({
                         {addr.country} {addr.zip_code && `• ${addr.zip_code}`}
                       </p>
                       {addr.phone_number && (
-                        <p className="text-xs text-gray-600">
-                          Tel: {addr.phone_number}
-                        </p>
+                        <p className="text-xs text-gray-600">Tel: {addr.phone_number}</p>
                       )}
                     </div>
-                    {addr.is_default && (
-                      <span className="text-xs bg-main text-white px-2 py-1 rounded-full mt-2 sm:mt-0">
-                        Principal
-                      </span>
-                    )}
+
+                    <div className="flex items-center gap-2 mt-2 sm:mt-0">
+                      {addr.is_default && (
+                        <span className="text-xs bg-main text-white px-2 py-1 rounded-full">
+                          Principal
+                        </span>
+                      )}
+                      <button
+                        onClick={() => handleDeleteAddress(addr.id)}
+                        className="text-white bg-red-500 hover:bg-red-600 px-3 py-1 rounded-full text-xs font-semibold shadow transition-all"
+                      >
+                        Eliminar
+                      </button>
+                    </div>
+
                   </li>
                 ))}
+
               </ul>
             ) : (
               <p className="text-sm text-gray-500 mb-3">
