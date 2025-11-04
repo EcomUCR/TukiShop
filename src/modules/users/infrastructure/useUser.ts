@@ -29,6 +29,8 @@ export interface Store {
   support_phone?: string | null;
   status?: string;
   user_id?: number;
+  is_verified?: boolean;
+  verification_date?: string | null;
 }
 
 export default function useUser() {
