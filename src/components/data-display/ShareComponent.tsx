@@ -9,6 +9,7 @@ import {
   IconBrandX,
 } from "@tabler/icons-react";
 import ButtonComponent from "../ui/ButtonComponent";
+import { useAlert } from "../../hooks/context/AlertContext";
 
 interface ShareComponentProps {
   positionClass?: string;
@@ -20,6 +21,7 @@ export default function ShareComponent({
   shareUrl,
 }: ShareComponentProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const { showAlert } = useAlert();
 
   const handleShare = (platform: string) => {
     const encodedUrl = encodeURIComponent(shareUrl);
@@ -27,7 +29,12 @@ export default function ShareComponent({
     switch (platform) {
       case "link":
         navigator.clipboard.writeText(shareUrl);
-        alert("Enlace copiado al portapapeles 📋");
+        showAlert({
+          type: "success",
+          message: "Enlace copiado al portapapeles ",
+          title: "Enlace copiado",
+          confirmText: "Ok",
+        });
         break;
       case "whatsapp":
         window.open(`https://wa.me/?text=${encodedUrl}`, "_blank");
@@ -39,13 +46,21 @@ export default function ShareComponent({
         );
         break;
       case "instagram":
-        alert(
-          "Instagram no permite compartir enlaces directamente desde el navegador 😅"
+        showAlert({
+          type: "info",
+          message:"Instagram no permite compartir enlaces directamente desde el navegador",
+          title: "Compartir en Instagram",
+          confirmText: "Ok",
+        }
         );
         break;
       case "tiktok":
-        alert(
-          "TikTok no permite compartir desde el navegador. Usa la app móvil 😉"
+        showAlert({
+          type: "info",
+          message:"TikTok no permite compartir desde el navegador. Usa la app móvil ",
+          title: "Compartir en TikTok",
+          confirmText: "Ok",
+        }
         );
         break;
       case "x":
