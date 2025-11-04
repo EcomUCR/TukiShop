@@ -47,7 +47,7 @@ export default function HeartButton({
     }
   }, [wishlist, productId]);
 
-  // 🔹 Agregar / quitar producto
+  // 💫 Animación instantánea al toque
   const handleToggle = async () => {
     if (!token) {
       showAlert({
@@ -63,18 +63,22 @@ export default function HeartButton({
       return;
     }
 
+    // ⚡ Animación inmediata
+    setAnimating(true);
+    setLiked((prev) => !prev);
+
     try {
-      setAnimating(true);
       if (liked && itemId) {
         await removeFromWishlist(itemId);
-        setLiked(false);
       } else {
         await addToWishlist(productId);
-        setLiked(true);
       }
+
       await fetchWishlist();
     } catch (err) {
       console.error("❌ Error al actualizar wishlist:", err);
+      // 🔁 Revertir si falla
+      setLiked((prev) => !prev);
     } finally {
       setTimeout(() => setAnimating(false), 400);
     }
@@ -91,7 +95,11 @@ export default function HeartButton({
       <motion.div
         whileTap={{ scale: 0.9 }}
         animate={
-          animating ? { scale: [1, 1.2, 1] } : liked ? { scale: [1, 1.1, 1] } : { scale: 1 }
+          animating
+            ? { scale: [1, 1.25, 1] }
+            : liked
+            ? { scale: [1, 1.1, 1] }
+            : { scale: 1 }
         }
         transition={{ duration: 0.3 }}
         className={`flex items-center justify-center ${
@@ -99,21 +107,32 @@ export default function HeartButton({
             ? "text-contrast-secondary hover:text-main"
             : `w-9 h-9 rounded-xl shadow-md transition-all duration-300 ${
                 liked
-                  ? "bg-gradient-to-br from-contrast-main to-contrast-secondary text-white"
+                  ? "bg-gradient-to-br from-[#ff5f6d] to-[#ffc371] text-white"
                   : "bg-gradient-to-br from-contrast-secondary to-contrast-main text-white hover:scale-110"
               }`
         }`}
       >
-        <IconHeart
-          size={isInline ? 24 : 20}
-          className={`transition-colors duration-300 ${
-            liked
-              ? isInline
-                ? "fill-red-500 text-red-500"
-                : "fill-white"
-              : "fill-transparent"
-          }`}
-        />
+        {/* 💖 Animación visual más suave */}
+        <motion.div
+          animate={{
+            scale: liked ? [1.1, 1] : [1, 0.95, 1],
+            filter: liked
+              ? "drop-shadow(0 0 8px rgba(255, 107, 107, 0.7))"
+              : "drop-shadow(0 0 0 rgba(0,0,0,0))",
+          }}
+          transition={{ duration: 0.4, ease: "easeInOut" }}
+        >
+          <IconHeart
+            size={isInline ? 24 : 20}
+            className={`transition-colors duration-300 ${
+              liked
+                ? isInline
+                  ? "fill-red-500 text-red-500"
+                  : "fill-white"
+                : "fill-transparent"
+            }`}
+          />
+        </motion.div>
       </motion.div>
 
       {/* Texto (solo en modo inline) */}
