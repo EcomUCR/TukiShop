@@ -6,7 +6,6 @@ import ButtonComponent from "../../../components/ui/ButtonComponent";
 import { motion } from "framer-motion";
 import { useAlert } from "../../../hooks/context/AlertContext";
 import useUser from "../../../hooks/useUser";
-import { Link } from "react-router-dom";
 import axios from "axios";
 import { useReports } from "../../admin/infrastructure/useReports";
 
@@ -178,28 +177,6 @@ export default function ReportProblemPage() {
 
             {/* 🔹 Contenido dinámico */}
             <section className="flex justify-center w-full px-6 py-10 sm:py-16">
-                {!user ? (
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.6 }}
-                        className="bg-white/80 backdrop-blur-lg p-8 sm:p-10 rounded-2xl shadow-lg max-w-md w-full text-center"
-                    >
-                        <h2 className="text-3xl font-bold text-main mb-4">
-                            Inicia sesión para continuar
-                        </h2>
-                        <p className="text-main-dark mb-6 text-base">
-                            Debes estar logueado para poder reportar un problema o enviar un
-                            reclamo.
-                        </p>
-                        <Link to="/loginregister">
-                            <ButtonComponent
-                                text="Ir al inicio de sesión"
-                                style="bg-contrast-main hover:bg-contrast-secondary text-white font-semibold py-3 px-8 rounded-full transition-all duration-300"
-                            />
-                        </Link>
-                    </motion.div>
-                ) : (
                     <form
                         onSubmit={handleSubmit}
                         className="flex flex-col gap-6 bg-white/80 backdrop-blur-lg rounded-2xl p-6 sm:p-10 shadow-xl w-full max-w-[40rem]"
@@ -325,7 +302,6 @@ export default function ReportProblemPage() {
                                 }`}
                         />
                     </form>
-                )}
             </section>
 
             <Footer />
