@@ -146,22 +146,22 @@ export default function ProductPage() {
       <AnimatePresence>
         {isZoomed && (
           <motion.div
-            className="fixed inset-0 bg-black/90 z-[9999] flex items-center justify-center p-4 cursor-default" // Mantiene cursor-default en el fondo
+            className="fixed inset-0 bg-black/70 z-[9999] flex items-center justify-center p-4 cursor-default" // Mantiene cursor-default en el fondo
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={closeZoom}
           >
-            <div className="relative w-full h-full max-w-4xl max-h-4xl">
+            <div className="relative w-full h-full max-w-2xl max-h-2xl">
               <button
-                className="absolute top-4 right-4 z-10 bg-white/30 text-white rounded-full p-2  flex items-center justify-center cursor-pointer "
+                className="absolute top-10 -right-10 z-10 bg-white/50 text-white rounded-full p-2  flex items-center justify-center cursor-pointer hover:bg-white/80 transition-all duration-300 hover:scale-110"
                 onClick={(e) => {
                   e.stopPropagation();
                   closeZoom();
                 }}
                 aria-label="Cerrar zoom"
               >
-                <IconX className="w-8 h-8 text-black" />
+                <IconX size={20} className="text-black" />
               </button>
               <img
                 src={
