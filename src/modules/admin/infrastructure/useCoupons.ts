@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-import { useAuth } from "../../../hooks/context/AuthContext"; // ✅ obtiene token global
+import { useAuth } from "../../../hooks/context/AuthContext";
 
 // 🧾 Interfaz del cupón
 export interface Coupon {
@@ -21,9 +21,8 @@ export interface Coupon {
   active: boolean;
 }
 
-// 🪄 Hook de cupones
 export function useCoupons() {
-  const { token } = useAuth(); // 👈 token desde contexto
+  const { token } = useAuth();
   const [coupons, setCoupons] = useState<Coupon[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -32,14 +31,15 @@ export function useCoupons() {
 
   const axiosConfig = {
     headers: {
-      Authorization: `Bearer ${token}`,
+      Authorization: token ? `Bearer ${token}` : "",
       Accept: "application/json",
       "Content-Type": "application/json",
     },
   };
 
-  // 🔍 Obtener cupones (admin: todos / seller: propios)
+  // 🔍 Obtener cupones (admin / seller)
   const fetchCoupons = async () => {
+    if (!token) return;
     try {
       setLoading(true);
       const { data } = await axios.get(API_URL, axiosConfig);
@@ -87,9 +87,41 @@ export function useCoupons() {
     }
   };
 
+  // 🎟️ Validar cupón público
+  const validateCoupon = async (code: string, total: number, userId?: number, storeId?: number) => {
+    try {
+      const { data } = await axios.post(
+        `${import.meta.env.VITE_API_URL}/coupons/validate`,
+        {
+          code,
+          total,
+          user_id: userId,
+          store_id: storeId,
+        },
+        { headers: { Accept: "application/json", "Content-Type": "application/json" } }
+      );
+      return data;
+    } catch (err: any) {
+      console.error("❌ Error al validar cupón:", err.response?.data || err.message);
+      return {
+        valid: false,
+        message: err.response?.data?.message || "Cupón inválido o expirado.",
+      };
+    }
+  };
+
   useEffect(() => {
-    if (token) fetchCoupons(); // solo si el usuario está logueado
+    if (token) fetchCoupons();
   }, [token]);
 
-  return { coupons, loading, error, fetchCoupons, createCoupon, updateCoupon, deleteCoupon };
+  return {
+    coupons,
+    loading,
+    error,
+    fetchCoupons,
+    createCoupon,
+    updateCoupon,
+    deleteCoupon,
+    validateCoupon,
+  };
 }

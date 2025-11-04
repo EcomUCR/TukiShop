@@ -2,13 +2,9 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { useCartTotals } from "./useCartTotals";
 import { useProducts } from "../../modules/store/infrastructure/useProducts";
-import { useVisa } from "../../modules/cart/infraestructure/useVisa";
 import { useCheckout } from "../../modules/cart/infraestructure/useCheckout";
-import visa from "../../img/resources/logo_visa.png";
-import mastercard from "../../img/resources/logo_mastercard.png";
-import paypal from "../../img/resources/logo_paypal.png";
-import american_express from "../../img/resources/american_express_logo.png";
-import { IconMapPin, IconMinus, IconPlus } from "@tabler/icons-react";
+import { useCoupons } from "../../modules/admin/infrastructure/useCoupons";
+import { IconMapPin, IconMinus, IconPlus, IconTicket } from "@tabler/icons-react";
 import { Button } from "../ui/button";
 import { useAlert } from "../../hooks/context/AlertContext";
 import { Elements } from "@stripe/react-stripe-js";
@@ -19,7 +15,7 @@ import { useNavigate, useParams } from "react-router-dom";
 
 const stripePromise = loadStripe(
   import.meta.env.VITE_STRIPE_PUBLIC_KEY ||
-  "pk_test_51SJQBqLl2yLxOyLIFdLhdGoXjNKpBn2WFxWjMhInw72TUbRe7DVmYLa17tBOfswYlYqe0E3J3bqYWFyuJaEFYMLI00aJOZAoJY"
+    "pk_test_51SJQBqLl2yLxOyLIFdLhdGoXjNKpBn2WFxWjMhInw72TUbRe7DVmYLa17tBOfswYlYqe0E3J3bqYWFyuJaEFYMLI00aJOZAoJY"
 );
 
 interface TotalsType {
@@ -44,10 +40,10 @@ export default function ShoppingForm({
   productId,
   quantity = 1,
 }: ShoppingFormProps) {
-  const { getForexRate, rate, error: errorVisa } = useVisa();
   const { processCheckout } = useCheckout();
   const { totals, getTotals, loading, error } = useCartTotals();
   const { getProductById } = useProducts();
+  const { validateCoupon } = useCoupons();
   const { showAlert } = useAlert();
   const { user, token } = useAuth();
   const navigate = useNavigate();
@@ -66,6 +62,12 @@ export default function ShoppingForm({
   const [product, setProduct] = useState<any>(null);
   const [qty, setQty] = useState<number>(quantity);
 
+  // 🧾 Estados del cupón
+  const [couponCode, setCouponCode] = useState("");
+  const [appliedCoupon, setAppliedCoupon] = useState<any>(null);
+  const [discount, setDiscount] = useState(0);
+  const [couponMessage, setCouponMessage] = useState("");
+
   const format = (n: number) => (n ?? 0).toLocaleString("es-CR");
 
   // ============================
@@ -73,26 +75,21 @@ export default function ShoppingForm({
   // ============================
   useEffect(() => {
     let isMounted = true;
-
     const loadTotals = async () => {
       try {
         const id = productId ?? Number(params.id);
-
         if (variant === "product") {
           const productData = await getProductById(id);
           if (!productData || !isMounted) return;
-
           setProduct(productData);
-
           const price = productData.discount_price ?? productData.price;
           const subtotal = price * qty;
           const taxes = subtotal * 0.13;
-          const total = subtotal + taxes; // 🚫 Sin envío
-
+          const total = subtotal + taxes;
           setLocalTotals({
             subtotal,
             taxes,
-            shipping: 0, // 🚫 No se muestra ni se suma
+            shipping: 0,
             total,
             currency: "CRC",
           });
@@ -104,20 +101,18 @@ export default function ShoppingForm({
         console.error("❌ Error al cargar totales:", err);
       }
     };
-
     loadTotals();
     return () => {
       isMounted = false;
     };
   }, [variant, productId, qty, token]);
 
-  // 🔹 Mantener sincronía en checkout
   useEffect(() => {
     if (variant === "checkout") setLocalTotals(totals);
   }, [totals, variant]);
 
   // ============================
-  // 🔹 Cargar direcciones (solo checkout)
+  // 🔹 Direcciones
   // ============================
   useEffect(() => {
     const fetchAddresses = async () => {
@@ -134,12 +129,11 @@ export default function ShoppingForm({
   }, [token, variant]);
 
   // ============================
-  // 🧾 Manejo del pago (Stripe)
+  // 💳 Pago con Stripe
   // ============================
   const handlePayment = async (paymentIntent: any) => {
     const parts = addressText.split(",").map((p) => p.trim());
     const [street, city, state, country, zip_code, phone_number] = parts;
-
     const selected = addresses.find((a) => a.id === selectedAddressId);
     const finalAddress = selected
       ? selected
@@ -155,12 +149,46 @@ export default function ShoppingForm({
       return;
     }
 
-    await getForexRate("CRC", "USD");
     await processCheckout(paymentIntent, totals, finalAddress);
   };
 
   // ============================
-  // 🖼️ Render principal
+  // 🎟️ Cupón
+  // ============================
+  const handleApplyCoupon = async () => {
+    if (!couponCode.trim()) return;
+    try {
+      const result = await validateCoupon(couponCode, localTotals.total, user?.id);
+      if (!result.valid) {
+        setCouponMessage(result.message || "Cupón inválido o expirado.");
+        setAppliedCoupon(null);
+        setDiscount(0);
+        return;
+      }
+      setAppliedCoupon(result.coupon);
+      setDiscount(result.discount);
+      setLocalTotals((prev) => ({
+        ...prev,
+        total: prev.total - result.discount,
+        shipping:
+          result.coupon?.type === "FREE_SHIPPING" ? 0 : prev.shipping ?? 0,
+      }));
+      setCouponMessage(`Cupón aplicado: ${result.coupon.code}`);
+    } catch (err) {
+      console.error("❌ Error al aplicar cupón:", err);
+      setCouponMessage("Error al aplicar el cupón.");
+    }
+  };
+
+  const handleRemoveCoupon = () => {
+    setAppliedCoupon(null);
+    setDiscount(0);
+    setCouponMessage("");
+    getTotals().then((res) => res && setLocalTotals(res));
+  };
+
+  // ============================
+  // 🖼️ Render
   // ============================
   return (
     <div className="font-quicksand">
@@ -185,164 +213,181 @@ export default function ShoppingForm({
       ) : error ? (
         <p className="text-red-500 mt-5">{error}</p>
       ) : (
-        <div className="flex flex-col gap-6 pt-6">
-          <div className="border-t pt-5 flex justify-between">
-            <p>Subtotal:</p>
-            <p className="text-[#7E22CE] font-semibold">
-              ₡{format(localTotals?.subtotal)}
-            </p>
-          </div>
-
-          <div className="border-t pt-5 flex justify-between">
-            <p>Impuestos (13%):</p>
-            <p className="text-[#7E22CE] font-semibold">
-              ₡{format(localTotals?.taxes)}
-            </p>
-          </div>
-
-          {/* 🚫 Envío se muestra solo en checkout */}
-          {variant === "checkout" && (localTotals?.shipping ?? 0) > 0 && (
-            <div className="border-t pt-5 flex justify-between">
-              <p>Envío:</p>
-              <p className="text-[#7E22CE] font-semibold">
-                ₡{format(localTotals.shipping)}
-              </p>
-            </div>
-          )}
-
-          <div className="border-t pt-5 flex justify-between">
-            <p className="font-bold">Total:</p>
-            <p className="font-bold text-[#5B21B6]">
-              ₡{format(localTotals?.total)}
-            </p>
-          </div>
-        </div>
-      )}
-
-      {/* Checkout */}
-      {variant === "checkout" && user && token && (
         <>
-          {/* Dirección */}
-          <div className="pt-10 flex flex-col gap-3 text-[#4C1D95]">
-            <label className="flex items-center gap-2 text-base font-semibold">
-              <IconMapPin className="text-[#6B21A8]" />
-              Dirección de envío
-            </label>
-
-            <select
-              className="border border-[#C4B5FD] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#7C3AED]"
-              onChange={(e) => {
-                const selected = addresses.find(
-                  (a) => a.id === Number(e.target.value)
-                );
-                if (selected) {
-                  setSelectedAddressId(selected.id);
-                  setAddressText(
-                    `${selected.street}, ${selected.city}, ${selected.state || ""}, ${selected.country}, ${selected.zip_code || ""}, ${selected.phone_number || ""}`
-                  );
-                } else {
-                  setSelectedAddressId(null);
-                  setAddressText("");
-                }
-              }}
-              value={selectedAddressId ?? ""}
-            >
-              <option value="">Seleccionar dirección guardada...</option>
-              {addresses.map((addr) => (
-                <option key={addr.id} value={addr.id}>
-                  {addr.street} - {addr.city}{" "}
-                  {addr.zip_code ? `(${addr.zip_code})` : ""}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          {/* Stripe */}
-          <div className="pt-10">
-            <Elements stripe={stripePromise}>
-              <StripePaymentForm
-                total={totals?.total || 0}
-                onPaymentSuccess={handlePayment}
-              />
-            </Elements>
-          </div>
-
-          {/* Métodos de pago */}
-          <div className="pt-10">
-            <h3 className="font-semibold mb-3 text-[#4C1D95]">Métodos de pago</h3>
-            <div className="flex gap-4">
-              <img className="h-10" src={visa} alt="Visa" />
-              <img className="h-10" src={mastercard} alt="Mastercard" />
-              <img className="h-10" src={paypal} alt="PayPal" />
-              <img className="h-10" src={american_express} alt="American Express" />
+          <div className="flex flex-col gap-6 pt-6">
+            <div className="border-t pt-5 flex justify-between">
+              <p>Subtotal:</p>
+              <p className="text-[#7E22CE] font-semibold">
+                ₡{format(localTotals?.subtotal)}
+              </p>
+            </div>
+            <div className="border-t pt-5 flex justify-between">
+              <p>Impuestos (13%):</p>
+              <p className="text-[#7E22CE] font-semibold">
+                ₡{format(localTotals?.taxes)}
+              </p>
+            </div>
+            {variant === "checkout" && (localTotals?.shipping ?? 0) > 0 && (
+              <div className="border-t pt-5 flex justify-between">
+                <p>Envío:</p>
+                <p className="text-[#7E22CE] font-semibold">
+                  ₡{format(localTotals.shipping)}
+                </p>
+              </div>
+            )}
+            {discount > 0 && (
+              <div className="border-t pt-5 flex justify-between text-green-600 font-semibold">
+                <p>Descuento ({appliedCoupon?.code}):</p>
+                <p>-₡{format(discount)}</p>
+              </div>
+            )}
+            <div className="border-t pt-5 flex justify-between">
+              <p className="font-bold">Total:</p>
+              <p className="font-bold text-[#5B21B6]">
+                ₡{format(localTotals?.total)}
+              </p>
             </div>
           </div>
 
-          {rate && (
-            <div className="mt-6 p-4 bg-purple-50 border border-[#DDD6FE] rounded-xl text-sm text-[#4C1D95]">
-              <p>
-                💰 <strong>Tipo de cambio:</strong>{" "}
-                {rate.sourceCurrencyCode} → {rate.destinationCurrencyCode} ={" "}
-                {rate.rate}
-              </p>
-              <p>Mock activo: {rate.mock ? "Sí" : "No"}</p>
+          {/* 🎟️ Campo de cupón */}
+          {variant === "checkout" && (
+            <div className="pt-8">
+              <label className="flex items-center gap-2 font-semibold text-main mb-2">
+                <IconTicket className="text-contrast-secondary" />
+                Aplicar cupón
+              </label>
+              <div className="flex h-full py-2 gap-2">
+                <input
+                  type="text"
+                  value={couponCode}
+                  onChange={(e) => setCouponCode(e.target.value)}
+                  placeholder="Ingresa tu código"
+                  className="border border-gray-300 rounded-xl h-10 px-4 w-full focus:ring-2 focus:ring-contrast-secondary outline-none"
+                  disabled={!!appliedCoupon}
+                />
+                {!appliedCoupon ? (
+                  <Button
+                    onClick={handleApplyCoupon}
+                    className="bg-contrast-secondary hover:bg-main text-white rounded-xl px-6 h-10"
+                  >
+                    Aplicar
+                  </Button>
+                ) : (
+                  <Button
+                    onClick={handleRemoveCoupon}
+                    className="bg-gray-300 hover:bg-gray-400 text-main rounded-full px-6"
+                  >
+                    Quitar
+                  </Button>
+                )}
+              </div>
+              {couponMessage && (
+                <p
+                  className={`mt-2 text-sm ${
+                    discount > 0 ? "text-green-600" : "text-red-500"
+                  }`}
+                >
+                  {couponMessage}
+                </p>
+              )}
             </div>
           )}
-          {errorVisa && <p className="text-red-500 text-sm mt-4">{errorVisa}</p>}
+
+          {/* Dirección + Stripe */}
+          {variant === "checkout" && user && token && (
+            <>
+              <div className="pt-10 flex flex-col gap-3 text-[#4C1D95]">
+                <label className="flex items-center gap-2 text-base font-semibold">
+                  <IconMapPin className="text-[#6B21A8]" />
+                  Dirección de envío
+                </label>
+                <select
+                  className="border border-[#C4B5FD] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#7C3AED]"
+                  onChange={(e) => {
+                    const selected = addresses.find(
+                      (a) => a.id === Number(e.target.value)
+                    );
+                    if (selected) {
+                      setSelectedAddressId(selected.id);
+                      setAddressText(
+                        `${selected.street}, ${selected.city}, ${selected.state || ""}, ${selected.country}, ${selected.zip_code || ""}, ${selected.phone_number || ""}`
+                      );
+                    } else {
+                      setSelectedAddressId(null);
+                      setAddressText("");
+                    }
+                  }}
+                  value={selectedAddressId ?? ""}
+                >
+                  <option value="">Seleccionar dirección guardada...</option>
+                  {addresses.map((addr) => (
+                    <option key={addr.id} value={addr.id}>
+                      {addr.street} - {addr.city}{" "}
+                      {addr.zip_code ? `(${addr.zip_code})` : ""}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="pt-10">
+                <Elements stripe={stripePromise}>
+                  <StripePaymentForm
+                    total={localTotals?.total || 0}
+                    onPaymentSuccess={handlePayment}
+                  />
+                </Elements>
+              </div>
+            </>
+          )}
+
+          {/* 🧍 Variante producto */}
+          {variant === "product" && product && (
+  <div className="pt-10 flex flex-col gap-4">
+    <label className="text-md font-semibold text-main text-center">
+      Cantidad
+    </label>
+
+    <div className="flex items-center justify-center">
+      <div className="flex items-center justify-between w-48 bg-white border-2 border-main rounded-full px-2 py-1 shadow-sm">
+        <button
+          onClick={() => setQty((q) => Math.max(1, q - 1))}
+          className="w-8 h-8 flex items-center justify-center rounded-full bg-main text-white font-bold transition-all hover:bg-[#4A1F70] disabled:opacity-40"
+          disabled={qty <= 1}
+        >
+          <IconMinus size={16} />
+        </button>
+
+        <span className="text-lg font-quicksand font-semibold text-main w-10 text-center select-none">
+          {qty}
+        </span>
+
+        <button
+          onClick={() => setQty((q) => q + 1)}
+          className="w-8 h-8 flex items-center justify-center rounded-full bg-main text-white font-bold transition-all hover:bg-[#4A1F70] disabled:opacity-40"
+          disabled={qty >= product.stock}
+        >
+          <IconPlus size={16} />
+        </button>
+      </div>
+    </div>
+
+    <Button
+      onClick={async () => {
+        try {
+          await onAddToCart?.(qty);
+          navigate("/shoppingCart");
+        } catch (err) {
+          console.error("❌ Error al añadir al carrito:", err);
+        }
+      }}
+      className="w-full bg-contrast-secondary hover:bg-main text-white shadow-md rounded-full transition-all mt-2"
+    >
+      Añadir {qty > 1 ? `${qty} productos` : "al carrito"}
+    </Button>
+  </div>
+)}
+
         </>
-      )}
-
-      {/* Modo producto */}
-      {variant === "product" && product && (
-        <div className="pt-10 flex flex-col gap-6">
-          {/* Selector de cantidad con estilo Tuki Minimal */}
-          <div className="flex items-center justify-center mt-6">
-            <div className="flex items-center justify-between w-48 bg-white border-2 border-main rounded-full px-3 py-2 shadow-sm">
-              <button
-                onClick={() => setQty((q) => Math.max(1, q - 1))}
-                className="w-8 h-8 flex items-center justify-center rounded-full bg-main text-white font-bold transition-all hover:bg-[#4A1F70] disabled:opacity-40"
-                disabled={qty <= 1}
-                title={qty <= 1 ? "Cantidad mínima alcanzada" : "Disminuir cantidad"}
-              >
-                <IconMinus size={16} />
-              </button>
-
-              <span className="text-lg font-quicksand font-semibold text-main w-10 text-center select-none">
-                {qty}
-              </span>
-
-              <button
-                onClick={() => setQty((q) => q + 1)}
-                className="w-8 h-8 flex items-center justify-center rounded-full bg-main text-white font-bold transition-all hover:bg-[#4A1F70] disabled:opacity-40"
-                disabled={qty >= product.stock}
-                title={
-                  qty >= product.stock
-                    ? `Stock máximo: ${product.stock}`
-                    : "Aumentar cantidad"
-                }
-              >
-                <IconPlus size={16} />
-              </button>
-            </div>
-          </div>
-
-
-
-          {/* Botón añadir */}
-          <Button
-            onClick={async () => {
-              try {
-                await onAddToCart?.(qty);
-                navigate("/shoppingCart");
-              } catch (err) {
-                console.error("❌ Error al añadir al carrito:", err);
-              }
-            }}
-            className="w-full bg-contrast-secondary hover:bg-main text-white shadow-md rounded-full transition-all"
-          >
-            Añadir {qty > 1 ? `${qty} productos` : "al carrito"}
-          </Button>
-        </div>
       )}
     </div>
   );

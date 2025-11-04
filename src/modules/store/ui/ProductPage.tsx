@@ -100,7 +100,7 @@ export default function ProductPage() {
     })();
   }, [product]);
 
-  const handleAddToCart = async (productId: number) => {
+  const handleAddToCart = async (productId: number, qty: number) => {
     if (!token) {
       showAlert({
         title: "Inicia sesión",
@@ -116,11 +116,10 @@ export default function ProductPage() {
     }
 
     try {
-      // Usamos la función addToCart del CartContext
-      await addToCart(productId, 1); // Añadimos 1 unidad del producto al carrito
+      await addToCart(productId, qty); // ✅ usa la cantidad enviada
       showAlert({
         title: "Producto añadido",
-        message: "El producto fue añadido al carrito correctamente ",
+        message: `Se añadieron ${qty} ${qty > 1 ? "unidades" : "unidad"} al carrito correctamente`,
         type: "success",
       });
       window.dispatchEvent(new Event("cartUpdated"));
@@ -128,11 +127,12 @@ export default function ProductPage() {
       console.error(error);
       showAlert({
         title: "Error al añadir",
-        message: "Hubo un problema al añadir el producto al carrito ",
+        message: "Hubo un problema al añadir el producto al carrito",
         type: "error",
       });
     }
   };
+
 
   // Función para abrir el zoom
   const openZoom = () => setIsZoomed(true);
@@ -281,11 +281,10 @@ export default function ProductPage() {
                             <button
                               key={index}
                               onClick={() => setSelectedImage(img!)}
-                              className={`w-20 h-20 rounded-xl overflow-hidden border-1 transition-all duration-300 ${
-                                selectedImage === img
-                                  ? "border-main scale-105"
-                                  : "border-transparent hover:scale-105"
-                              }`}
+                              className={`w-20 h-20 rounded-xl overflow-hidden border-1 transition-all duration-300 ${selectedImage === img
+                                ? "border-main scale-105"
+                                : "border-transparent hover:scale-105"
+                                }`}
                             >
                               <img
                                 src={img!}
@@ -299,29 +298,27 @@ export default function ProductPage() {
 
                     {/* Tabs de descripción / calificaciones / detalles */}
                     <div
-                      className={`relative flex justify-between items-center my-10 p-2 rounded-full overflow-hidden text-sm font-quicksand transition-colors duration-500 z-0 ${
-                        activeTab === "description"
-                          ? "border-2 border-main"
-                          : activeTab === "reviews"
+                      className={`relative flex justify-between items-center my-10 p-2 rounded-full overflow-hidden text-sm font-quicksand transition-colors duration-500 z-0 ${activeTab === "description"
+                        ? "border-2 border-main"
+                        : activeTab === "reviews"
                           ? "border-2 border-contrast-secondary"
                           : "border-2 border-contrast-main"
-                      }`}
+                        }`}
                     >
                       <div
-                        className={`absolute top-[4px] left-[4px] h-[calc(100%-8px)] w-1/3 rounded-full shadow-md transition-all duration-500 ease-in-out z-0 ${
-                          activeTab === "description"
-                            ? "bg-main"
-                            : activeTab === "reviews"
+                        className={`absolute top-[4px] left-[4px] h-[calc(100%-8px)] w-1/3 rounded-full shadow-md transition-all duration-500 ease-in-out z-0 ${activeTab === "description"
+                          ? "bg-main"
+                          : activeTab === "reviews"
                             ? "bg-contrast-secondary"
                             : "bg-contrast-main"
-                        }`}
+                          }`}
                         style={{
                           transform:
                             activeTab === "description"
                               ? "translateX(0%)"
                               : activeTab === "reviews"
-                              ? "translateX(96%)"
-                              : "translateX(193%)",
+                                ? "translateX(96%)"
+                                : "translateX(193%)",
                         }}
                       />
                       {["description", "reviews", "details"].map((tab) => (
@@ -331,17 +328,16 @@ export default function ProductPage() {
                             tab === "description"
                               ? "Descripción"
                               : tab === "reviews"
-                              ? "Calificaciones"
-                              : "Detalles"
+                                ? "Calificaciones"
+                                : "Detalles"
                           }
                           onClick={() =>
                             setActiveTab(tab as keyof BorderColors)
                           }
-                          style={`relative z-10 flex-1 py-3 rounded-full transition-all ${
-                            activeTab === tab
-                              ? "text-white font-bold"
-                              : "text-main-dark/50 hover:text-main"
-                          }`}
+                          style={`relative z-10 flex-1 py-3 rounded-full transition-all ${activeTab === tab
+                            ? "text-white font-bold"
+                            : "text-main-dark/50 hover:text-main"
+                            }`}
                         />
                       ))}
                     </div>
@@ -420,8 +416,9 @@ export default function ProductPage() {
                     <div className="order-6 mt-6 sm:pt-0 pt-15 lg:hidden">
                       <ShoppingForm
                         variant="product"
-                        onAddToCart={() => handleAddToCart(product.id!)}
+                        onAddToCart={(qty) => handleAddToCart(product.id!, qty)}
                       />
+
                     </div>
                   </div>
 
@@ -455,11 +452,10 @@ export default function ProductPage() {
                             <button
                               key={index}
                               onClick={() => setSelectedImage(img!)}
-                              className={`w-20 h-20 rounded-xl overflow-hidden border-1 transition-all duration-300 ${
-                                selectedImage === img
-                                  ? "border-main scale-105"
-                                  : "border-transparent hover:scale-105"
-                              }`}
+                              className={`w-20 h-20 rounded-xl overflow-hidden border-1 transition-all duration-300 ${selectedImage === img
+                                ? "border-main scale-105"
+                                : "border-transparent hover:scale-105"
+                                }`}
                             >
                               <img
                                 src={img!}
@@ -494,8 +490,9 @@ export default function ProductPage() {
                   <div className="hidden lg:block w-3/12 order-3">
                     <ShoppingForm
                       variant="product"
-                      onAddToCart={() => handleAddToCart(product.id!)}
+                      onAddToCart={(qty) => handleAddToCart(product.id!, qty)} 
                     />
+
                   </div>
                 </section>
 
@@ -517,9 +514,9 @@ export default function ProductPage() {
                         }),
                         discountPrice: prod.discount_price
                           ? prod.discount_price.toLocaleString("es-CR", {
-                              style: "currency",
-                              currency: "CRC",
-                            })
+                            style: "currency",
+                            currency: "CRC",
+                          })
                           : "",
 
                         rating: 0,
