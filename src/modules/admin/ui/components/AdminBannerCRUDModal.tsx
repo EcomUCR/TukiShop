@@ -4,6 +4,7 @@ import ButtonComponent from "../../../../components/ui/ButtonComponent";
 import { useBanner } from "../../infrastructure/useBanner";
 import { useEffect, useState } from "react";
 import { uploadImage } from "../../../users/infrastructure/imageService";
+import {useAlert} from "../../../../hooks/context/AlertContext";
 
 interface AdminBannerCRUDModalProps {
   newBanner: any;
@@ -27,6 +28,7 @@ export default function AdminBannerCRUDModal({
     deleteBannerImage,
     loading,
   } = useBanner();
+  const {showAlert} = useAlert();
   const [uploading, setUploading] = useState(false);
   // 🔹 State para controlar el menú desplegable de banners
   const [showBannerDropdown, setShowBannerDropdown] = useState(false);
@@ -83,7 +85,12 @@ export default function AdminBannerCRUDModal({
       await fetchBannerImages();
     } catch (error) {
       console.error("❌ Error al subir y registrar imagen:", error);
-      alert("Error al subir la imagen. Intenta de nuevo.");
+      showAlert({
+        message: "Error al subir la imagen. Intenta de nuevo.",
+        type: "error",
+        title: "Error al subir imagen",
+        confirmText: "Ok",
+      });
     } finally {
       setUploading(false);
     }
@@ -96,7 +103,11 @@ export default function AdminBannerCRUDModal({
       onClose();
     } catch (err) {
       console.error("❌ Error al guardar banner:", err);
-      alert("No se pudo guardar el banner.");
+      showAlert({message: "No se pudo guardar el banner.",
+        type: "error",
+        title: "Error al guardar banner",
+        confirmText: "Ok",
+      });
     }
   };
 
@@ -104,7 +115,11 @@ export default function AdminBannerCRUDModal({
     if (!newBanner.id) return;
 
     if (newBanner.is_active) {
-      alert("⚠️ No puedes eliminar un banner que está activo. Desactívalo primero.");
+      showAlert({message: " No puedes eliminar un banner que está activo. Desactívalo primero.",
+        type: "warning",
+        title: "Banner activo",
+        confirmText: "Ok",
+      });
       return;
     }
 
@@ -115,12 +130,20 @@ export default function AdminBannerCRUDModal({
 
     try {
       await deleteBanner(newBanner.id);
-      alert("✅ Banner eliminado correctamente.");
+      showAlert({message:" Banner eliminado correctamente.",
+        type: "success",
+        title: "Banner eliminado",
+        confirmText: "Ok",
+      });
       if (onSaveSuccess) onSaveSuccess();
       onClose();
     } catch (err) {
       console.error("❌ Error al eliminar banner:", err);
-      alert("No se pudo eliminar el banner.");
+      showAlert({message:"No se pudo eliminar el banner.",
+        type: "error",
+        title: "Error al eliminar banner",
+        confirmText: "Ok",
+      });
     }
   };
 
