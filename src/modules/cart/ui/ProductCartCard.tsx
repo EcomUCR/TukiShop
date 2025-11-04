@@ -1,9 +1,10 @@
-import { IconHeart, IconTrash } from "@tabler/icons-react";
+import { IconTrash } from "@tabler/icons-react";
 import StarRatingComponent from "../../../components/ui/StarRatingComponent";
 import { useCart } from "../../../hooks/context/CartContext";
 import { Link } from "react-router-dom";
 import { useAlert } from "../../../hooks/context/AlertContext";
 import { useState } from "react";
+import HeartButton from "../../../components/data-display/HeartButton";
 
 interface Props {
   item: {
@@ -28,7 +29,7 @@ interface Props {
 
 export default function ProductCartCard({ item }: Props) {
   const { product } = item;
-  const { updateQuantity, removeItem } = useCart(); // ✅ Usamos funciones del CartContext
+  const { updateQuantity, removeItem } = useCart();
   const { showAlert } = useAlert();
   const [updating, setUpdating] = useState(false);
 
@@ -77,21 +78,22 @@ export default function ProductCartCard({ item }: Props) {
       });
     }
   };
+
   const isArchived = product.status === "ARCHIVED";
 
   const productStatus =
     product.status === "ARCHIVED"
       ? "Eliminado"
       : product.stock && product.stock > 0
-      ? "Disponible"
-      : "Agotado";
+        ? "Disponible"
+        : "Agotado";
 
   const productStatusColor =
     product.status === "ARCHIVED"
       ? "text-gray-500 font-semibold"
       : product.stock && product.stock > 0
-      ? "text-green-600"
-      : "text-red-500 font-semibold";
+        ? "text-green-600"
+        : "text-red-500 font-semibold";
 
   return (
     <>
@@ -99,11 +101,10 @@ export default function ProductCartCard({ item }: Props) {
       <figure
         className={`hidden sm:flex relative items-center justify-between w-full rounded-2xl p-5 shadow-md border 
       overflow-hidden mb-5 font-quicksand transition-all duration-500
-      ${
-        isArchived
-          ? "bg-gray-100 border-gray-300 scale-[0.96] grayscale opacity-80"
-          : "bg-gradient-to-br from-white to-gray-50 border-gray-100 hover:border-contrast-secondary/40"
-      }`}
+      ${isArchived
+            ? "bg-gray-100 border-gray-300 scale-[0.96] grayscale opacity-80"
+            : "bg-gradient-to-br from-white to-gray-50 border-gray-100 hover:border-contrast-secondary/40"
+          }`}
       >
         {/* Imagen */}
         <div className="flex-shrink-0 flex items-center justify-center w-32 h-32 rounded-2xl overflow-hidden bg-white shadow-inner">
@@ -114,9 +115,8 @@ export default function ProductCartCard({ item }: Props) {
                 "https://electrogenpro.com/wp-content/themes/estore/images/placeholder-shop.jpg"
               }
               alt={product.name}
-              className={`object-contain w-full h-full transition-transform duration-500 cursor-pointer ${
-                isArchived ? "opacity-70 grayscale" : "hover:scale-105"
-              }`}
+              className={`object-contain w-full h-full transition-transform duration-500 cursor-pointer ${isArchived ? "opacity-70 grayscale" : "hover:scale-105"
+                }`}
             />
           </Link>
         </div>
@@ -127,11 +127,10 @@ export default function ProductCartCard({ item }: Props) {
             <div className="flex items-center justify-between">
               <Link to={`/product/${product.id}`}>
                 <h3
-                  className={`font-bold text-lg cursor-pointer transition-colors ${
-                    isArchived
+                  className={`font-bold text-lg cursor-pointer transition-colors ${isArchived
                       ? "text-gray-500"
                       : "text-gray-800 hover:text-main"
-                  }`}
+                    }`}
                 >
                   {product.name}
                 </h3>
@@ -195,15 +194,14 @@ export default function ProductCartCard({ item }: Props) {
             )}
           </div>
 
-          <div className="flex gap-3 text-main">
+          {/* ❤️ HeartButton con animación */}
+          <div className="flex gap-3 text-main items-center">
             {!isArchived && (
-              <button className="p-2 rounded-full bg-gradient-to-br from-contrast-main to-contrast-secondary text-white hover:scale-110 shadow-md transition-transform duration-300">
-                <IconHeart size={18} />
-              </button>
+              <HeartButton productId={product.id} variant="filled" />
             )}
             <button
               onClick={handleDelete}
-              className="p-2 rounded-full bg-gray-200 hover:bg-red-500 hover:text-white transition-all duration-300 shadow-sm hover:scale-110"
+              className="p-2 rounded-xl bg-gray-200 hover:bg-red-500 hover:text-white transition-all duration-300 shadow-sm hover:scale-110"
             >
               <IconTrash size={18} />
             </button>
@@ -215,11 +213,10 @@ export default function ProductCartCard({ item }: Props) {
       <figure
         className={`sm:hidden relative w-full rounded-2xl shadow-md border 
       transition-all duration-500 overflow-hidden mb-5 font-quicksand p-4 h-[14rem] flex flex-col justify-between
-      ${
-        isArchived
-          ? "bg-gray-100 border-gray-300 scale-[0.96] grayscale opacity-80"
-          : "bg-gradient-to-br from-white to-gray-50 border-gray-100 hover:border-contrast-secondary/40"
-      }`}
+      ${isArchived
+            ? "bg-gray-100 border-gray-300 scale-[0.96] grayscale opacity-80"
+            : "bg-gradient-to-br from-white to-gray-50 border-gray-100 hover:border-contrast-secondary/40"
+          }`}
       >
         <div className="flex w-full">
           <div className="flex-shrink-0 flex items-center justify-center w-24 h-24 rounded-2xl overflow-hidden bg-white shadow-inner mr-3">
@@ -230,9 +227,8 @@ export default function ProductCartCard({ item }: Props) {
                   "https://electrogenpro.com/wp-content/themes/estore/images/placeholder-shop.jpg"
                 }
                 alt={product.name}
-                className={`object-contain w-full h-full transition-transform duration-500 cursor-pointer ${
-                  isArchived ? "opacity-70 grayscale" : "hover:scale-105"
-                }`}
+                className={`object-contain w-full h-full transition-transform duration-500 cursor-pointer ${isArchived ? "opacity-70 grayscale" : "hover:scale-105"
+                  }`}
               />
             </Link>
           </div>
@@ -242,11 +238,10 @@ export default function ProductCartCard({ item }: Props) {
             <div>
               <Link to={`/product/${product.id}`}>
                 <h3
-                  className={`font-bold text-sm cursor-pointer transition-colors ${
-                    isArchived
+                  className={`font-bold text-sm cursor-pointer transition-colors ${isArchived
                       ? "text-gray-500"
                       : "text-gray-800 hover:text-main"
-                  }`}
+                    }`}
                 >
                   {product.name}
                 </h3>
@@ -303,13 +298,11 @@ export default function ProductCartCard({ item }: Props) {
             </p>
             <div className="flex gap-3 text-main">
               {!isArchived && (
-                <button className="p-2 rounded-full bg-gradient-to-br from-contrast-main to-contrast-secondary text-white hover:scale-110 shadow-md transition-transform duration-300">
-                  <IconHeart size={16} />
-                </button>
+                <HeartButton productId={product.id} variant="filled" />
               )}
               <button
                 onClick={handleDelete}
-                className="p-2 rounded-full bg-gray-200 hover:bg-red-500 hover:text-white transition-all duration-300 shadow-sm hover:scale-110"
+                className="py-2 px-2.5  rounded-xl bg-gray-200 hover:bg-red-500 hover:text-white transition-all duration-300 shadow-sm hover:scale-110"
               >
                 <IconTrash size={16} />
               </button>
