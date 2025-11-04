@@ -83,15 +83,15 @@ export default function ProductWishlistCard({
             {product.discount_price && product.discount_price > 0 ? (
               <>
                 <p className="text-xs line-through text-gray-400">
-                  {formatCRC(product.price)}
+                  ₡{formatCRC(product.price)}
                 </p>
                 <p className="text-xl font-bold text-main bg-clip-text">
-                  {formatCRC(product.discount_price)}
+                  ₡{formatCRC(product.discount_price)}
                 </p>
               </>
             ) : (
               <p className="text-xl font-bold text-main">
-                {formatCRC(product.price)}
+                 ₡{formatCRC(product.price)}
               </p>
             )}
           </div>

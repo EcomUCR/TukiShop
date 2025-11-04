@@ -233,7 +233,7 @@ discountPrice: prod.discount_price
             </h2>
             <div className="flex items-center gap-1 text-sm sm:text-base">
               <a
-                href="/offers" // 👉 futuro enlace a página de todas las ofertas
+                href="search?mode=offers"
                 className="font-quicksand font-semibold cursor-pointer"
               >
                 Ver todo

@@ -5,6 +5,7 @@ import {
   IconBrandX,
 } from "@tabler/icons-react";
 import logo from "../../img/TukiLogo.png";
+import { Link } from "react-router-dom";
 
 export default function Footer() {
   return (
@@ -76,10 +77,12 @@ export default function Footer() {
 
         {/* 🔹 Columna central: logo */}
         <div className="flex flex-col items-center gap-2 w-full sm:w-[33%] order-1 sm:order-2">
-          <img src={logo} alt="TukiShop" className="h-15 w-auto" />
+          <Link to="/" className="flex flex-col justify-center items-center">
+          <img src={logo} alt="TukiShop" className="h-15 w-15" />
           <a className="text-3xl font-fugaz" href="/">
             TukiShop
           </a>
+          </Link>
         </div>
 
         {/* 🔹 Columna derecha: llamada a la acción */}
