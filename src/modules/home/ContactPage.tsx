@@ -3,15 +3,26 @@ import NavBar from "../../components/layout/NavBar";
 import Footer from "../../components/layout/Footer";
 import ButtonComponent from "../../components/ui/ButtonComponent";
 import useContactForm from "../../hooks/useContactForm";
+import { useState } from "react";
 
 export default function ContactPage() {
     const { fields, handleChange, handleSubmit, loading, sent, error } = useContactForm();
+    const [charCount, setCharCount] = useState(0);
+    const maxChars = 500; // 🔹 límite de caracteres del mensaje
+
+    const handleMessageChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+        const value = e.target.value;
+        if (value.length <= maxChars) {
+            handleChange(e);
+            setCharCount(value.length);
+        }
+    };
 
     return (
         <div className="min-h-screen flex flex-col bg-gradient-to-b from-light-gray to-white">
             <NavBar />
 
-
+            {/* Hero */}
             <section className="text-center py-16 sm:py-20 bg-gradient-to-br from-contrast-main via-contrast-secondary to-main text-white font-quicksand">
                 <motion.h1
                     initial={{ opacity: 0, y: 20 }}
@@ -27,6 +38,7 @@ export default function ContactPage() {
                 </p>
             </section>
 
+            {/* Formulario */}
             <section className="flex justify-center w-full px-6 py-10 sm:py-16 font-quicksand">
                 <form
                     onSubmit={handleSubmit}
@@ -71,14 +83,26 @@ export default function ContactPage() {
                         />
                     </label>
 
+                    {/* Campo de mensaje con contador */}
                     <label className="flex flex-col gap-1">
-                        <p className="font-semibold text-main">Mensaje</p>
+                        <div className="flex justify-between items-center">
+                            <p className="font-semibold text-main">Mensaje</p>
+                            <span
+                                className={`text-sm ${charCount >= maxChars * 0.9
+                                        ? "text-red-500"
+                                        : "text-gray-500"
+                                    }`}
+                            >
+                                {charCount}/{maxChars}
+                            </span>
+                        </div>
                         <textarea
                             name="message"
                             value={fields.message}
-                            onChange={handleChange}
+                            onChange={handleMessageChange}
+                            maxLength={maxChars}
                             placeholder="Escribí tu mensaje aquí..."
-                            className="rounded-2xl p-3 border border-main/30 bg-transparent text-gray-800 h-32 resize-none"
+                            className="rounded-2xl p-3 border border-main/30 bg-transparent text-gray-800 h-32 resize-none focus:ring-2 focus:ring-main"
                             required
                         />
                     </label>
