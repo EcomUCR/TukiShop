@@ -12,8 +12,8 @@ interface FeaturedProductsSliderProps {
         id: number;
         shop: string;
         title: string;
-        price: string;
-        discountPrice: string;
+        price: number;
+        discountPrice?: number;
         rating: number;
         img: string;
     }[];

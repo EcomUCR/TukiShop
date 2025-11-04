@@ -14,8 +14,8 @@ interface FeaturedProductCardProps {
   shop: string;
   img?: string;
   title: string;
-  price: string;
-  discountPrice?: string;
+  price: number;
+  discountPrice?: number;
   rating: number;
   edit: "EDIT" | "EDITING" | "NONE";
   onEditClick?: (id: number) => void;
@@ -59,6 +59,16 @@ export default function FeaturedProductCard(props: FeaturedProductCardProps) {
       });
     }
   };
+
+  const formatPrice = (value?: number | string) => {
+  if (value === undefined || value === null) return "0";
+  // 🔹 Limpiamos símbolos, comas y espacios por si llega un string
+  const clean = String(value).replace(/[^\d.-]/g, "");
+  const num = Number(clean) || 0;
+  return num.toLocaleString("es-CR");
+};
+
+
 
   return (
     <figure
@@ -149,15 +159,18 @@ export default function FeaturedProductCard(props: FeaturedProductCardProps) {
             {hasDiscount ? (
               <>
                 <p className="line-through font-comme text-xs sm:text-sm text-black/30">
-                  {props.price}
+                  ₡ {formatPrice(props.price)}
                 </p>
                 <p className="font-comme text-base sm:text-lg">
-                  {props.discountPrice}
+                  ₡ {formatPrice(props.discountPrice)}
                 </p>
               </>
             ) : (
-              <p className="font-comme text-base sm:text-lg"> {props.price}</p>
+              <p className="font-comme text-base sm:text-lg">
+                ₡ {formatPrice(props.price)}
+              </p>
             )}
+
           </div>
 
           {/* 🔹 Botones desktop */}
@@ -171,17 +184,17 @@ export default function FeaturedProductCard(props: FeaturedProductCardProps) {
                 animate={
                   added
                     ? {
-                        background:
-                          "linear-gradient(90deg, var(--color-contrast-secondary), var(--color-main))",
-                        scale: [1, 1.05, 1],
-                        boxShadow: "0 0 15px rgba(150, 80, 220, 0.6)",
-                      }
+                      background:
+                        "linear-gradient(90deg, var(--color-contrast-secondary), var(--color-main))",
+                      scale: [1, 1.05, 1],
+                      boxShadow: "0 0 15px rgba(150, 80, 220, 0.6)",
+                    }
                     : {
-                        background:
-                          "linear-gradient(90deg, var(--color-contrast-main), var(--color-contrast-secondary))",
-                        scale: 1,
-                        boxShadow: "0 0 0 rgba(0,0,0,0)",
-                      }
+                      background:
+                        "linear-gradient(90deg, var(--color-contrast-main), var(--color-contrast-secondary))",
+                      scale: 1,
+                      boxShadow: "0 0 0 rgba(0,0,0,0)",
+                    }
                 }
                 transition={{
                   duration: 0.1,
@@ -278,17 +291,17 @@ export default function FeaturedProductCard(props: FeaturedProductCardProps) {
             animate={
               added
                 ? {
-                    background:
-                      "linear-gradient(90deg, var(--color-contrast-secondary), var(--color-main))",
-                    scale: [1, 1.05, 1],
-                    boxShadow: "0 0 15px rgba(150, 80, 220, 0.6)",
-                  }
+                  background:
+                    "linear-gradient(90deg, var(--color-contrast-secondary), var(--color-main))",
+                  scale: [1, 1.05, 1],
+                  boxShadow: "0 0 15px rgba(150, 80, 220, 0.6)",
+                }
                 : {
-                    background:
-                      "linear-gradient(90deg, var(--color-contrast-main), var(--color-contrast-secondary))",
-                    scale: 1,
-                    boxShadow: "0 0 0 rgba(0,0,0,0)",
-                  }
+                  background:
+                    "linear-gradient(90deg, var(--color-contrast-main), var(--color-contrast-secondary))",
+                  scale: 1,
+                  boxShadow: "0 0 0 rgba(0,0,0,0)",
+                }
             }
             transition={{
               duration: 0.1,

@@ -62,33 +62,33 @@ export default function HomePage() {
   const [editingSide, setEditingSide] = useState<"LEFT" | "RIGHT" | null>(null);
   const hasFetched = useRef(false);
 
- useEffect(() => {
-  if (hasFetched.current) return;
-  hasFetched.current = true;
+  useEffect(() => {
+    if (hasFetched.current) return;
+    hasFetched.current = true;
 
-  (async () => {
-    try {
-      const prods = await getProducts();
+    (async () => {
+      try {
+        const prods = await getProducts();
 
-      // 🔹 Filtrar y limitar directamente en el componente
-      const validos = prods
-        .filter(
-          (p) =>
-            p &&
-            p.status === "ACTIVE" &&     // solo activos
-            p.price > 0 &&               // con precio válido
-            (p.image_1_url || p.image)   // con alguna imagen
-        )
-        .slice(0, 10); // máximo 10 productos
+        // 🔹 Filtrar y limitar directamente en el componente
+        const validos = prods
+          .filter(
+            (p) =>
+              p &&
+              p.status === "ACTIVE" &&     // solo activos
+              p.price > 0 &&               // con precio válido
+              (p.image_1_url || p.image)   // con alguna imagen
+          )
+          .slice(0, 10); // máximo 10 productos
 
-      setExploreProducts(validos);
-    } catch (err) {
-      console.error("Error al cargar productos:", err);
-    } finally {
-      setLoadingExplore(false);
-    }
-  })();
-}, []);
+        setExploreProducts(validos);
+      } catch (err) {
+        console.error("Error al cargar productos:", err);
+      } finally {
+        setLoadingExplore(false);
+      }
+    })();
+  }, []);
 
 
   /** 🔹 Cargar productos destacados */
@@ -197,15 +197,13 @@ export default function HomePage() {
                   id: prod.id!,
                   shop: prod.store?.name || "Sin tienda",
                   title: prod.name,
-                 price: prod.price.toLocaleString("es-CR", { style: "currency", currency: "CRC" }),
-discountPrice: prod.discount_price
-  ? prod.discount_price.toLocaleString("es-CR", { style: "currency", currency: "CRC" })
-  : "",
-
+                  price: prod.price,
+                  discountPrice: prod.discount_price,
                   rating: 0,
                   img: prod.image_1_url || audifonos,
                 }))}
               />
+
             )}
           </div>
         </section>
@@ -217,9 +215,8 @@ discountPrice: prod.discount_price
           </h2>
           {loadingCategories && <SkeletonCategory count={4} />}
           <div
-            className={`${
-              loadingCategories ? "opacity-0" : "opacity-100"
-            } transition-opacity duration-500`}
+            className={`${loadingCategories ? "opacity-0" : "opacity-100"
+              } transition-opacity duration-500`}
           >
             <CategorySlider onLoaded={() => setLoadingCategories(false)} />
           </div>
@@ -365,49 +362,49 @@ discountPrice: prod.discount_price
 
         {/* 🔹 EXPLORAR */}
         {/* 🔹 EXPLORAR */}
-<section className="mx-5 sm:mx-10 my-6 sm:my-10">
-  <div className="flex justify-between items-center">
-    <h2 className="text-lg sm:text-2xl font-semibold font-quicksand">
-      Explorar
-    </h2>
-    <div className="flex items-center gap-1 text-sm sm:text-base">
-      <a
-        href="/search?mode=explore"
-        className="font-quicksand font-semibold cursor-pointer"
-      >
-        Ver todo
-      </a>
-      <IconChevronRight className="inline w-4 h-4 sm:w-5 sm:h-5" />
-    </div>
-  </div>
+        <section className="mx-5 sm:mx-10 my-6 sm:my-10">
+          <div className="flex justify-between items-center">
+            <h2 className="text-lg sm:text-2xl font-semibold font-quicksand">
+              Explorar
+            </h2>
+            <div className="flex items-center gap-1 text-sm sm:text-base">
+              <a
+                href="/search?mode=explore"
+                className="font-quicksand font-semibold cursor-pointer"
+              >
+                Ver todo
+              </a>
+              <IconChevronRight className="inline w-4 h-4 sm:w-5 sm:h-5" />
+            </div>
+          </div>
 
-  {loadingExplore ? (
-    <SkeletonProduct count={10} />
-  ) : exploreProducts.length === 0 ? (
-    <p className="text-center text-gray-500 my-8">
-      No hay productos para explorar 🛍️
-    </p>
-  ) : (
-    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 my-6 sm:my-10 gap-4 sm:gap-5">
-      {exploreProducts.slice(0, 10).map((prod) => (
-        <ProductCard
-          key={prod.id}
-          id={prod.id!}
-          shop={prod.store?.name || "No hay tienda"}
-          title={prod.name}
-          price={prod.price}
-          discountPrice={
-            prod.discount_price && prod.discount_price !== 0
-              ? prod.discount_price
-              : undefined
-          }
-          img={prod.image_1_url || audifonos}
-          edit={"NONE"}
-        />
-      ))}
-    </div>
-  )}
-</section>
+          {loadingExplore ? (
+            <SkeletonProduct count={10} />
+          ) : exploreProducts.length === 0 ? (
+            <p className="text-center text-gray-500 my-8">
+              No hay productos para explorar 🛍️
+            </p>
+          ) : (
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 my-6 sm:my-10 gap-4 sm:gap-5">
+              {exploreProducts.slice(0, 10).map((prod) => (
+                <ProductCard
+                  key={prod.id}
+                  id={prod.id!}
+                  shop={prod.store?.name || "No hay tienda"}
+                  title={prod.name}
+                  price={prod.price}
+                  discountPrice={
+                    prod.discount_price && prod.discount_price !== 0
+                      ? prod.discount_price
+                      : undefined
+                  }
+                  img={prod.image_1_url || audifonos}
+                  edit={"NONE"}
+                />
+              ))}
+            </div>
+          )}
+        </section>
 
       </div>
 
