@@ -173,36 +173,18 @@ export default function CustomerProfileComponent({
   };
 
   const handleDeleteAddress = async (id: number) => {
-    try {
-      // Confirmación visual
-      const confirmDelete = window.confirm("¿Seguro que deseas eliminar esta dirección?");
-      if (!confirmDelete) return;
+  console.log("🧭 Eliminando dirección ID:", id);
 
-      // Eliminar en backend
-      await axios.delete(`/addresses/${id}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+  try {
+    await axios.delete(`/addresses/${id}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    console.log("✅ Petición DELETE enviada correctamente");
+  } catch (error) {
+    console.error("❌ Error al eliminar dirección:", error);
+  }
+};
 
-      // Actualizar la lista local
-      setAddresses((prev) => prev.filter((addr) => addr.id !== id));
-
-      // Mostrar alerta de éxito
-      setAlert({
-        show: true,
-        title: "Dirección eliminada",
-        message: "La dirección se eliminó correctamente.",
-        type: "success",
-      });
-    } catch (error) {
-      console.error("❌ Error al eliminar dirección:", error);
-      setAlert({
-        show: true,
-        title: "Error al eliminar",
-        message: "No se pudo eliminar la dirección. Intenta nuevamente.",
-        type: "error",
-      });
-    }
-  };
 
 
   const handleAddAddress = async () => {
