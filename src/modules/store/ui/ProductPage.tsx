@@ -154,7 +154,7 @@ export default function ProductPage() {
           >
             <div className="relative w-full h-full max-w-2xl max-h-2xl">
               <button
-                className="absolute top-10 -right-10 z-10 bg-white/50 text-white rounded-full p-2  flex items-center justify-center cursor-pointer hover:bg-white/80 transition-all duration-300 hover:scale-110"
+                className="absolute right-0 top-20 sm:top-10 sm:-right-10 z-10 bg-white/50 text-white rounded-full p-2  flex items-center justify-center cursor-pointer hover:bg-white/80 transition-all duration-300 hover:scale-110"
                 onClick={(e) => {
                   e.stopPropagation();
                   closeZoom();
