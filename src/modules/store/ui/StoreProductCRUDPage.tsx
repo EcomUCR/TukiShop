@@ -423,51 +423,58 @@ export default function StoreProductCRUDPage() {
             {/* Izquierda */}
             <div className="flex flex-col sm:w-5/12 gap-6">
 
+              {/* 🔹 Descripción llamativa */}
               <label className="flex flex-col w-full gap-2">
-                <p className="font-semibold">Sobre este producto (Descripción)</p>
-                <textarea
-                  placeholder="Descripción del producto"
-                  value={form.description}
-                  onChange={(e) =>
-                    setForm({ ...form, description: e.target.value })
-                  }
-                  cols={30}
-                  rows={5}
-                  className="bg-main-dark/20 rounded-xl px-3 py-2 w-full"
-                />
-                <div className="flex flex-col w-full items-center">
+                <div className="flex justify-between items-center">
+                  <p className="font-semibold text-main-dark">Descripción</p>
+                  <span className="text-xs text-gray-500">Máx. 400 caracteres</span>
+                </div>
+                <div className="bg-main-dark/20 rounded-xl px-3 py-2 w-full">
+                  <textarea
+                    placeholder="Describe el producto de forma atractiva, por ejemplo: 'La camiseta perfecta para los fans del ciclismo, cómoda y con tela transpirable.' O utiliza el botón 'Autogenerar descripción'."
+                    value={form.description}
+                    onChange={(e) => setForm({ ...form, description: e.target.value })}
+                    maxLength={400}
+                    rows={5}
+                    className="bg-transparent w-full resize-none outline-none text-sm sm:text-base placeholder-gray-500"
+                  />
+                </div>
+                <span className="text-xs text-gray-500 mt-1">
+                  Esta descripción se mostrará en la página del producto para atraer al cliente.
+                </span>
+                <div className="flex flex-col w-full items-center mt-2">
                   <ButtonComponent
                     type="button"
-                    text={
-                      loadingDescription
-                        ? "Cargando..."
-                        : "Autogenerar descripción"
-                    }
+                    text={loadingDescription ? "Cargando..." : "Autogenerar descripción"}
                     onClick={handleGenerateDescription}
                     icon={<IconWand />}
                     style="flex justify-center text-sm w-full sm:w-[50%] px-3 py-2 items-center gap-2 rounded-full bg-main text-white hover:bg-contrast-secondary transition-colors duration-300"
                   />
                   {errorDescription && (
-                    <p className="text-red-500 text-sm text-center">
+                    <p className="text-red-500 text-sm text-center mt-1">
                       {errorDescription}
                     </p>
                   )}
                 </div>
               </label>
 
-
+              {/* 🔹 Detalles técnicos */}
               <label className="flex flex-col w-full gap-2">
-                <p className="font-semibold">Detalles</p>
-                <textarea
-                  placeholder="Detalles adicionales del producto"
-                  value={form.details}
-                  onChange={(e) =>
-                    setForm({ ...form, details: e.target.value })
-                  }
-                  cols={30}
-                  rows={5}
-                  className="bg-main-dark/20 rounded-xl px-3 py-2 w-full"
-                />
+                <p className="font-semibold text-main-dark">Detalles técnicos</p>
+                <div className="bg-main-dark/20 rounded-xl px-3 py-2 w-full">
+                  <textarea
+                    placeholder={`Ejemplo:
+- Peso: 500g
+- Material: Acero inoxidable
+- Medidas: 20x10cm`} value={form.details}
+                    onChange={(e) => setForm({ ...form, details: e.target.value })}
+                    rows={5}
+                    className="bg-transparent w-full resize-none outline-none text-sm sm:text-base placeholder-gray-500"
+                  />
+                </div>
+                <span className="text-xs text-gray-500 mt-1">
+                  Incluí especificaciones técnicas o información adicional útil.
+                </span>
               </label>
 
               <div className="flex flex-col gap-4">
