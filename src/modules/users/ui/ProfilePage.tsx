@@ -20,6 +20,7 @@ import { SkeletonUserPage } from "../../../components/ui/AllSkeletons";
 import AdminSupportList from "../../admin/ui/AdminSupportList";
 import { Navigate } from "react-router-dom";
 import SellerCouponsList from "./components/SellerCouponsList";
+
 export default function UserPage() {
   const [selected, setSelected] = useState("profile");
   const { user, loading } = useAuth();
@@ -40,32 +41,32 @@ export default function UserPage() {
     }
   }, [storeToOpen, user]);
 
-
   // 🌀 Mientras carga la sesión
-if (loading) {
-  return (
-    <div>
-      <NavBar />
-      <SkeletonUserPage />
-      <Footer />
-    </div>
-  );
-}
+  if (loading) {
+    return (
+      <div>
+        <NavBar />
+        <SkeletonUserPage />
+        <Footer />
+      </div>
+    );
+  }
 
-// 🚀 Si no hay usuario (por logout o no autenticado)
-if (!user) {
-  return <Navigate to="/loginRegister" replace />;
-}
+  // 🚀 Si no hay usuario después de cargar
+  if (!loading && !user) {
+    return <Navigate to="/loginRegister" replace />;
+  }
 
-// 🧩 Si el usuario existe pero tiene rol no permitido
-if (
-  user.role !== "SELLER" &&
-  user.role !== "CUSTOMER" &&
-  user.role !== "ADMIN"
-) {
-  return <Navigate to="/notAuthorized" replace />;
-}
+  const currentUser = user!; // 🔒 Garantizado no nulo en este punto
 
+  // 🧩 Si el usuario existe pero tiene rol no permitido
+  if (
+    currentUser.role !== "SELLER" &&
+    currentUser.role !== "CUSTOMER" &&
+    currentUser.role !== "ADMIN"
+  ) {
+    return <Navigate to="/notAuthorized" replace />;
+  }
 
   return (
     <div className="relative">
@@ -74,7 +75,7 @@ if (
       {/* Mobile header con botón hamburguesa */}
       <div className="sm:hidden flex items-center justify-between px-6 py-4 border-b border-main/10">
         <h2 className="text-lg font-semibold font-quicksand text-main">
-          {user.role === "ADMIN" ? "Panel de Administración" : "Mi Cuenta"}
+          {currentUser.role === "ADMIN" ? "Panel de Administración" : "Mi Cuenta"}
         </h2>
         <button
           onClick={() => setSidebarOpen(true)}
@@ -88,7 +89,7 @@ if (
       <section className="flex flex-col sm:flex-row px-4 sm:px-10 py-6 sm:py-10 mx-auto max-w-[80rem] relative">
         {/* Sidebar fijo en escritorio */}
         <div className="hidden sm:block w-[25%]">
-          <SideBar type={user.role} onSelect={setSelected} selected={selected} />
+          <SideBar type={currentUser.role} onSelect={setSelected} selected={selected} />
         </div>
 
         {/* Sidebar móvil animado */}
@@ -114,7 +115,7 @@ if (
               >
                 <div className="flex justify-between items-center px-5 py-4 border-b border-gray-200">
                   <h2 className="text-lg font-semibold font-quicksand text-main">
-                    {user.role === "ADMIN"
+                    {currentUser.role === "ADMIN"
                       ? "Panel de Administración"
                       : "Mi Cuenta"}
                   </h2>
@@ -128,7 +129,7 @@ if (
                 </div>
 
                 <SideBar
-                  type={user.role}
+                  type={currentUser.role}
                   onSelect={(section) => {
                     setSelected(section);
                     setSidebarOpen(false);
@@ -150,40 +151,39 @@ if (
               exit={{ opacity: 0, y: -15 }}
               transition={{ duration: 0.3, ease: "easeInOut" }}
             >
-              {selected === "profile" && <AccountInformation type={user.role} />}
+              {selected === "profile" && <AccountInformation type={currentUser.role} />}
               {selected === "transactions" && <TransactionHistory />}
 
               {/* pedidos según rol */}
               {selected === "orders" &&
-                (user.role === "SELLER" ? (
+                (currentUser.role === "SELLER" ? (
                   <StoreOrderList />
                 ) : (
                   <OrdersList />
                 ))}
 
-
-              {selected === "products" && user.role === "SELLER" && (
+              {selected === "products" && currentUser.role === "SELLER" && (
                 <StoreProductsList />
               )}
-              {selected === "orderStatus" && user.role === "SELLER" && (
+              {selected === "orderStatus" && currentUser.role === "SELLER" && (
                 <OrderStatusList />
               )}
-                {selected === "coupons" && user.role === "SELLER" && (
-                  <SellerCouponsList />
-                )}
-              {selected === "users" && user.role === "ADMIN" && (
+              {selected === "coupons" && currentUser.role === "SELLER" && (
+                <SellerCouponsList />
+              )}
+              {selected === "users" && currentUser.role === "ADMIN" && (
                 <AdminUsersList />
               )}
-              {selected === "coupons" && user.role === "ADMIN" && (
+              {selected === "coupons" && currentUser.role === "ADMIN" && (
                 <AdminCouponsList />
               )}
-              {selected === "mailbox" && user.role === "ADMIN" && (
+              {selected === "mailbox" && currentUser.role === "ADMIN" && (
                 <AdminMailboxList />
               )}
-              {selected === "banners" && user.role === "ADMIN" && (
+              {selected === "banners" && currentUser.role === "ADMIN" && (
                 <AdminBannerList />
               )}
-              {selected === "support" && user.role === "ADMIN" && (
+              {selected === "support" && currentUser.role === "ADMIN" && (
                 <AdminSupportList />
               )}
             </motion.div>

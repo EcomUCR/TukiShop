@@ -63,7 +63,7 @@ type AuthContextType = {
   user: UserType | null;
   token: string | null;
   loading: boolean;
-  login: (loginInput: string, password: string) => Promise<boolean>; // ✅ puede ser username o email
+  login: (loginInput: string, password: string) => Promise<boolean>;
   logout: () => Promise<void>;
   refreshUser: () => Promise<void>;
 };
@@ -74,27 +74,30 @@ type AuthContextType = {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// ✅ Contexto completo actualizado
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<UserType | null>(null);
   const [token, setToken] = useState<string | null>(
     localStorage.getItem("access_token")
   );
-  const [loading, setLoading] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(true); // ✅ empieza en true
 
   useEffect(() => {
-    if (token) {
-      axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-      loadUser();
-    } else {
-      delete axios.defaults.headers.common["Authorization"];
-      setUser(null);
-    }
+    const initAuth = async () => {
+      if (token) {
+        axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+        await loadUser();
+      } else {
+        delete axios.defaults.headers.common["Authorization"];
+        setUser(null);
+        setLoading(false);
+      }
+    };
+
+    initAuth();
   }, [token]);
 
   // 🔹 Carga del usuario actual
   const loadUser = async () => {
-    setLoading(true);
     try {
       const { data } = await axios.get("/me");
       const userData = data.user ?? data;
@@ -110,19 +113,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       localStorage.removeItem("access_token");
       delete axios.defaults.headers.common["Authorization"];
     } finally {
-      setLoading(false);
+      setLoading(false); // ✅ termina de cargar
     }
   };
 
-  // 🔹 Alias para refrescar el usuario desde otros componentes
   const refreshUser = async () => {
+    setLoading(true);
     await loadUser();
   };
 
-  // 🔹 Iniciar sesión (ahora acepta correo o username)
   const login = async (loginInput: string, password: string) => {
     const { data } = await axios.post("/login", {
-      login: loginInput, 
+      login: loginInput,
       password,
     });
 
@@ -134,7 +136,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return true;
   };
 
-  // 🔹 Cerrar sesión
   const logout = async () => {
     try {
       await axios.post("/logout");
@@ -156,9 +157,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   );
 }
 
-// ============================
-// 🔍 Hook personalizado
-// ============================
 export function useAuth() {
   const context = useContext(AuthContext);
   if (context === undefined) {
