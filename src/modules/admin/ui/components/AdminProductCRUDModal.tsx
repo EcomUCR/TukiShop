@@ -57,6 +57,7 @@ export default function AdminProductCRUDModal({
     const [form, setForm] = useState<ProductForm>({
         name: "",
         description: "",
+        details: "", 
         price: 0,
         discount_price: 0,
         stock: 0,
@@ -115,6 +116,7 @@ export default function AdminProductCRUDModal({
                 discount_price: product.discount_price?.toString() ?? "0",
                 categories: Array.isArray(product.categories) ? product.categories.map((c: any) => c.id) : [],
                 status: product.status || "ACTIVE",
+                details: product.details || "", 
             });
 
             setPreviews(loadedImages);
@@ -166,6 +168,7 @@ export default function AdminProductCRUDModal({
             image_3: form.images[2],
             name: form.name,
             description: form.description,
+            details: form.details, 
             stock: form.stock,
             status: form.status,
             categories: form.categories,
@@ -189,6 +192,7 @@ export default function AdminProductCRUDModal({
                 setForm({
                     name: "",
                     description: "",
+                    details: "",
                     price: 0,
                     discount_price: 0,
                     stock: 0,
@@ -393,8 +397,8 @@ export default function AdminProductCRUDModal({
                                 >
                                     <option value="ACTIVE">Activo</option>
                                     <option value="INACTIVE">Inactivo</option>
-                                    <option value="DRAFT">Archivado</option>
-                                    <option value="ARCHIVED">Eliminado (archivado)</option>
+                                    <option value="DRAFT">Borrador</option> {/* Corregido para ser más claro */}
+                                    <option value="ARCHIVED">Archivado</option>
                                 </select>
                             </label>
                         </div>
@@ -404,29 +408,45 @@ export default function AdminProductCRUDModal({
                     <div className="flex flex-col sm:flex-row gap-10 justify-between">
                         {/* Columna Izquierda */}
                         <div className="flex flex-col sm:w-6/12 gap-6">
-                            <label className="flex flex-col w-full gap-2">
-                                <p className="font-semibold">Sobre este producto</p>
-                                <textarea
-                                    placeholder="Sobre este producto"
-                                    value={form.description}
-                                    onChange={(e) => setForm({ ...form, description: e.target.value })}
-                                    cols={30}
-                                    rows={5}
-                                    className="bg-main-dark/20 rounded-xl px-3 py-2 w-full"
-                                />
-                                <div className="flex flex-col w-full items-center">
-                                    <ButtonComponent
-                                        type="button"
-                                        text={loadingDescription ? "Cargando..." : "Autogenerar descripción"}
-                                        onClick={handleGenerateDescription}
-                                        icon={<IconWand />}
-                                        style="flex justify-center text-sm w-full sm:w-[50%] px-3 py-2 items-center gap-2 rounded-full bg-main text-white hover:bg-contrast-secondary transition-colors duration-300"
+                            {/* Descripción y Detalles agrupados */}
+                            <div className="flex flex-col gap-4">
+                                <label className="flex flex-col w-full gap-2">
+                                    <p className="font-semibold">Descripción (Corta)</p>
+                                    <textarea
+                                        placeholder="Sobre este producto"
+                                        value={form.description}
+                                        onChange={(e) => setForm({ ...form, description: e.target.value })}
+                                        cols={30}
+                                        rows={3}
+                                        className="bg-main-dark/20 rounded-xl px-3 py-2 w-full"
                                     />
-                                    {errorDescription && (
-                                        <p className="text-red-500 text-sm text-center">{errorDescription}</p>
-                                    )}
-                                </div>
-                            </label>
+                                    <div className="flex flex-col w-full items-center">
+                                        <ButtonComponent
+                                            type="button"
+                                            text={loadingDescription ? "Cargando..." : "Autogenerar descripción"}
+                                            onClick={handleGenerateDescription}
+                                            icon={<IconWand />}
+                                            style="flex justify-center text-sm w-full sm:w-[50%] px-3 py-2 items-center gap-2 rounded-full bg-main text-white hover:bg-contrast-secondary transition-colors duration-300"
+                                        />
+                                        {errorDescription && (
+                                            <p className="text-red-500 text-sm text-center">{errorDescription}</p>
+                                        )}
+                                    </div>
+                                </label>
+
+
+                                <label className="flex flex-col w-full gap-2">
+                                    <p className="font-semibold">Detalles </p>
+                                    <textarea
+                                        placeholder="Detalles, especificaciones, material, etc."
+                                        value={form.details}
+                                        onChange={(e) => setForm({ ...form, details: e.target.value })}
+                                        cols={30}
+                                        rows={5}
+                                        className="bg-main-dark/20 rounded-xl px-3 py-2 w-full"
+                                    />
+                                </label>
+                            </div>
 
                             {/* Imágenes */}
                             <div className="flex flex-col gap-4">
