@@ -128,25 +128,16 @@ export default function StoreHomeComponent() {
                 }`}
               >
                 <FeaturedProductsSlider
-                  products={featuredProducts.map((prod) => ({
-                    id: prod.id!,
-                    shop: prod.store?.name || "Tienda",
-                    title: prod.name,
-                    price: prod.price.toLocaleString("es-CR", {
-                      style: "currency",
-                      currency: "CRC",
-                    }),
-                    discountPrice: prod.discount_price
-                      ? prod.discount_price.toLocaleString("es-CR", {
-                          style: "currency",
-                          currency: "CRC",
-                        })
-                      : "",
-
-                    rating: prod.rating || 0,
-                    img: prod.image_1_url || audifonos,
-                  }))}
-                />
+                products={featuredProducts.map((prod) => ({
+                  id: prod.id!,
+                  shop: prod.store?.name || "Sin tienda",
+                  title: prod.name,
+                  price: prod.price,
+                  discountPrice: prod.discount_price,
+                  rating: 0,
+                  img: prod.image_1_url || audifonos,
+                }))}
+              />
               </div>
             ) : (
               <p className="text-gray-500 my-5">No hay productos destacados.</p>

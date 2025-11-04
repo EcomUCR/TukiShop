@@ -490,7 +490,7 @@ export default function ProductPage() {
                   <div className="hidden lg:block w-3/12 order-3">
                     <ShoppingForm
                       variant="product"
-                      onAddToCart={(qty) => handleAddToCart(product.id!, qty)} 
+                      onAddToCart={(qty) => handleAddToCart(product.id!, qty)}
                     />
 
                   </div>
@@ -506,19 +506,10 @@ export default function ProductPage() {
                     <FeaturedProductsSlider
                       products={prodStore.map((prod) => ({
                         id: prod.id!,
-                        shop: prod.store?.name || "Tienda",
+                        shop: prod.store?.name || "Sin tienda",
                         title: prod.name,
-                        price: prod.price.toLocaleString("es-CR", {
-                          style: "currency",
-                          currency: "CRC",
-                        }),
-                        discountPrice: prod.discount_price
-                          ? prod.discount_price.toLocaleString("es-CR", {
-                            style: "currency",
-                            currency: "CRC",
-                          })
-                          : "",
-
+                        price: prod.price,
+                        discountPrice: prod.discount_price,
                         rating: 0,
                         img: prod.image_1_url || audifonos,
                       }))}
