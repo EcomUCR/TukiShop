@@ -301,10 +301,10 @@ export default function ProductPage() {
                     <div
                       className={`relative flex justify-between items-center my-10 p-2 rounded-full overflow-hidden text-sm font-quicksand transition-colors duration-500 z-0 ${
                         activeTab === "description"
-                          ? "border-1 border-main"
+                          ? "border-2 border-main"
                           : activeTab === "reviews"
-                          ? "border-1 border-contrast-secondary"
-                          : "border-1 border-contrast-main"
+                          ? "border-2 border-contrast-secondary"
+                          : "border-2 border-contrast-main"
                       }`}
                     >
                       <div

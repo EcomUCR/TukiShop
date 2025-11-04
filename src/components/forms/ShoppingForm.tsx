@@ -1,13 +1,14 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { useCartTotals } from "./useCartTotals";
+import { useProducts } from "../../modules/store/infrastructure/useProducts";
 import { useVisa } from "../../modules/cart/infraestructure/useVisa";
 import { useCheckout } from "../../modules/cart/infraestructure/useCheckout";
 import visa from "../../img/resources/logo_visa.png";
 import mastercard from "../../img/resources/logo_mastercard.png";
 import paypal from "../../img/resources/logo_paypal.png";
 import american_express from "../../img/resources/american_express_logo.png";
-import { IconMapPin } from "@tabler/icons-react";
+import { IconMapPin, IconMinus, IconPlus } from "@tabler/icons-react";
 import { Button } from "../ui/button";
 import { useAlert } from "../../hooks/context/AlertContext";
 import { Elements } from "@stripe/react-stripe-js";
@@ -32,7 +33,7 @@ interface TotalsType {
 
 interface ShoppingFormProps {
   variant?: "checkout" | "product";
-  onAddToCart?: () => void;
+  onAddToCart?: (quantity: number) => void;
   productId?: number;
   quantity?: number;
 }
@@ -45,7 +46,8 @@ export default function ShoppingForm({
 }: ShoppingFormProps) {
   const { getForexRate, rate, error: errorVisa } = useVisa();
   const { processCheckout } = useCheckout();
-  const { totals, getTotals, getProductTotal, loading, error } = useCartTotals();
+  const { totals, getTotals, loading, error } = useCartTotals();
+  const { getProductById } = useProducts();
   const { showAlert } = useAlert();
   const { user, token } = useAuth();
   const navigate = useNavigate();
@@ -54,7 +56,15 @@ export default function ShoppingForm({
   const [addresses, setAddresses] = useState<any[]>([]);
   const [addressText, setAddressText] = useState("");
   const [selectedAddressId, setSelectedAddressId] = useState<number | null>(null);
-  const [localTotals, setLocalTotals] = useState<TotalsType>(totals);
+  const [localTotals, setLocalTotals] = useState<TotalsType>({
+    subtotal: 0,
+    taxes: 0,
+    shipping: 0,
+    total: 0,
+    currency: "CRC",
+  });
+  const [product, setProduct] = useState<any>(null);
+  const [qty, setQty] = useState<number>(quantity);
 
   const format = (n: number) => (n ?? 0).toLocaleString("es-CR");
 
@@ -67,47 +77,25 @@ export default function ShoppingForm({
     const loadTotals = async () => {
       try {
         const id = productId ?? Number(params.id);
+
         if (variant === "product") {
-          if (token) {
-            // Usuario logueado → combinar carrito + producto
-            const [cartRes, productRes] = await Promise.all([
-              getTotals(),
-              getProductTotal(id, quantity),
-            ]);
+          const productData = await getProductById(id);
+          if (!productData || !isMounted) return;
 
-            if (!isMounted) return;
+          setProduct(productData);
 
-            const cart: TotalsType = cartRes || {
-              subtotal: 0,
-              taxes: 0,
-              shipping: 0,
-              total: 0,
-              currency: "CRC",
-            };
-            const product: TotalsType = productRes || {
-              subtotal: 0,
-              taxes: 0,
-              shipping: 0,
-              total: 0,
-              currency: "CRC",
-            };
+          const price = productData.discount_price ?? productData.price;
+          const subtotal = price * qty;
+          const taxes = subtotal * 0.13;
+          const total = subtotal + taxes; // 🚫 Sin envío
 
-            const combined: TotalsType = {
-              subtotal: (cart.subtotal ?? 0) + (product.subtotal ?? 0),
-              taxes: (cart.taxes ?? 0) + (product.taxes ?? 0),
-              shipping: cart.shipping ?? 0,
-              total:
-                ((cart.total ?? 0) - (cart.shipping ?? 0)) +
-                (product.total ?? 0),
-              currency: "CRC",
-            };
-
-            setLocalTotals(combined);
-          } else {
-            // Usuario NO autenticado → solo el producto
-            const productRes = await getProductTotal(id, quantity);
-            if (isMounted && productRes) setLocalTotals(productRes);
-          }
+          setLocalTotals({
+            subtotal,
+            taxes,
+            shipping: 0, // 🚫 No se muestra ni se suma
+            total,
+            currency: "CRC",
+          });
         } else if (variant === "checkout" && token) {
           const cartRes = await getTotals();
           if (isMounted && cartRes) setLocalTotals(cartRes);
@@ -118,11 +106,10 @@ export default function ShoppingForm({
     };
 
     loadTotals();
-
     return () => {
       isMounted = false;
     };
-  }, [variant, productId, quantity, token]);
+  }, [variant, productId, qty, token]);
 
   // 🔹 Mantener sincronía en checkout
   useEffect(() => {
@@ -213,8 +200,8 @@ export default function ShoppingForm({
             </p>
           </div>
 
-          {/* ✅ Mostrar envío solo si hay costo */}
-          {(localTotals?.shipping ?? 0) > 0 && (
+          {/* 🚫 Envío se muestra solo en checkout */}
+          {variant === "checkout" && (localTotals?.shipping ?? 0) > 0 && (
             <div className="border-t pt-5 flex justify-between">
               <p>Envío:</p>
               <p className="text-[#7E22CE] font-semibold">
@@ -235,6 +222,7 @@ export default function ShoppingForm({
       {/* Checkout */}
       {variant === "checkout" && user && token && (
         <>
+          {/* Dirección */}
           <div className="pt-10 flex flex-col gap-3 text-[#4C1D95]">
             <label className="flex items-center gap-2 text-base font-semibold">
               <IconMapPin className="text-[#6B21A8]" />
@@ -305,14 +293,46 @@ export default function ShoppingForm({
       )}
 
       {/* Modo producto */}
-      {variant === "product" && (
-        <div className="pt-10">
+      {variant === "product" && product && (
+        <div className="pt-10 flex flex-col gap-6">
+          {/* Selector de cantidad con estilo Tuki Minimal */}
+          <div className="flex items-center justify-center mt-6">
+            <div className="flex items-center justify-between w-48 bg-white border-2 border-main rounded-full px-3 py-2 shadow-sm">
+              <button
+                onClick={() => setQty((q) => Math.max(1, q - 1))}
+                className="w-8 h-8 flex items-center justify-center rounded-full bg-main text-white font-bold transition-all hover:bg-[#4A1F70] disabled:opacity-40"
+                disabled={qty <= 1}
+                title={qty <= 1 ? "Cantidad mínima alcanzada" : "Disminuir cantidad"}
+              >
+                <IconMinus size={16} />
+              </button>
+
+              <span className="text-lg font-quicksand font-semibold text-main w-10 text-center select-none">
+                {qty}
+              </span>
+
+              <button
+                onClick={() => setQty((q) => q + 1)}
+                className="w-8 h-8 flex items-center justify-center rounded-full bg-main text-white font-bold transition-all hover:bg-[#4A1F70] disabled:opacity-40"
+                disabled={qty >= product.stock}
+                title={
+                  qty >= product.stock
+                    ? `Stock máximo: ${product.stock}`
+                    : "Aumentar cantidad"
+                }
+              >
+                <IconPlus size={16} />
+              </button>
+            </div>
+          </div>
+
+
+
+          {/* Botón añadir */}
           <Button
             onClick={async () => {
               try {
-                await onAddToCart?.();
-
-                //Redirigir al carrito
+                await onAddToCart?.(qty);
                 navigate("/shoppingCart");
               } catch (err) {
                 console.error("❌ Error al añadir al carrito:", err);
@@ -320,9 +340,8 @@ export default function ShoppingForm({
             }}
             className="w-full bg-contrast-secondary hover:bg-main text-white shadow-md rounded-full transition-all"
           >
-            Añadir al carrito
+            Añadir {qty > 1 ? `${qty} productos` : "al carrito"}
           </Button>
-
         </div>
       )}
     </div>
