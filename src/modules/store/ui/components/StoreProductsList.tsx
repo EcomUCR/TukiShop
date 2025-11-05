@@ -184,12 +184,8 @@ export default function StoreProductsList() {
                         : "https://upload.wikimedia.org/wikipedia/commons/1/14/No_Image_Available.jpg"
                     }
                     title={product.name}
-                    price={product.price.toString()}
-                    discountPrice={
-                      product.discount_price
-                        ? product.discount_price.toString()
-                        : undefined
-                    }
+                    price={product.price}
+                    discountPrice={product.discount_price}
                     rating={4.5}
                     edit = "EDIT"
                     id={product.id ?? 0}
