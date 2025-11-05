@@ -22,8 +22,8 @@ type ProductForm = Omit<
   | "image_2_url"
   | "image_3_url"
 > & {
-  price: string | number;
-  discount_price: string | number;
+  price:number;
+  discount_price: number;
   images: (File | string | null)[];
   details: string;
 };
@@ -103,8 +103,8 @@ export default function StoreProductCRUDPage() {
         setForm({
           ...(product as any),
           images: loadedImages,
-          price: product.price.toString(),
-          discount_price: product.discount_price?.toString() || "0",
+          price: product.price,
+          discount_price: product.discount_price,
           categories: Array.isArray(product.categories)
             ? product.categories.map((cat: any) => cat.id)
             : [],
@@ -365,7 +365,7 @@ export default function StoreProductCRUDPage() {
                 <input
                   type="text"
                   value={form.price}
-                  onChange={(e) => setForm({ ...form, price: e.target.value })}
+                  onChange={(e) => setForm({ ...form, price: Number(e.target.value)})}
                   placeholder="Precio"
                   className="bg-main-dark/20 rounded-2xl p-2 w-full"
                 />
@@ -377,7 +377,7 @@ export default function StoreProductCRUDPage() {
                   type="text"
                   value={form.discount_price}
                   onChange={(e) =>
-                    setForm({ ...form, discount_price: e.target.value })
+                    setForm({ ...form, discount_price: Number(e.target.value) })
                   }
                   placeholder="Precio de oferta"
                   className="bg-main-dark/20 rounded-2xl p-2 w-full"
@@ -573,12 +573,8 @@ export default function StoreProductCRUDPage() {
                   <FeaturedProductCard
                     shop="Preview"
                     title={form.name || "Nombre del producto"}
-                    price={form.price ? form.price.toString() : "0"}
-                    discountPrice={
-                      form.discount_price
-                        ? form.discount_price.toString()
-                        : undefined
-                    }
+                    price={form.price}
+                    discountPrice={form.discount_price}
                     img={mainPreview}
                     rating={0}
                     edit={"EDITING"}
