@@ -79,9 +79,9 @@ export default function Footer() {
         <div className="flex flex-col items-center gap-2 w-full sm:w-[33%] order-1 sm:order-2">
           <Link to="/" className="flex flex-col justify-center items-center">
           <img src={logo} alt="TukiShop" className="h-15 w-15" />
-          <a className="text-3xl font-fugaz" href="/">
+          <p className="text-3xl font-fugaz">
             TukiShop
-          </a>
+          </p>
           </Link>
         </div>
 
