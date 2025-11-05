@@ -5,11 +5,11 @@ import Footer from "../../../components/layout/Footer";
 
 export default function AboutUs() {
   const teamMember = [
-    { name: "Raul", role: "Designer & FullStack Developer" },
-    { name: "John", role: "FullStack Developer" },
+    { name: "Raul", role: "Designer & Full-Stack Developer" },
+    { name: "John", role: "Full-Stack Developer" },
     { name: "Alejandro", role: "CEO" },
-    { name: "Kristen", role: "Designer & FrontEnd Developer" },
-    { name: "Andres", role: "QA & Backend Developer" },
+    { name: "Kristen", role: "Designer & Front-End Developer" },
+    { name: "Andres", role: "Full-Stack Developer" },
   ];
 
   return (
