@@ -146,7 +146,7 @@ export default function ProductRatingSummary({
                             </h2>
                             <StarGroup size={20} value={summary.average} />
                             <p className="text-sm text-gray-500 mt-1 w-full text-center">
-                                {summary.total} opiniones de <strong>producto</strong>
+                                {summary.total} opiniones
                             </p>
                         </div>
                     </div>
