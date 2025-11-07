@@ -29,10 +29,10 @@ export default function AccountInformation({ type }: AccountInformationProps): J
       </div>
 
       {type === "CUSTOMER" && (
-        <CustomerProfileComponent alert={alert} setAlert={setAlert} />
+        <CustomerProfileComponent/>
       )}
       {type === "SELLER" && (
-        <SellerProfileComponent alert={alert} setAlert={setAlert} />
+        <SellerProfileComponent/>
       )}
 
       <AlertComponent
