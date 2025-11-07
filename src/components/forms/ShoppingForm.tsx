@@ -236,31 +236,75 @@ export default function ShoppingForm({
   // 💳 Pago con Stripe
   // ============================
   const handlePayment = async (paymentIntent: any) => {
-    const selected = addresses.find((a) => a.id === selectedAddressId);
+  const selected = addresses.find((a) => a.id === selectedAddressId);
 
-    const finalAddress = selected
-      ? selected
-      : {
-          street,
-          city,
-          state,
-          country,
-          zip_code: zipCode,
-          phone_number: phoneNumber,
-        };
+  const finalAddress = selected
+    ? selected
+    : {
+        street,
+        city,
+        state,
+        country,
+        zip_code: zipCode,
+        phone_number: phoneNumber,
+      };
 
-    if (!finalAddress.street || !finalAddress.city) {
-      showAlert({
-        title: "Dirección requerida",
-        message:
-          "Debes seleccionar una dirección guardada o escribir una nueva antes de continuar.",
-        type: "warning",
-      });
-      return;
-    }
+  if (!finalAddress.street || !finalAddress.city) {
+    showAlert({
+      title: "Dirección requerida",
+      message:
+        "Debes seleccionar una dirección guardada o escribir una nueva antes de continuar.",
+      type: "warning",
+    });
+    return;
+  }
 
+  try {
+    // 💳 Procesar pago normalmente
     await processCheckout(paymentIntent, totals, finalAddress);
-  };
+
+    // ✅ Mostrar alerta de éxito
+    await showAlert({
+      title: "Pago completado",
+      message: "Tu compra se ha realizado con éxito 🎉",
+      type: "success",
+      confirmText: "Aceptar",
+    });
+
+    // 🧹 Limpiar los campos de dirección
+    setSelectedAddressId(null);
+    setStreet("");
+    setCity("");
+    setState("");
+    setCountry("");
+    setZipCode("");
+    setPhoneNumber("");
+
+    // 🧾 Limpiar todo lo relacionado con cupones
+    setCouponCode("");
+    setAppliedCoupon(null);
+    setDiscount(0);
+    setCouponMessage("");
+
+    // 🔄 Resetear totales locales
+    setLocalTotals({
+      subtotal: 0,
+      taxes: 0,
+      shipping: 0,
+      total: 0,
+      currency: "CRC",
+    });
+  } catch (error) {
+    console.error("❌ Error al procesar el pago:", error);
+    showAlert({
+      title: "Error en el pago",
+      message: "Hubo un problema al procesar el pago. Intenta nuevamente.",
+      type: "error",
+      confirmText: "Aceptar",
+    });
+  }
+};
+
 
   // ============================
   // 🖼️ Render
