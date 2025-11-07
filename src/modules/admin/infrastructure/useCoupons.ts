@@ -21,14 +21,35 @@ export interface Coupon {
   active: boolean;
 }
 
+// 🧩 Resultado de validación del cupón
+export interface CouponValidationResult {
+  valid: boolean;
+  discount: number;
+  coupon?: Coupon;
+  applied_to: {
+    id: number;
+    name: string;
+    price: number;
+    quantity: number;
+  }[];
+  context?: {
+    applies_to: "product" | "category" | "store" | "global";
+    scope_id: number | null;
+  } | null;
+  message?: string;
+}
+
 export function useCoupons() {
-  const { token, user } = useAuth(); // 👈 Agregamos user aquí
+  const { token, user } = useAuth();
   const [coupons, setCoupons] = useState<Coupon[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const API_URL = `${import.meta.env.VITE_API_URL}/coupons`;
+  // Limpieza del endpoint: evita duplicar `/api`
+  const BASE_URL = import.meta.env.VITE_API_URL.replace(/\/$/, "");
+  const API_URL = `${BASE_URL}/coupons`;
 
+  // Config base para axios
   const axiosConfig = {
     headers: {
       Authorization: token ? `Bearer ${token}` : "",
@@ -44,9 +65,10 @@ export function useCoupons() {
       setLoading(true);
       const { data } = await axios.get(API_URL, axiosConfig);
       setCoupons(data);
+      setError(null);
     } catch (err) {
       console.error("❌ [useCoupons] Error al obtener cupones:", err);
-      setError("Error al obtener los cupones");
+      setError("Error al obtener los cupones.");
     } finally {
       setLoading(false);
     }
@@ -59,6 +81,9 @@ export function useCoupons() {
       const { data } = await axios.post(API_URL, coupon, axiosConfig);
       setCoupons((prev) => [...prev, data]);
       return data;
+    } catch (err: any) {
+      console.error("❌ Error al crear cupón:", err.response?.data || err.message);
+      throw err;
     } finally {
       setLoading(false);
     }
@@ -71,6 +96,9 @@ export function useCoupons() {
       const { data } = await axios.put(`${API_URL}/${id}`, coupon, axiosConfig);
       setCoupons((prev) => prev.map((c) => (c.id === id ? data : c)));
       return data;
+    } catch (err: any) {
+      console.error("❌ Error al actualizar cupón:", err.response?.data || err.message);
+      throw err;
     } finally {
       setLoading(false);
     }
@@ -82,30 +110,57 @@ export function useCoupons() {
       setLoading(true);
       await axios.delete(`${API_URL}/${id}`, axiosConfig);
       setCoupons((prev) => prev.filter((c) => c.id !== id));
+    } catch (err: any) {
+      console.error("❌ Error al eliminar cupón:", err.response?.data || err.message);
+      throw err;
     } finally {
       setLoading(false);
     }
   };
 
   // 🎟️ Validar cupón público
-  const validateCoupon = async (code: string, total: number, userId?: number, storeId?: number) => {
+  const validateCoupon = async (
+    code: string,
+    total: number,
+    userId?: number,
+    storeId?: number
+  ): Promise<CouponValidationResult> => {
     try {
+      // ✅ incluir token si existe
+      const headers: Record<string, string> = {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      };
+      if (token) headers.Authorization = `Bearer ${token}`;
+
       const { data } = await axios.post(
-        `${import.meta.env.VITE_API_URL}/coupons/validate`,
+        `${BASE_URL}/coupons/validate`,
         { code, total, user_id: userId, store_id: storeId },
-        { headers: { Accept: "application/json", "Content-Type": "application/json" } }
+        { headers }
       );
-      return data;
+
+      return {
+        valid: data.valid ?? true,
+        discount: data.discount ?? 0,
+        coupon: data.coupon,
+        applied_to: Array.isArray(data.applied_to) ? data.applied_to : [],
+        context: data.context ?? null,
+        message: data.message,
+      };
     } catch (err: any) {
-      console.error("❌ Error al validar cupón:", err.response?.data || err.message);
+      const backendMessage = err.response?.data?.message;
+      console.error("❌ Error al validar cupón:", backendMessage || err.message);
+
       return {
         valid: false,
-        message: err.response?.data?.message || "Cupón inválido o expirado.",
+        discount: 0,
+        applied_to: [],
+        message: backendMessage || "Cupón inválido o expirado.",
       };
     }
   };
 
-  // 🧠 Solo cargar cupones si el usuario es admin o vendedor
+  // 🧠 Cargar cupones si el usuario es admin o vendedor
   useEffect(() => {
     if (token && (user?.role === "ADMIN" || user?.role === "SELLER")) {
       fetchCoupons();

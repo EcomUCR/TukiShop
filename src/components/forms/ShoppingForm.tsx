@@ -4,7 +4,13 @@ import { useCartTotals } from "./useCartTotals";
 import { useProducts } from "../../modules/store/infrastructure/useProducts";
 import { useCheckout } from "../../modules/cart/infraestructure/useCheckout";
 import { useCoupons } from "../../modules/admin/infrastructure/useCoupons";
-import { IconMapPin, IconMinus, IconPlus, IconTicket, IconDeviceFloppy } from "@tabler/icons-react";
+import {
+  IconMapPin,
+  IconMinus,
+  IconPlus,
+  IconTicket,
+  IconDeviceFloppy,
+} from "@tabler/icons-react";
 import { Button } from "../ui/button";
 import { useAlert } from "../../hooks/context/AlertContext";
 import { Elements } from "@stripe/react-stripe-js";
@@ -50,7 +56,9 @@ export default function ShoppingForm({
   const params = useParams();
 
   const [addresses, setAddresses] = useState<any[]>([]);
-  const [selectedAddressId, setSelectedAddressId] = useState<number | null>(null);
+  const [selectedAddressId, setSelectedAddressId] = useState<number | null>(
+    null
+  );
 
   // 🏠 Campos de dirección manual
   const [street, setStreet] = useState("");
@@ -108,7 +116,7 @@ export default function ShoppingForm({
           if (isMounted && cartRes) setLocalTotals(cartRes);
         }
       } catch (err) {
-        console.error(" Error al cargar totales:", err);
+        console.error("❌ Error al cargar totales:", err);
       }
     };
     loadTotals();
@@ -132,7 +140,7 @@ export default function ShoppingForm({
         });
         setAddresses(data.addresses || []);
       } catch (error) {
-        console.error(" Error al obtener direcciones:", error);
+        console.error("❌ Error al obtener direcciones:", error);
       }
     };
 
@@ -153,7 +161,6 @@ export default function ShoppingForm({
     }
 
     try {
-      // Verificar si ya existe una dirección similar
       const existe = addresses.some(
         (a) =>
           a.street?.trim().toLowerCase() === street.trim().toLowerCase() &&
@@ -162,7 +169,8 @@ export default function ShoppingForm({
       if (existe) {
         showAlert({
           title: "Dirección duplicada",
-          message: "Ya tienes una dirección guardada con la misma calle y ciudad.",
+          message:
+            "Ya tienes una dirección guardada con la misma calle y ciudad.",
           type: "warning",
         });
         return;
@@ -183,7 +191,7 @@ export default function ShoppingForm({
       );
 
       showAlert({
-        title: "Dirección guardada ",
+        title: "Dirección guardada",
         message: "La nueva dirección se ha guardado correctamente.",
         type: "success",
       });
@@ -191,7 +199,7 @@ export default function ShoppingForm({
       setAddresses((prev) => [...prev, data.address]);
       setSelectedAddressId(data.address.id);
     } catch (error) {
-      console.error(" Error al guardar dirección:", error);
+      console.error("❌ Error al guardar dirección:", error);
       showAlert({
         title: "Error al guardar",
         message: "No se pudo guardar la dirección. Inténtalo de nuevo.",
@@ -221,7 +229,7 @@ export default function ShoppingForm({
 
     if (!finalAddress.street || !finalAddress.city) {
       showAlert({
-        title: "Dirección requerida ",
+        title: "Dirección requerida",
         message:
           "Debes seleccionar una dirección guardada o escribir una nueva antes de continuar.",
         type: "warning",
@@ -238,9 +246,12 @@ export default function ShoppingForm({
   return (
     <div className="font-quicksand">
       <h2 className="text-xl font-bold mb-4 text-main">
-        {variant === "product" ? "Detalles del producto" : "Detalles de la compra"}
+        {variant === "product"
+          ? "Detalles del producto"
+          : "Detalles de la compra"}
       </h2>
 
+      {/* 🔹 Si no hay sesión */}
       {variant === "checkout" && (!user || !token) ? (
         <div className="mt-6 p-5 border border-red-300 bg-red-50 rounded-lg text-center text-red-700">
           <p className="font-semibold mb-3">
@@ -263,16 +274,22 @@ export default function ShoppingForm({
           <div className="flex flex-col gap-6 pt-6">
             <div className="border-t pt-5 flex justify-between">
               <p>Subtotal:</p>
-              <p className="text-[#7E22CE] font-semibold">₡{format(localTotals?.subtotal)}</p>
+              <p className="text-[#7E22CE] font-semibold">
+                ₡{format(localTotals?.subtotal)}
+              </p>
             </div>
             <div className="border-t pt-5 flex justify-between">
               <p>Impuestos (13%):</p>
-              <p className="text-[#7E22CE] font-semibold">₡{format(localTotals?.taxes)}</p>
+              <p className="text-[#7E22CE] font-semibold">
+                ₡{format(localTotals?.taxes)}
+              </p>
             </div>
             {variant === "checkout" && (localTotals?.shipping ?? 0) > 0 && (
               <div className="border-t pt-5 flex justify-between">
                 <p>Envío:</p>
-                <p className="text-[#7E22CE] font-semibold">₡{format(localTotals.shipping)}</p>
+                <p className="text-[#7E22CE] font-semibold">
+                  ₡{format(localTotals.shipping)}
+                </p>
               </div>
             )}
             {discount > 0 && (
@@ -283,7 +300,9 @@ export default function ShoppingForm({
             )}
             <div className="border-t pt-5 flex justify-between">
               <p className="font-bold">Total:</p>
-              <p className="font-bold text-[#5B21B6]">₡{format(localTotals?.total)}</p>
+              <p className="font-bold text-[#5B21B6]">
+                ₡{format(localTotals?.total)}
+              </p>
             </div>
           </div>
 
@@ -294,6 +313,7 @@ export default function ShoppingForm({
                 <IconTicket className="text-contrast-secondary" />
                 Aplicar cupón
               </label>
+
               <div className="flex h-full py-2 gap-2">
                 <input
                   type="text"
@@ -303,53 +323,71 @@ export default function ShoppingForm({
                   className="border border-gray-300 rounded-xl h-10 px-4 w-full focus:ring-2 focus:ring-contrast-secondary outline-none"
                   disabled={!!appliedCoupon}
                 />
+
                 {!appliedCoupon ? (
                   <Button
                     onClick={async () => {
                       if (!localTotals?.total || localTotals.total <= 0) {
-                        setCouponMessage("No se puede aplicar un cupón sin productos en el carrito.");
+                        setCouponMessage(
+                          "No se puede aplicar un cupón sin productos en el carrito."
+                        );
                         setAppliedCoupon(null);
                         setDiscount(0);
                         return;
                       }
 
-                      const result = await validateCoupon(couponCode, localTotals.total, user?.id);
+                      const result = await validateCoupon(
+                        couponCode,
+                        localTotals.total,
+                        user?.id
+                      );
 
                       if (!result.valid) {
                         const backendMsg = result.message || "";
-                        // Si Laravel devolvió "The total field is required"
-                        if (backendMsg.includes("total")) {
-                          setCouponMessage("No se puede aplicar un cupón sin productos en el carrito.");
-                        } else {
-                          setCouponMessage(backendMsg || "Cupón inválido o expirado.");
-                        }
+                        setCouponMessage(
+                          backendMsg || "Cupón inválido o expirado."
+                        );
                         setAppliedCoupon(null);
                         setDiscount(0);
                         return;
                       }
 
-                      // ✅ Cupón válido
-                      setAppliedCoupon(result.coupon);
-                      setDiscount(result.discount);
+                      const newDiscount = result.discount ?? 0;
+                      setAppliedCoupon(result);
+                      setDiscount(newDiscount);
+
                       setLocalTotals((prev) => ({
                         ...prev,
-                        total: prev.total - result.discount,
+                        total: Math.max(prev.total - newDiscount, 0),
                         shipping:
-                          result.coupon?.type === "FREE_SHIPPING" ? 0 : prev.shipping ?? 0,
+                          result.coupon?.type === "FREE_SHIPPING"
+                            ? 0
+                            : prev.shipping ?? 0,
                       }));
-                      setCouponMessage(`Cupón aplicado: ${result.coupon.code}`);
+
+                      let appliedList = "";
+                      if (result.applied_to?.length > 0) {
+                        appliedList = result.applied_to
+                          .map((p) => `${p.name} (x${p.quantity})`)
+                          .join(", ");
+                      }
+
+                      setCouponMessage(
+                        `Cupón aplicado: ${result.coupon?.code ?? "Desconocido"}${appliedList ? ` (Aplica a: ${appliedList})` : ""
+                        }`
+                      );
+
                     }}
                     className="bg-contrast-secondary hover:bg-main text-white rounded-xl px-6 h-10"
                   >
                     Aplicar
                   </Button>
-
                 ) : (
                   <Button
                     onClick={async () => {
                       setAppliedCoupon(null);
                       setDiscount(0);
-                      setCouponMessage("");
+                      setCouponMessage("Cupón eliminado.");
                       const res = await getTotals();
                       if (res) setLocalTotals(res);
                     }}
@@ -359,13 +397,24 @@ export default function ShoppingForm({
                   </Button>
                 )}
               </div>
+
               {couponMessage && (
-                <p
-                  className={`mt-2 text-sm ${discount > 0 ? "text-green-600" : "text-red-500"
-                    }`}
-                >
-                  {couponMessage}
-                </p>
+                <div className="mt-3 text-sm">
+                  <p
+                    className={`${discount > 0 ? "text-green-600" : "text-red-500"}`}
+                  >
+                    {couponMessage}
+                  </p>
+                  {appliedCoupon?.applied_to && discount > 0 && (
+                    <ul className="list-disc list-inside text-gray-600 mt-1">
+                      {appliedCoupon.applied_to.map((item: any) => (
+                        <li key={item.id}>
+                          {item.name} (x{item.quantity})
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
               )}
             </div>
           )}
@@ -378,7 +427,6 @@ export default function ShoppingForm({
                   <IconMapPin className="text-[#6B21A8]" />
                   Dirección de envío
                 </label>
-
                 <select
                   className="border border-[#C4B5FD] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#7C3AED]"
                   onChange={(e) => {
@@ -414,15 +462,50 @@ export default function ShoppingForm({
 
                 {/* Campos manuales */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
-                  <input type="text" value={street} onChange={(e) => setStreet(e.target.value)} placeholder="Calle" className="border border-[#C4B5FD] rounded-lg px-3 py-2" />
-                  <input type="text" value={city} onChange={(e) => setCity(e.target.value)} placeholder="Ciudad" className="border border-[#C4B5FD] rounded-lg px-3 py-2" />
-                  <input type="text" value={state} onChange={(e) => setState(e.target.value)} placeholder="Provincia" className="border border-[#C4B5FD] rounded-lg px-3 py-2" />
-                  <input type="text" value={country} onChange={(e) => setCountry(e.target.value)} placeholder="País" className="border border-[#C4B5FD] rounded-lg px-3 py-2" />
-                  <input type="text" value={zipCode} onChange={(e) => setZipCode(e.target.value)} placeholder="Código postal" className="border border-[#C4B5FD] rounded-lg px-3 py-2" />
-                  <input type="text" value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)} placeholder="Teléfono" className="border border-[#C4B5FD] rounded-lg px-3 py-2" />
+                  <input
+                    type="text"
+                    value={street}
+                    onChange={(e) => setStreet(e.target.value)}
+                    placeholder="Calle"
+                    className="border border-[#C4B5FD] rounded-lg px-3 py-2"
+                  />
+                  <input
+                    type="text"
+                    value={city}
+                    onChange={(e) => setCity(e.target.value)}
+                    placeholder="Ciudad"
+                    className="border border-[#C4B5FD] rounded-lg px-3 py-2"
+                  />
+                  <input
+                    type="text"
+                    value={state}
+                    onChange={(e) => setState(e.target.value)}
+                    placeholder="Provincia"
+                    className="border border-[#C4B5FD] rounded-lg px-3 py-2"
+                  />
+                  <input
+                    type="text"
+                    value={country}
+                    onChange={(e) => setCountry(e.target.value)}
+                    placeholder="País"
+                    className="border border-[#C4B5FD] rounded-lg px-3 py-2"
+                  />
+                  <input
+                    type="text"
+                    value={zipCode}
+                    onChange={(e) => setZipCode(e.target.value)}
+                    placeholder="Código postal"
+                    className="border border-[#C4B5FD] rounded-lg px-3 py-2"
+                  />
+                  <input
+                    type="text"
+                    value={phoneNumber}
+                    onChange={(e) => setPhoneNumber(e.target.value)}
+                    placeholder="Teléfono"
+                    className="border border-[#C4B5FD] rounded-lg px-3 py-2"
+                  />
                 </div>
 
-                {/* 💾 Botón guardar */}
                 <Button
                   onClick={handleSaveAddress}
                   disabled={savingAddress}
@@ -433,10 +516,12 @@ export default function ShoppingForm({
                 </Button>
               </div>
 
-              {/* 💳 Stripe */}
               <div className="pt-10">
                 <Elements stripe={stripePromise}>
-                  <StripePaymentForm total={localTotals?.total || 0} onPaymentSuccess={handlePayment} />
+                  <StripePaymentForm
+                    total={localTotals?.total || 0}
+                    onPaymentSuccess={handlePayment}
+                  />
                 </Elements>
               </div>
             </>
@@ -445,7 +530,9 @@ export default function ShoppingForm({
           {/* 🧍 Variante producto */}
           {variant === "product" && product && (
             <div className="pt-10 flex flex-col gap-4">
-              <label className="text-md font-semibold text-main text-center">Cantidad</label>
+              <label className="text-md font-semibold text-main text-center">
+                Cantidad
+              </label>
 
               <div className="flex items-center justify-center">
                 <div className="flex items-center justify-between w-48 bg-white border-2 border-main rounded-full px-2 py-1 shadow-sm">
