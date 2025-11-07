@@ -116,12 +116,17 @@ export default function AdminUsersList() {
 
   // 🔹 Editar tienda
   const handleEditStore = async (user: any) => {
-    const storeData = await getStoreByUserId(user.id);
-    if (storeData) {
-      setSelectedStore(storeData);
-      setShowStoreModal(true);
-    }
-  };
+  console.log("🧩 Editando tienda del usuario:", user.id, user.username);
+  const storeData = await getStoreByUserId(user.id);
+  console.log("📦 Respuesta de tienda:", storeData);
+
+  if (storeData) {
+    setSelectedStore(storeData);
+    setShowStoreModal(true);
+  }
+};
+
+
 
   // 🔹 Guardar cambios en tienda
   const handleSaveStore = async (updatedStore: any) => {

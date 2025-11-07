@@ -128,23 +128,36 @@ export default function useAdmin() {
     };
 
     const getStoreByUserId = async (userId: number): Promise<Store | null> => {
-        if (!token) {
-            console.error("❌ No hay token disponible para obtener tienda");
-            return null;
-        }
+    if (!token) {
+        console.error("❌ No hay token disponible para obtener tienda");
+        return null;
+    }
 
-        try {
-            const res = await axios.get(`${BASE_URL}/stores/user/${userId}`, {
-                headers: { Authorization: `Bearer ${token}` },
-            });
+    try {
+        const res = await axios.get(`${BASE_URL}/stores/user/${userId}`, {
+            headers: { Authorization: `Bearer ${token}` },
+        });
 
-            console.log(`🏪 Tienda del usuario ${userId} cargada correctamente`);
-            return res.data.store;
-        } catch (e) {
+        console.log(`🏪 Tienda del usuario ${userId} cargada correctamente`);
+
+        // 🧠 El backend devuelve directamente la tienda (no dentro de { store: ... })
+        // Pero si algún día cambia, esto la toma igual
+        const storeData = res.data.store ?? res.data;
+
+        // Validamos que tenga ID real antes de devolverla
+        return storeData?.id ? storeData : null;
+
+    } catch (e: any) {
+        if (e.response?.status === 404) {
+            console.warn(`⚠️ No se encontró tienda para el usuario ${userId}`);
+        } else {
             console.error("❌ Error al obtener tienda del usuario:", e);
-            return null;
         }
-    };
+        return null;
+    }
+};
+
+
 
     const updateStoreData = async (storeId: number, updatedData: Partial<Store>) => {
         if (!token) {
