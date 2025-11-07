@@ -4,6 +4,7 @@ import ButtonComponent from "../../../../components/ui/ButtonComponent";
 import axios from "axios";
 import { uploadImage } from "../../infrastructure/imageService";
 import { IconEdit } from "@tabler/icons-react";
+import { useAlert } from "../../../../hooks/context/AlertContext";
 
 interface CustomerProfileComponentProps {
   alert: any;
@@ -18,6 +19,7 @@ export default function CustomerProfileComponent({
   const [profilePreview, setProfilePreview] = useState<string | null>(null);
   const [cambiarPassword, setCambiarPassword] = useState(false);
   const [saving, setSaving] = useState(false);
+  const {showAlert} = useAlert();
 
   // 🔹 Campos de contraseña
   const [currentPassword, setCurrentPassword] = useState("");
@@ -84,11 +86,11 @@ export default function CustomerProfileComponent({
         // 🔐 Cambiar contraseña
         if (cambiarPassword) {
           if (!currentPassword || !newPassword || !confirmPassword) {
-            setAlert({
-              show: true,
+            showAlert({
               title: "Campos incompletos",
               message: "Debes llenar todos los campos de contraseña.",
               type: "warning",
+              confirmText: "Aceptar",
             });
             setSaving(false);
             return;
@@ -96,11 +98,11 @@ export default function CustomerProfileComponent({
 
           // Verificar que las contraseñas coincidan
           if (newPassword !== confirmPassword) {
-            setAlert({
-              show: true,
+            showAlert({
               title: "Error de confirmación",
               message: "Las contraseñas no coinciden.",
               type: "error",
+              confirmText: "Aceptar",
             });
             setSaving(false);
             return;
@@ -123,31 +125,31 @@ export default function CustomerProfileComponent({
             // Verificar si `err` es un error de Axios con la propiedad `response`
             if (axios.isAxiosError(err) && err.response) {
               console.error("Error al actualizar la contraseña:", err.response);
-              setAlert({
-                show: true,
+              showAlert({
                 title: "Error al guardar",
                 message: err.response?.data?.error || "Error desconocido.",
                 type: "error",
+                confirmText: "Aceptar",
               });
             } else {
               console.error("Error inesperado:", err);
-              setAlert({
-                show: true,
+              showAlert({
                 title: "Error al guardar",
-                message: "Ocurrió un problema desconocido.",
+                message: "Ocurrió un problema desconocido. Intentalo más tarde.",
                 type: "error",
+                confirmText: "Aceptar",
               });
             }
           }
         }
 
-        setAlert({
-          show: true,
+        showAlert({
           title: "Cambios guardados",
           message: cambiarPassword
             ? "Tu contraseña y perfil se actualizaron correctamente."
             : "Tu foto de perfil se actualizó correctamente.",
           type: "success",
+          confirmText: "Aceptar",
         });
 
         // Reset campos
@@ -159,13 +161,13 @@ export default function CustomerProfileComponent({
         setNewProfileFile(null);
       }
     } catch (err: any) {
-      setAlert({
-        show: true,
+      showAlert({
         title: "Error al guardar",
         message:
           err.response?.data?.error ||
           "Ocurrió un problema al actualizar el perfil.",
         type: "error",
+        confirmText: "Aceptar",
       });
     } finally {
       setSaving(false);
@@ -173,15 +175,43 @@ export default function CustomerProfileComponent({
   };
 
   const handleDeleteAddress = async (id: number) => {
-  console.log("🧭 Eliminando dirección ID:", id);
-
   try {
-    await axios.delete(`/addresses/${id}`, {
+    // ⚠️ Primero mostramos la alerta de confirmación
+    const confirmed = await showAlert({
+      title: "Eliminar dirección",
+      message: "¿Deseas eliminar esta dirección?",
+      type: "warning",
+      confirmText: "Eliminar",
+      cancelText: "Cancelar",
+    });
+
+    if (!confirmed) return; // Si el usuario cancela, no hacemos nada
+
+    // ✅ Si el usuario confirma, ejecutamos la eliminación
+    const res = await axios.delete(`/addresses/${id}`, {
       headers: { Authorization: `Bearer ${token}` },
     });
-    console.log("✅ Petición DELETE enviada correctamente");
-  } catch (error) {
+
+    // ✅ Actualizamos la lista local
+    setAddresses((prev) => prev.filter((a) => a.id !== id));
+
+    // ✅ Mostramos alerta de éxito
+    showAlert({
+      title: "Dirección eliminada",
+      message: res.data.message || "La dirección se eliminó correctamente.",
+      type: "success",
+      confirmText: "Aceptar",
+    });
+  } catch (error: any) {
     console.error("❌ Error al eliminar dirección:", error);
+    showAlert({
+      title: "Error al eliminar",
+      message:
+        error.response?.data?.error ||
+        "No se pudo eliminar la dirección. Intenta de nuevo.",
+      type: "error",
+      confirmText: "Aceptar",
+    });
   }
 };
 
@@ -335,6 +365,7 @@ export default function CustomerProfileComponent({
                         </span>
                       )}
                       <button
+                        type="button"
                         onClick={() => handleDeleteAddress(addr.id)}
                         className="text-white bg-red-500 hover:bg-red-600 px-3 py-1 rounded-full text-xs font-semibold shadow transition-all"
                       >
