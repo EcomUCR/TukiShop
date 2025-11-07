@@ -18,10 +18,12 @@ import { loadStripe } from "@stripe/stripe-js";
 import StripePaymentForm from "../ui/StripePaymentForm";
 import { useAuth } from "../../hooks/context/AuthContext";
 import { useNavigate, useParams } from "react-router-dom";
+import { useCart } from "../../hooks/context/CartContext";
+import { motion, AnimatePresence } from "framer-motion"; // Animaciones suaves
 
 const stripePromise = loadStripe(
   import.meta.env.VITE_STRIPE_PUBLIC_KEY ||
-  "pk_test_51SJQBqLl2yLxOyLIFdLhdGoXjNKpBn2WFxWjMhInw72TUbRe7DVmYLa17tBOfswYlYqe0E3J3bqYWFyuJaEFYMLI00aJOZAoJY"
+    "pk_test_51SJQBqLl2yLxOyLIFdLhdGoXjNKpBn2WFxWjMhInw72TUbRe7DVmYLa17tBOfswYlYqe0E3J3bqYWFyuJaEFYMLI00aJOZAoJY"
 );
 
 interface TotalsType {
@@ -52,13 +54,12 @@ export default function ShoppingForm({
   const { validateCoupon } = useCoupons();
   const { showAlert } = useAlert();
   const { user, token } = useAuth();
+  const { cart } = useCart();
   const navigate = useNavigate();
   const params = useParams();
 
   const [addresses, setAddresses] = useState<any[]>([]);
-  const [selectedAddressId, setSelectedAddressId] = useState<number | null>(
-    null
-  );
+  const [selectedAddressId, setSelectedAddressId] = useState<number | null>(null);
 
   // 🏠 Campos de dirección manual
   const [street, setStreet] = useState("");
@@ -126,8 +127,31 @@ export default function ShoppingForm({
   }, [variant, productId, qty, token]);
 
   useEffect(() => {
-    if (variant === "checkout") setLocalTotals(totals);
-  }, [totals, variant]);
+  if (variant !== "checkout" || !cart) return;
+
+  // 🔹 Solo recalcula localmente, no llama a getTotals cada vez
+  const subtotal =
+    cart.items?.reduce((acc, item) => {
+      const price =
+        item.product.discount_price && item.product.discount_price > 0
+          ? item.product.discount_price
+          : item.product.price;
+      return acc + price * item.quantity;
+    }, 0) ?? 0;
+
+  const taxes = subtotal * 0.13;
+  const shipping = cart.items?.length ? 3000 : 0;
+  const total = subtotal + taxes + shipping - discount;
+
+  setLocalTotals({
+    subtotal,
+    taxes,
+    shipping,
+    total,
+    currency: "CRC",
+  });
+}, [cart, discount, variant]);
+
 
   // ============================
   // 🔹 Direcciones guardadas
@@ -143,7 +167,6 @@ export default function ShoppingForm({
         console.error("❌ Error al obtener direcciones:", error);
       }
     };
-
     if (user) fetchAddresses();
   }, [user, token]);
 
@@ -169,8 +192,7 @@ export default function ShoppingForm({
       if (existe) {
         showAlert({
           title: "Dirección duplicada",
-          message:
-            "Ya tienes una dirección guardada con la misma calle y ciudad.",
+          message: "Ya tienes una dirección guardada con la misma calle y ciudad.",
           type: "warning",
         });
         return;
@@ -219,13 +241,13 @@ export default function ShoppingForm({
     const finalAddress = selected
       ? selected
       : {
-        street,
-        city,
-        state,
-        country,
-        zip_code: zipCode,
-        phone_number: phoneNumber,
-      };
+          street,
+          city,
+          state,
+          country,
+          zip_code: zipCode,
+          phone_number: phoneNumber,
+        };
 
     if (!finalAddress.street || !finalAddress.city) {
       showAlert({
@@ -243,12 +265,19 @@ export default function ShoppingForm({
   // ============================
   // 🖼️ Render
   // ============================
+  const rows: [string, number][] = [
+    ["Subtotal:", localTotals?.subtotal ?? 0],
+    ["Impuestos (13%):", localTotals?.taxes ?? 0],
+  ];
+
+  if (variant === "checkout" && (localTotals?.shipping ?? 0) > 0) {
+    rows.push(["Envío:", localTotals.shipping ?? 0]);
+  }
+
   return (
     <div className="font-quicksand">
       <h2 className="text-xl font-bold mb-4 text-main">
-        {variant === "product"
-          ? "Detalles del producto"
-          : "Detalles de la compra"}
+        {variant === "product" ? "Detalles del producto" : "Detalles de la compra"}
       </h2>
 
       {/* 🔹 Si no hay sesión */}
@@ -270,39 +299,57 @@ export default function ShoppingForm({
         <p className="text-red-500 mt-5">{error}</p>
       ) : (
         <>
-          {/* 💰 Totales */}
+          {/* 💰 Totales animados */}
           <div className="flex flex-col gap-6 pt-6">
-            <div className="border-t pt-5 flex justify-between">
-              <p>Subtotal:</p>
-              <p className="text-[#7E22CE] font-semibold">
-                ₡{format(localTotals?.subtotal)}
-              </p>
-            </div>
-            <div className="border-t pt-5 flex justify-between">
-              <p>Impuestos (13%):</p>
-              <p className="text-[#7E22CE] font-semibold">
-                ₡{format(localTotals?.taxes)}
-              </p>
-            </div>
-            {variant === "checkout" && (localTotals?.shipping ?? 0) > 0 && (
-              <div className="border-t pt-5 flex justify-between">
-                <p>Envío:</p>
-                <p className="text-[#7E22CE] font-semibold">
-                  ₡{format(localTotals.shipping)}
-                </p>
+            {rows.map(([label, value]) => (
+              <div key={label} className="border-t pt-5 flex justify-between">
+                <p>{label}</p>
+                <AnimatePresence mode="wait">
+                  <motion.p
+                    key={value}
+                    initial={{ opacity: 0, y: -5 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 5 }}
+                    transition={{ duration: 0.25 }}
+                    className="text-[#7E22CE] font-semibold"
+                  >
+                    ₡{format(value)}
+                  </motion.p>
+                </AnimatePresence>
               </div>
-            )}
+            ))}
+
             {discount > 0 && (
               <div className="border-t pt-5 flex justify-between text-green-600 font-semibold">
                 <p>Descuento ({appliedCoupon?.code}):</p>
-                <p>-₡{format(discount)}</p>
+                <AnimatePresence mode="wait">
+                  <motion.p
+                    key={discount}
+                    initial={{ opacity: 0, y: -5 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 5 }}
+                    transition={{ duration: 0.25 }}
+                  >
+                    -₡{format(discount)}
+                  </motion.p>
+                </AnimatePresence>
               </div>
             )}
+
             <div className="border-t pt-5 flex justify-between">
               <p className="font-bold">Total:</p>
-              <p className="font-bold text-[#5B21B6]">
-                ₡{format(localTotals?.total)}
-              </p>
+              <AnimatePresence mode="wait">
+                <motion.p
+                  key={localTotals?.total}
+                  initial={{ opacity: 0, y: -8, scale: 0.97 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: 8, scale: 0.97 }}
+                  transition={{ duration: 0.3 }}
+                  className="font-bold text-[#5B21B6]"
+                >
+                  ₡{format(localTotals?.total)}
+                </motion.p>
+              </AnimatePresence>
             </div>
           </div>
 
@@ -373,10 +420,10 @@ export default function ShoppingForm({
                       }
 
                       setCouponMessage(
-                        `Cupón aplicado: ${result.coupon?.code ?? "Desconocido"}${appliedList ? ` (Aplica a: ${appliedList})` : ""
-                        }`
+                        `Cupón aplicado: ${
+                          result.coupon?.code ?? "Desconocido"
+                        }${appliedList ? ` (Aplica a: ${appliedList})` : ""}`
                       );
-
                     }}
                     className="bg-contrast-secondary hover:bg-main text-white rounded-xl px-6 h-10"
                   >
@@ -401,7 +448,9 @@ export default function ShoppingForm({
               {couponMessage && (
                 <div className="mt-3 text-sm">
                   <p
-                    className={`${discount > 0 ? "text-green-600" : "text-red-500"}`}
+                    className={`${
+                      discount > 0 ? "text-green-600" : "text-red-500"
+                    }`}
                   >
                     {couponMessage}
                   </p>

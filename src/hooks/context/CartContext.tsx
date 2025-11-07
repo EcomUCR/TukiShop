@@ -111,17 +111,27 @@ export function CartProvider({ children }: { children: ReactNode }) {
   };
 
   // ============================
-  // 🔢 Actualizar cantidad
+  // 🔢 Actualizar cantidad (sin recargar todo el carrito)
   // ============================
   const updateQuantity = async (itemId: number, quantity: number) => {
     if (!token) return;
     try {
+      // ✅ Ahora usamos PATCH y endpoint correcto
       const { data } = await axios.patch(
         `/cart/item/${itemId}`,
         { quantity },
         { headers: { Authorization: `Bearer ${token}` } }
       );
-      setCart(data.cart ?? data);
+
+      // ✅ Actualiza solo el item modificado, no todo el carrito
+      setCart((prev) => {
+        if (!prev) return prev;
+        const updatedItems = prev.items.map((i) =>
+          i.id === itemId ? { ...i, ...data.item } : i
+        );
+        return { ...prev, items: updatedItems };
+      });
+
       window.dispatchEvent(new Event("cartUpdated"));
     } catch (err) {
       console.error("Error al actualizar cantidad:", err);
@@ -129,15 +139,18 @@ export function CartProvider({ children }: { children: ReactNode }) {
   };
 
   // ============================
-  // 🗑️ Eliminar producto
+  // 🗑️ Eliminar producto (sin recargar todo)
   // ============================
   const removeItem = async (itemId: number) => {
     if (!token) return;
     try {
-      const { data } = await axios.delete(`/cart/item/${itemId}`, {
+      await axios.delete(`/cart/items/${itemId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      setCart(data.cart ?? data);
+      setCart((prev) => {
+        if (!prev) return prev;
+        return { ...prev, items: prev.items.filter((i) => i.id !== itemId) };
+      });
       window.dispatchEvent(new Event("cartUpdated"));
     } catch (err) {
       console.error("Error al eliminar producto:", err);

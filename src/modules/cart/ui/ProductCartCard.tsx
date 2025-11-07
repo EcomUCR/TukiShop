@@ -1,10 +1,11 @@
-import { IconTrash } from "@tabler/icons-react";
+import { IconTrash, IconMinus, IconPlus } from "@tabler/icons-react";
 import StarRatingComponent from "../../../components/ui/StarRatingComponent";
 import { useCart } from "../../../hooks/context/CartContext";
 import { Link } from "react-router-dom";
 import { useAlert } from "../../../hooks/context/AlertContext";
 import { useState } from "react";
 import HeartButton from "../../../components/data-display/HeartButton";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface Props {
   item: {
@@ -31,16 +32,21 @@ export default function ProductCartCard({ item }: Props) {
   const { product } = item;
   const { updateQuantity, removeItem } = useCart();
   const { showAlert } = useAlert();
-  const [updating, setUpdating] = useState(false);
 
+  const [updating, setUpdating] = useState(false);
+  const [localQty, setLocalQty] = useState(item.quantity);
+
+  // 🔹 Formato de moneda CRC
   const formatCRC = (n: number) =>
     n?.toLocaleString("es-CR", { style: "currency", currency: "CRC" });
 
-  const handleQuantityChange = async (newQuantity: number) => {
-    if (newQuantity < 1 || updating) return;
+  // 🔹 Cambiar cantidad con animación
+  const handleQuantityChange = async (newQty: number) => {
+    if (newQty < 1 || updating) return;
+    setLocalQty(newQty);
     setUpdating(true);
     try {
-      await updateQuantity(item.id, newQuantity);
+      await updateQuantity(item.id, newQty);
     } catch (error) {
       console.error("Error al actualizar cantidad:", error);
       showAlert({
@@ -49,15 +55,17 @@ export default function ProductCartCard({ item }: Props) {
         confirmText: "Ok",
         type: "error",
       });
+      setLocalQty(item.quantity);
     } finally {
       setUpdating(false);
     }
   };
 
+  // 🔹 Eliminar producto
   const handleDelete = async () => {
     const confirmed = await showAlert({
       title: "Eliminar producto",
-      message: "¿Deseas eliminar el producto del carrito?",
+      message: "¿Deseas eliminar este producto del carrito?",
       confirmText: "Eliminar",
       cancelText: "Cancelar",
       type: "warning",
@@ -80,236 +88,144 @@ export default function ProductCartCard({ item }: Props) {
   };
 
   const isArchived = product.status === "ARCHIVED";
-
-  const productStatus =
-    product.status === "ARCHIVED"
-      ? "Eliminado"
-      : product.stock && product.stock > 0
-        ? "Disponible"
-        : "Agotado";
-
-  const productStatusColor =
-    product.status === "ARCHIVED"
-      ? "text-gray-500 font-semibold"
-      : product.stock && product.stock > 0
-        ? "text-green-600"
-        : "text-red-500 font-semibold";
+  const total = (product.discount_price ?? product.price) * localQty;
 
   return (
-    <>
-      {/* 🌟 Desktop version */}
-      <figure
-        className={`hidden sm:flex relative items-center justify-between w-full rounded-2xl p-5 shadow-md border 
-      overflow-hidden mb-5 font-quicksand transition-all duration-500
-      ${isArchived
-            ? "bg-gray-100 border-gray-300 scale-[0.96] grayscale opacity-80"
-            : "bg-gradient-to-br from-white to-gray-50 border-gray-100 hover:border-contrast-secondary/40"
-          }`}
-      >
+    <motion.div
+      layout
+      transition={{ type: "spring", stiffness: 100, damping: 18 }}
+      className={`w-full bg-white/80 backdrop-blur-md border border-gray-200 rounded-2xl p-4 shadow-sm hover:shadow-md transition-all duration-300 mb-4 font-quicksand ${
+        isArchived ? "opacity-70 grayscale" : ""
+      }`}
+    >
+      <div className="flex flex-col sm:flex-row gap-4 items-center sm:items-start">
         {/* Imagen */}
-        <div className="flex-shrink-0 flex items-center justify-center w-32 h-32 rounded-2xl overflow-hidden bg-white shadow-inner">
-          <Link to={`/product/${product.id}`}>
-            <img
-              src={
-                product.image_1_url ||
-                "https://electrogenpro.com/wp-content/themes/estore/images/placeholder-shop.jpg"
-              }
-              alt={product.name}
-              className={`object-contain w-full h-full transition-transform duration-500 cursor-pointer ${isArchived ? "opacity-70 grayscale" : "hover:scale-105"
-                }`}
-            />
-          </Link>
-        </div>
+        <Link
+          to={`/product/${product.id}`}
+          className="flex-shrink-0 w-24 h-24 sm:w-28 sm:h-28 rounded-xl overflow-hidden bg-gray-100 shadow-inner"
+        >
+          <motion.img
+            key={product.image_1_url}
+            src={
+              product.image_1_url ||
+              "https://electrogenpro.com/wp-content/themes/estore/images/placeholder-shop.jpg"
+            }
+            alt={product.name}
+            className="object-contain w-full h-full hover:scale-105 transition-transform duration-300"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.3 }}
+          />
+        </Link>
 
         {/* Información */}
-        <div className="flex flex-col justify-between flex-grow px-6 py-2">
-          <div className="flex flex-col gap-1">
-            <div className="flex items-center justify-between">
-              <Link to={`/product/${product.id}`}>
-                <h3
-                  className={`font-bold text-lg cursor-pointer transition-colors ${isArchived
-                      ? "text-gray-500"
-                      : "text-gray-800 hover:text-main"
-                    }`}
-                >
-                  {product.name}
-                </h3>
-              </Link>
-              <span className={`text-xs ${productStatusColor}`}>
-                {productStatus}
-              </span>
-            </div>
-            <p className="text-xs text-gray-500">
-              Tienda:{" "}
-              <span className="font-medium">
-                {product.store?.name ?? "Sin tienda"}
-              </span>
-            </p>
-
-            <StarRatingComponent value={product.rating ?? 0} size={12} />
-          </div>
-
-          {/* Cantidad */}
-          {!isArchived && (
-            <div className="mt-3 flex items-center justify-start gap-3">
-              <div className="flex items-center bg-white border border-contrast-secondary/60 rounded-full shadow-sm">
-                <button
-                  onClick={() => handleQuantityChange(item.quantity - 1)}
-                  disabled={updating}
-                  className="px-3 py-1 text-lg font-semibold text-contrast-main hover:text-contrast-secondary disabled:opacity-50 transition-colors"
-                >
-                  −
-                </button>
-                <span className="px-3 text-base font-semibold text-gray-800">
-                  {item.quantity}
-                </span>
-                <button
-                  onClick={() => handleQuantityChange(item.quantity + 1)}
-                  disabled={updating}
-                  className="px-3 py-1 text-lg font-semibold text-contrast-main hover:text-contrast-secondary disabled:opacity-50 transition-colors"
-                >
-                  +
-                </button>
-              </div>
-            </div>
-          )}
-        </div>
-
-        {/* Precio y acciones */}
-        <div className="flex flex-col items-end justify-between h-full gap-3 pr-2">
-          <div className="text-right">
-            {product.discount_price && product.discount_price > 0 ? (
-              <>
-                <p className="text-xs line-through text-gray-400">
-                  {formatCRC(product.price)}
-                </p>
-                <p className="text-xl font-bold text-main bg-clip-text">
-                  {formatCRC(product.discount_price)}
-                </p>
-              </>
-            ) : (
-              <p className="text-xl font-bold text-main">
-                {formatCRC(product.price)}
-              </p>
-            )}
-          </div>
-
-          {/* ❤️ HeartButton con animación */}
-          <div className="flex gap-3 text-main items-center">
-            {!isArchived && (
-              <HeartButton productId={product.id} variant="filled" />
-            )}
-            <button
-              onClick={handleDelete}
-              className="p-2 rounded-xl bg-gray-200 hover:bg-red-500 hover:text-white transition-all duration-300 shadow-sm hover:scale-110"
-            >
-              <IconTrash size={18} />
-            </button>
-          </div>
-        </div>
-      </figure>
-
-      {/* 📱 Mobile version */}
-      <figure
-        className={`sm:hidden relative w-full rounded-2xl shadow-md border 
-      transition-all duration-500 overflow-hidden mb-5 font-quicksand p-4 h-[14rem] flex flex-col justify-between
-      ${isArchived
-            ? "bg-gray-100 border-gray-300 scale-[0.96] grayscale opacity-80"
-            : "bg-gradient-to-br from-white to-gray-50 border-gray-100 hover:border-contrast-secondary/40"
-          }`}
-      >
-        <div className="flex w-full">
-          <div className="flex-shrink-0 flex items-center justify-center w-24 h-24 rounded-2xl overflow-hidden bg-white shadow-inner mr-3">
-            <Link to={`/product/${product.id}`}>
-              <img
-                src={
-                  product.image_1_url ||
-                  "https://electrogenpro.com/wp-content/themes/estore/images/placeholder-shop.jpg"
-                }
-                alt={product.name}
-                className={`object-contain w-full h-full transition-transform duration-500 cursor-pointer ${isArchived ? "opacity-70 grayscale" : "hover:scale-105"
-                  }`}
-              />
-            </Link>
-          </div>
-
-          {/* Info básica */}
-          <div className="flex flex-col justify-between flex-grow">
+        <div className="flex-1 w-full">
+          {/* Encabezado */}
+          <div className="flex justify-between items-start">
             <div>
               <Link to={`/product/${product.id}`}>
-                <h3
-                  className={`font-bold text-sm cursor-pointer transition-colors ${isArchived
-                      ? "text-gray-500"
-                      : "text-gray-800 hover:text-main"
-                    }`}
-                >
+                <h3 className="font-semibold text-gray-800 text-base hover:text-main transition-colors">
                   {product.name}
                 </h3>
               </Link>
-              <p className="text-xs text-gray-500">
+              <p className="text-xs text-gray-500 mt-1">
                 Tienda:{" "}
                 <span className="font-medium">
                   {product.store?.name ?? "Sin tienda"}
                 </span>
               </p>
-
-              <div className="flex justify-start mt-1">
-                <StarRatingComponent value={product.rating ?? 0} size={10} />
+              <div className="mt-1">
+                <StarRatingComponent value={product.rating ?? 0} size={12} />
               </div>
             </div>
-          </div>
-        </div>
 
-        {/* Parte inferior */}
-        <div className="flex justify-between items-end w-full">
-          {!isArchived && (
-            <div className="flex flex-col items-start gap-4">
-              <div className="flex items-center bg-white border border-contrast-secondary/60 rounded-full shadow-sm">
-                <button
-                  onClick={() => handleQuantityChange(item.quantity - 1)}
-                  disabled={updating}
-                  className="px-3 py-1 text-lg font-semibold text-contrast-main hover:text-contrast-secondary disabled:opacity-50 transition-colors"
-                >
-                  −
-                </button>
-                <span className="px-3 text-base font-semibold text-gray-800">
-                  {item.quantity}
-                </span>
-                <button
-                  onClick={() => handleQuantityChange(item.quantity + 1)}
-                  disabled={updating}
-                  className="px-3 py-1 text-lg font-semibold text-contrast-main hover:text-contrast-secondary disabled:opacity-50 transition-colors"
-                >
-                  +
-                </button>
-              </div>
-              <span className={`text-base ${productStatusColor}`}>
-                {productStatus}
-              </span>
-            </div>
-          )}
-
-          {/* Precio + acciones */}
-          <div className="flex flex-col items-end gap-4">
-            <p className="text-xl font-bold text-main">
-              {product.discount_price && product.discount_price > 0
-                ? formatCRC(product.discount_price)
-                : formatCRC(product.price)}
-            </p>
-            <div className="flex gap-3 text-main">
+            {/* Botones */}
+            <div className="flex items-center gap-2">
               {!isArchived && (
                 <HeartButton productId={product.id} variant="filled" />
               )}
               <button
                 onClick={handleDelete}
-                className="py-2 px-2.5  rounded-xl bg-gray-200 hover:bg-red-500 hover:text-white transition-all duration-300 shadow-sm hover:scale-110"
+                className="p-2 rounded-lg bg-gray-100 hover:bg-red-500 hover:text-white transition-all duration-300"
               >
                 <IconTrash size={16} />
               </button>
             </div>
           </div>
+
+          {/* Cantidad + Precios */}
+          <div className="mt-4 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
+            {/* Controles de cantidad */}
+            <div className="flex items-center gap-3">
+              <button
+                type="button"
+                onClick={() => handleQuantityChange(localQty - 1)}
+                disabled={updating || localQty <= 1}
+                className="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center text-main font-bold hover:bg-main hover:text-white transition-colors disabled:opacity-40"
+              >
+                <IconMinus size={14} />
+              </button>
+
+              {/* Animación en cantidad */}
+              <AnimatePresence mode="wait">
+                <motion.span
+                  key={localQty}
+                  initial={{ scale: 0.8, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  exit={{ scale: 0.8, opacity: 0 }}
+                  transition={{ duration: 0.2 }}
+                  className="text-lg font-semibold text-gray-700 select-none"
+                >
+                  {localQty}
+                </motion.span>
+              </AnimatePresence>
+
+              <button
+                type="button"
+                onClick={() => handleQuantityChange(localQty + 1)}
+                disabled={updating}
+                className="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center text-main font-bold hover:bg-main hover:text-white transition-colors disabled:opacity-40"
+              >
+                <IconPlus size={14} />
+              </button>
+            </div>
+
+            {/* Precios */}
+            <div className="text-right sm:text-end">
+              {product.discount_price && product.discount_price > 0 ? (
+                <>
+                  <p className="text-sm line-through text-gray-400">
+                    {formatCRC(product.price)}
+                  </p>
+                  <p className="text-base font-bold text-main">
+                    {formatCRC(product.discount_price)}
+                  </p>
+                </>
+              ) : (
+                <p className="text-base font-bold text-main">
+                  {formatCRC(product.price)}
+                </p>
+              )}
+
+              <p className="text-sm text-gray-600 mt-1">
+                Total:{" "}
+                <AnimatePresence mode="wait">
+                  <motion.span
+                    key={total}
+                    initial={{ opacity: 0, y: -5 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 5 }}
+                    transition={{ duration: 0.25 }}
+                    className="font-semibold text-main"
+                  >
+                    {formatCRC(total)}
+                  </motion.span>
+                </AnimatePresence>
+              </p>
+            </div>
+          </div>
         </div>
-      </figure>
-    </>
+      </div>
+    </motion.div>
   );
 }

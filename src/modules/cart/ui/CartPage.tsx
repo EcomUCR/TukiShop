@@ -28,7 +28,7 @@ type AnyBanner = {
 };
 
 export default function CartPage() {
-  const { cart, loading, refreshCart, clearCart } = useCart();
+  const { cart,  refreshCart, clearCart } = useCart();
   const {
     banners,
     fetchBanners,
@@ -40,6 +40,7 @@ export default function CartPage() {
   const { showAlert } = useAlert();
 
   const [clearing, setClearing] = useState(false);
+  const [isInitialLoading, setIsInitialLoading] = useState(true); // 👈 Nuevo estado
 
   // 🔹 Banners seleccionados (solo 2)
   const [bannerSlot1, setBannerSlot1] = useState<AnyBanner | null>(null);
@@ -54,7 +55,11 @@ export default function CartPage() {
   }, []);
 
   useEffect(() => {
-    refreshCart();
+    const loadCart = async () => {
+      await refreshCart();
+      setIsInitialLoading(false); // ✅ Solo al terminar la primera carga
+    };
+    loadCart();
   }, []);
 
   /** 🔹 Cargar banners asignados a esta página (desde page_banners) */
@@ -142,8 +147,6 @@ export default function CartPage() {
     }
   };
 
-
-
   // 🔧 Helper: convertir File|string → URL
   const asUrl = (v?: string | File) =>
     v ? (typeof v === "string" ? v : URL.createObjectURL(v)) : undefined;
@@ -152,7 +155,8 @@ export default function CartPage() {
   const normalizeOrientation = (o?: AnyBanner["orientation"]) =>
     o === "RIGHT" ? "RIGTH" : o;
 
-  if (loading || loadingBanners)
+  // ✅ Mostrar skeleton solo en la primera carga
+  if (isInitialLoading || loadingBanners)
     return (
       <div>
         <NavBar />
@@ -183,10 +187,11 @@ export default function CartPage() {
                   onClick={handleClearCart}
                   disabled={clearing}
                   className={`mb-4 px-6 py-2 rounded-full border-2 border-[#ff7e47] text-[#ff7e47] font-medium flex items-center justify-center gap-2 transition-all duration-200
-      ${clearing
-                      ? "opacity-60 cursor-not-allowed"
-                      : "hover:bg-[#ff7e47] hover:text-white"
-                    }`}
+      ${
+        clearing
+          ? "opacity-60 cursor-not-allowed"
+          : "hover:bg-[#ff7e47] hover:text-white"
+      }`}
                 >
                   {clearing ? (
                     <>
@@ -217,13 +222,10 @@ export default function CartPage() {
                   )}
                 </button>
               </div>
-
             )}
 
             {hasItems ? (
-              cart.items.map((item) => (
-                <ProductCartCard key={item.id} item={item} />
-              ))
+              cart.items.map((item) => <ProductCartCard key={item.id} item={item} />)
             ) : (
               <p className="text-center font-semibold text-main text-lg py-10">
                 Tu carrito está vacío
@@ -253,6 +255,7 @@ export default function CartPage() {
             </section>
           </div>
 
+          {/* 🧾 Formulario de compra */}
           <div className="my-5 sm:my-10 sm:pl-10 w-full sm:w-1/3">
             <ShoppingForm />
           </div>
