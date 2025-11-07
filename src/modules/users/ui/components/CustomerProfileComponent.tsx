@@ -6,14 +6,7 @@ import { uploadImage } from "../../infrastructure/imageService";
 import { IconEdit } from "@tabler/icons-react";
 import { useAlert } from "../../../../hooks/context/AlertContext";
 
-interface CustomerProfileComponentProps {
-  alert: any;
-  setAlert: React.Dispatch<React.SetStateAction<any>>;
-}
-
-export default function CustomerProfileComponent({
-  setAlert,
-}: CustomerProfileComponentProps) {
+export default function CustomerProfileComponent() {
   const { user, refreshUser, token } = useAuth();
   const [newProfileFile, setNewProfileFile] = useState<File | null>(null);
   const [profilePreview, setProfilePreview] = useState<string | null>(null);
@@ -231,11 +224,11 @@ export default function CustomerProfileComponent({
       setAddresses(res.data.addresses || []);
 
       // ✅ 3️⃣ Alerta de éxito
-      setAlert({
-        show: true,
+      showAlert({
         title: "Dirección agregada",
         message: "Tu nueva dirección se guardó correctamente.",
         type: "success",
+        confirmText: "Aceptar",
       });
 
       // 🧹 4️⃣ Reset del formulario
@@ -250,11 +243,11 @@ export default function CustomerProfileComponent({
       setAddingAddress(false);
     } catch (error) {
       console.error("❌ Error al agregar dirección:", error);
-      setAlert({
-        show: true,
+      showAlert({
         title: "Error al agregar",
         message: "No se pudo agregar la dirección.",
         type: "error",
+        confirmText: "Aceptar",
       });
     }
   };
