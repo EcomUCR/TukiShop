@@ -7,7 +7,10 @@ interface StoreProps {
     id: number;
     name: string;
     description?: string;
-    category?: string;
+     category?: {
+      id: number;
+      name: string;
+    }
     rating?: number;
     image?: string;
     banner?: string;
@@ -39,8 +42,9 @@ export default function StoreListCard({ store }: StoreProps) {
       </div>
       <div className="flex relative flex-col items-center pt-14 sm:pt-5 pb-6 px-4 text-center flex-1">
         <p className="absolute top-2 right-3 bg-white/50 text-xs text-main px-3 py-1 rounded-full">
-          {store.category?.trim() || "Sin categoría"}
+          {store.category?.name?.trim() || "Sin categoría"}
         </p>
+
         <h2 className="text-xl text-white sm:text-xl font-semibold mt-4 sm:mt-5">
           {store.name}
         </h2>

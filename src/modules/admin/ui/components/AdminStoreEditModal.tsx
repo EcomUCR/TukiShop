@@ -3,6 +3,7 @@ import { IconArrowLeft, IconEdit, IconTrash } from "@tabler/icons-react";
 import ButtonComponent from "../../../../components/ui/ButtonComponent";
 import { Switch } from "../../../../components/ui/switch";
 import { uploadImage } from "../../../users/infrastructure/imageService";
+import axios from "axios";
 
 interface Store {
   id: number;
@@ -18,7 +19,13 @@ interface Store {
   banner?: string | null;
   status?: string;
   is_verified?: boolean;
+  category_id?: number | null;
   user?: { username?: string };
+}
+
+interface StoreCategory {
+  id: number;
+  name: string;
 }
 
 interface AdminStoreEditModalProps {
@@ -38,12 +45,32 @@ export default function AdminStoreEditModal({
   const [logoFile, setLogoFile] = useState<File | null>(null);
   const [bannerFile, setBannerFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
+  const [categories, setCategories] = useState<StoreCategory[]>([]);
+
+  // 🔹 Cargar categorías desde el backend
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const url = `${import.meta.env.VITE_API_URL}/store-categories`;
+        console.log("📡 Cargando categorías desde:", url);
+        const res = await axios.get(url);
+        console.log("✅ Categorías obtenidas:", res.data);
+        setCategories(res.data);
+      } catch (error) {
+        console.error("❌ Error al cargar categorías:", error);
+      }
+    };
+    fetchCategories();
+  }, []);
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
-    setFormData((prev: Store) => ({ ...prev, [name]: value }));
+    setFormData((prev: Store) => ({
+      ...prev,
+      [name]: name === "category_id" ? Number(value) || null : value,
+    }));
   };
 
   const handleLogoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -91,16 +118,17 @@ export default function AdminStoreEditModal({
         updatedData.banner = uploadedBanner;
       }
 
-      console.log("Datos enviados:", updatedData);
+      console.log("📤 Datos enviados:", updatedData);
       await onSave(updatedData);
       onClose();
     } catch (error) {
-      console.error("Error al subir imágenes o guardar tienda:", error);
+      console.error("❌ Error al subir imágenes o guardar tienda:", error);
     } finally {
       setUploading(false);
     }
   };
 
+  // Evitar scroll de fondo
   useEffect(() => {
     const scrollbarWidth =
       window.innerWidth - document.documentElement.clientWidth;
@@ -144,13 +172,15 @@ export default function AdminStoreEditModal({
             </div>
           </div>
 
-          <div className="flex flex-wrap justify-center items-center gap-3 sm:gap-10 text-xs sm:text-sm text-gray-600">
+          {/* Info + Selectores */}
+          <div className="flex flex-wrap justify-center items-center gap-3 sm:gap-8 text-xs sm:text-sm text-gray-600">
             <div>
               <strong>ID:</strong> {store.id}
             </div>
             <div>
               <strong>Tienda:</strong> {store.user?.username ?? "—"}
             </div>
+
             <div className="flex items-center gap-2">
               <strong>Verificada:</strong>
               <Switch
@@ -160,6 +190,7 @@ export default function AdminStoreEditModal({
                 }
               />
             </div>
+
             <div className="flex items-center gap-2">
               <strong>Status:</strong>
               <select
@@ -176,6 +207,27 @@ export default function AdminStoreEditModal({
                 <option value="ACTIVE">Activa</option>
                 <option value="SUSPENDED">Suspendida</option>
                 <option value="CLOSED">Cerrada</option>
+              </select>
+            </div>
+
+            {/* 🆕 Categoría visible en header */}
+            <div className="flex items-center gap-2">
+              <strong>Categoría:</strong>
+              <select
+                name="category_id"
+                value={formData.category_id ?? ""}
+                onChange={handleChange}
+                className="border border-gray-300 rounded-lg px-2 py-1 text-xs sm:text-sm outline-none focus:border-main focus:ring-1 focus:ring-main/20 transition"
+              >
+                <option value="">Sin categoría</option>
+                {categories.length === 0 && (
+                  <option disabled>Cargando...</option>
+                )}
+                {categories.map((cat) => (
+                  <option key={cat.id} value={cat.id}>
+                    {cat.name}
+                  </option>
+                ))}
               </select>
             </div>
           </div>
@@ -267,6 +319,30 @@ export default function AdminStoreEditModal({
 
             {/* Columna derecha */}
             <div className="bg-gray-50 rounded-2xl p-5 sm:p-6 shadow-inner space-y-3">
+              {/* 🆕 Selector de categoría visible en la parte superior de la columna derecha */}
+              <div>
+                <label className="text-base font-semibold text-gray-600">
+                  Categoría
+                </label>
+                <select
+                  name="category_id"
+                  value={formData.category_id ?? ""}
+                  onChange={handleChange}
+                  className="w-full mt-1 border border-gray-300 rounded-lg p-2 text-base outline-none focus:border-main focus:ring-2 focus:ring-main/20 transition"
+                >
+                  <option value="">Sin categoría</option>
+                  {categories.length === 0 && (
+                    <option disabled>Cargando...</option>
+                  )}
+                  {categories.map((cat) => (
+                    <option key={cat.id} value={cat.id}>
+                      {cat.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* 🔹 Resto de campos existentes */}
               {[
                 ["Nombre", "name"],
                 ["Descripción", "description"],
@@ -291,13 +367,13 @@ export default function AdminStoreEditModal({
                 </div>
               ))}
             </div>
+
           </div>
 
           {/* Footer */}
           <div className="flex flex-col justify-center items-center border-t border-gray-200 pt-4 text-center">
             <p className="text-[10px] sm:text-xs text-gray-500 mb-3 px-2">
-              Los cambios se aplicarán inmediatamente y serán notificados al
-              vendedor.
+              Los cambios se aplicarán inmediatamente y serán notificados al vendedor.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 w-full sm:w-auto justify-center">
               <ButtonComponent

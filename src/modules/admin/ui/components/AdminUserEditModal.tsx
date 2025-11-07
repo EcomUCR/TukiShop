@@ -356,9 +356,10 @@ export default function AdminUserEditModal({
                   </h2>
                   <ButtonComponent
                     text="Modificar tienda"
-                    onClick={() => onEditStore?.(formData)}
+                    onClick={() => formData.store && onEditStore?.(formData.store)}
                     style="bg-gradient-to-br from-main via-contrast-secondary to-contrast-main text-white px-4 sm:px-6 py-2 rounded-full font-semibold shadow-md hover:shadow-lg transition text-sm sm:text-base"
                   />
+
                 </div>
               </div>
             )}
