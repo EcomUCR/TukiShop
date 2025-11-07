@@ -17,6 +17,7 @@ import { uploadImage } from "../../infrastructure/imageService";
 import { updateStore } from "../../../store/infrastructure/storeService";
 import { useAuth } from "../../../../hooks/context/AuthContext";
 import { Skeleton } from "../../../../components/ui/skeleton";
+import { useAlert } from "../../../../hooks/context/AlertContext";
 
 interface Store {
   id: number;
@@ -47,20 +48,9 @@ const iconMap = {
   link: <IconLink />,
 };
 
-interface SellerProfileComponentProps {
-  alert: any;
-  setAlert: React.Dispatch<
-    React.SetStateAction<{
-      show: boolean;
-      title: string;
-      message: string;
-      type: "warning" | "info" | "success" | "error";
-    }>
-  >;
-}
-
-export default function SellerProfileComponent({ setAlert }: SellerProfileComponentProps) {
+export default function SellerProfileComponent() {
   const { user, token, refreshUser } = useAuth();
+  const {showAlert} = useAlert();
 
   const [savingUser, setSavingUser] = useState(false);
   const [cambiarPassword, setCambiarPassword] = useState(false);
@@ -156,11 +146,11 @@ export default function SellerProfileComponent({ setAlert }: SellerProfileCompon
         headers: { Authorization: `Bearer ${token}` },
       });
       setAddresses(res.data.addresses || []);
-      setAlert({
-        show: true,
+      showAlert({
         title: "Dirección agregada",
         message: "Tu nueva dirección se guardó correctamente.",
         type: "success",
+        confirmText: "Aceptar",
       });
       setForm({
         street: "",
@@ -173,11 +163,11 @@ export default function SellerProfileComponent({ setAlert }: SellerProfileCompon
       setAdding(false);
     } catch (error) {
       console.error("❌ Error al agregar dirección:", error);
-      setAlert({
-        show: true,
+      showAlert({
         title: "Error al agregar",
-        message: "No se pudo agregar la dirección.",
+        message: "No se pudo agregar la dirección. Intentalo más tarde.",
         type: "error",
+        confirmText: "Aceptar",
       });
     }
   };
@@ -203,11 +193,11 @@ export default function SellerProfileComponent({ setAlert }: SellerProfileCompon
       setSocialLinks(socials);
       setNewBannerFile(null);
       setNewLogoFile(null);
-      setAlert({
-        show: true,
+      showAlert({
         title: "Cambios descartados",
         message: "Se restauró la información original de la tienda.",
         type: "info",
+        confirmText: "Aceptar",
       });
     } catch (err) {
       console.error("Error al restaurar datos de la tienda:", err);
@@ -243,22 +233,22 @@ export default function SellerProfileComponent({ setAlert }: SellerProfileCompon
         // 🔐 Cambio de contraseña (opcional)
         if (cambiarPassword) {
           if (!currentPassword || !newPassword || !confirmPassword) {
-            setAlert({
-              show: true,
+            showAlert({
               title: "Campos incompletos",
               message: "Debes llenar todos los campos de contraseña.",
               type: "warning",
+              confirmText: "Aceptar",
             });
             setSavingUser(false);
             return;
           }
 
           if (newPassword !== confirmPassword) {
-            setAlert({
-              show: true,
+            showAlert({
               title: "Error de confirmación",
               message: "Las contraseñas no coinciden.",
               type: "error",
+              confirmText: "Aceptar",
             });
             setSavingUser(false);
             return;
@@ -276,13 +266,13 @@ export default function SellerProfileComponent({ setAlert }: SellerProfileCompon
         }
 
         // ✅ Mensaje de éxito
-        setAlert({
-          show: true,
+        showAlert({
           title: "Cambios guardados",
           message: cambiarPassword
             ? "Tu contraseña y perfil se actualizaron correctamente."
             : "Tu perfil se actualizó correctamente.",
           type: "success",
+          confirmText: "Aceptar",
         });
 
         // 🔹 Limpieza de estado
@@ -292,13 +282,13 @@ export default function SellerProfileComponent({ setAlert }: SellerProfileCompon
         setCambiarPassword(false);
       }
     } catch (err: any) {
-      setAlert({
-        show: true,
+      showAlert({
         title: "Error al guardar",
         message:
           err.response?.data?.error ||
           "Ocurrió un problema al actualizar el perfil.",
         type: "error",
+        confirmText: "Aceptar",
       });
     } finally {
       setSavingUser(false);
@@ -361,20 +351,20 @@ export default function SellerProfileComponent({ setAlert }: SellerProfileCompon
       await updateStore(editableStore.id, updatedFields);
       await refreshUser?.();
 
-      setAlert({
-        show: true,
+      showAlert({
         title: "Cambios guardados",
         message: "La tienda se actualizó correctamente.",
         type: "success",
+        confirmText: "Aceptar",
       });
     } catch (err: any) {
-      setAlert({
-        show: true,
+      showAlert({
         title: "Error al guardar",
         message:
           err.response?.data?.error ||
           "Ocurrió un problema al actualizar los datos.",
         type: "error",
+        confirmText: "Aceptar",
       });
     } finally {
       setSavingStore(false);
