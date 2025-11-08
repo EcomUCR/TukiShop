@@ -1,4 +1,3 @@
-import audifonos from "../../../../img/resources/audifonos.jpg";
 import ProductCard from "../../../../components/data-display/ProductCard";
 import { useProducts } from "../../infrastructure/useProducts";
 import type { Product } from "../../infrastructure/useProducts";
@@ -59,7 +58,7 @@ export default function StoreOffersComponent() {
               title={prod.name}
               price={prod.price}
               discountPrice={prod.discount_price}
-              img={prod.image_1_url || audifonos}
+              img={prod.image_1_url || "https://res.cloudinary.com/dpbghs8ep/image/upload/v1761412207/imagenNoSubida_dymbb7.png"}
               edit={"NONE"}
             />
           ))}

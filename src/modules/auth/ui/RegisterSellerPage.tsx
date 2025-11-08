@@ -249,53 +249,90 @@ export default function RegisterSellerPage() {
               <h2 className="text-2xl font-bold mb-4 text-main">
                 Términos y Condiciones de Uso de TukiShop
               </h2>
-              <p className="text-sm text-gray-700 whitespace-pre-line">
+              <div className="text-sm text-gray-700">
+              <div className="whitespace-pre-line mb-4">
                 Última actualización: 02/10/2025
+              </div>
 
-                1. Objeto
+              <div className="font-bold mb-1">1. Objeto</div>
+              <div className="whitespace-pre-line mb-4">
                 El presente documento establece los términos y condiciones de uso (en adelante, los “Términos y Condiciones”) que regulan el acceso, navegación y utilización de la plataforma digital TukiShop (en adelante, “Plataforma”), a través de la cual los usuarios podrán ofrecer, adquirir y gestionar productos y/o servicios por medio de internet.
+              </div>
 
-                2. Definición de Usuarios
+              <div className="font-bold mb-1">2. Definición de Usuarios</div>
+              <div className="whitespace-pre-line mb-4">
                 A efectos de este documento, se entenderá por “Usuarios” tanto a los compradores como a los vendedores registrados en la Plataforma. Los Usuarios deberán aceptar íntegramente los presentes Términos y Condiciones para utilizar los servicios aquí ofrecidos.
+              </div>
 
-                3. Registro y Responsabilidades del Usuario
+              <div className="font-bold mb-1">3. Registro y Responsabilidades del Usuario</div>
+              <div className="whitespace-pre-line mb-4">
                 El acceso y uso de la Plataforma requiere registro previo de los Usuarios, quienes se obligan a proporcionar información veraz, actualizada y completa al momento del registro. Es responsabilidad exclusiva del Usuario custodiar sus credenciales de acceso, exonerando a la Plataforma de cualquier responsabilidad derivada del uso indebido o no autorizado de las mismas.
+              </div>
 
-                4. Condiciones para Vendedores
+              <div className="font-bold mb-1">4. Condiciones para Vendedores</div>
+              <div className="whitespace-pre-line mb-4">
                 Cada vendedor será responsable de la veracidad, integridad y legalidad de la información publicada referente a sus productos y/o servicios, así como del cumplimiento de la normativa aplicable, incluyendo aquellos aspectos relacionados con las garantías y condiciones comerciales. Queda totalmente prohibida la oferta de productos ilegales, prohibidos o que vulneren derechos de terceros.
+              </div>
 
-                5. Condiciones para Compradores
+              <div className="font-bold mb-1">5. Condiciones para Compradores</div>
+              <div className="whitespace-pre-line mb-4">
                 Los compradores se obligan a emplear los servicios de la Plataforma de conformidad con la legalidad vigente y las presentes condiciones, comprometiéndose a proporcionar información verídica en las transacciones y a completar los pagos conforme a las condiciones pactadas en cada caso.
+              </div>
 
-                6. Formas de Pago y Condiciones Financieras
+              <div className="font-bold mb-1">6. Formas de Pago y Condiciones Financieras</div>
+              <div className="whitespace-pre-line mb-4">
                 La Plataforma pone a disposición de los Usuarios diferentes métodos de pago, debiendo consultarse las condiciones particulares de cada uno. Los precios publicados incluirán, en su caso, los impuestos aplicables y gastos adicionales, que serán informados antes de la formalización de la transacción. El cobro de comisiones o tarifas por el uso de la Plataforma será comunicado de forma previa, según corresponda.
+              </div>
 
-                7. Entrega de Productos, Envíos y Devoluciones
+              <div className="font-bold mb-1">7. Entrega de Productos, Envíos y Devoluciones</div>
+              <div className="whitespace-pre-line mb-4">
                 Los plazos y condiciones de entrega serán determinados por cada vendedor y estarán debidamente informados en la ficha de producto. Las políticas de devolución, garantía y reembolso deberán ser informadas expresamente y cumplir, como mínimo, con la legislación vigente en materia de protección al consumidor.
+              </div>
 
-                8. Propiedad Intelectual e Industrial
+              <div className="font-bold mb-1">8. Propiedad Intelectual e Industrial</div>
+              <div className="whitespace-pre-line mb-4">
                 Todos los derechos sobre los contenidos, software, marcas, logos, imágenes y demás elementos de la Plataforma corresponden a la titular de la misma o a los legítimos titulares de los derechos. Queda prohibida la reproducción, distribución, modificación o uso no autorizado de cualquier elemento integrante de la Plataforma.
+              </div>
 
-                9. Responsabilidad y Exoneración de Garantía
+              <div className="font-bold mb-1">9. Responsabilidad y Exoneración de Garantía</div>
+              <div className="whitespace-pre-line mb-4">
                 La Plataforma actúa exclusivamente como intermediaria entre vendedores y compradores, y no asume ninguna responsabilidad por los productos o servicios ofertados y/o entregados por terceros, salvo en los supuestos expresamente previstos por la normativa aplicable. La Plataforma no será responsable de daños indirectos, lucro cesante, pérdida de datos, o cualquier daño resultante del uso o imposibilidad de uso de la misma.
+              </div>
 
-                10. Restricción, Suspensión y Cancelación de Cuentas
+              <div className="font-bold mb-1">10. Restricción, Suspensión y Cancelación de Cuentas</div>
+              <div className="whitespace-pre-line mb-4">
                 La Plataforma se reserva el derecho de restringir, suspender o cancelar el acceso a Usuarios que incumplan con los presentes Términos y Condiciones, lleven a cabo actividades ilícitas, fraudulentas, o que puedan afectar la seguridad, integridad y correcto funcionamiento de la Plataforma.
+              </div>
 
-                11. Protección de Datos Personales
+              <div className="font-bold mb-1">11. Protección de Datos Personales</div>
+              <div className="whitespace-pre-line mb-4">
                 El tratamiento de los datos personales de los Usuarios se realizará conforme a la Política de Privacidad de la Plataforma y a la normativa vigente en la materia, asegurando su confidencialidad e integridad.
+              </div>
 
-                12. Modificaciones de los Términos y Condiciones
+              <div className="font-bold mb-1">12. Modificaciones de los Términos y Condiciones</div>
+              <div className="whitespace-pre-line mb-4">
                 La titular de la Plataforma podrá modificar en cualquier momento los presentes Términos y Condiciones, notificando a los Usuarios mediante la publicación de la versión actualizada en la Plataforma. El uso continuo supondrá la aceptación de los mismos.
+              </div>
 
-                13. Legislación Aplicable y Jurisdicción
+              <div className="font-bold mb-1">13. Legislación Aplicable y Jurisdicción</div>
+              <div className="whitespace-pre-line mb-4">
                 Los presentes Términos y Condiciones se regirán e interpretarán conforme a las leyes de Costa Rica, y ante cualquier controversia, las partes se someten expresamente a los juzgados y tribunales competentes de dicha jurisdicción.
+              </div>
 
-                14. Contacto
-                Para cualquier duda, consulta o reclamación, el Usuario podrá contactar a través de soporte@tukishopcr.com.
-
+              <div className="font-bold mb-1">14. Contacto</div>
+              <div className="whitespace-pre-line mb-4">
+                Para cualquier duda, consulta o reclamación, el Usuario podrá contactar a través de{" "}
+                <a
+                  href="mailto:soporte@tukishopcr.com"
+                  className="text-main underline hover:text-blue-800"
+                >
+                  soporte@tukicr.com
+                </a>.
+              </div>
+              <div className="whitespace-pre-line">
                 © 2025 TukiShop. Todos los derechos reservados.
-              </p>
+              </div>
+            </div>
               <div className="flex justify-center mt-6">
                 <button
                   onClick={() => setShowTerms(false)}
