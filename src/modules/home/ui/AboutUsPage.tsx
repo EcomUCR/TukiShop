@@ -157,7 +157,7 @@ export default function AboutUs() {
                 className="absolute inset-0 w-full h-full object-cover opacity-80 grayscale group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-500"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent"></div>
-              <div className="relative z-10 p-5 text-white group-hover:-translate-y-6 transition-all duration-500">
+              <div className="relative z-10 p-5 text-white group-hover:-translate-y-6 group-hover:scale-110 transition-all duration-500">
                 <h4 className="text-lg font-semibold tracking-wide uppercase mb-1">
                   {member.name}
                 </h4>
