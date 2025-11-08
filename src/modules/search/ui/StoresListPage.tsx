@@ -62,6 +62,15 @@ export default function SearchedStores() {
   return (
     <div>
       <NavBar />
+      <div className="text-center my-10">
+  <h1 className="text-3xl sm:text-4xl font-quicksand bg-main bg-clip-text text-transparent">
+    Tiendas en TukiShop
+  </h1>
+  <p className="text-base sm:text-lg text-main-dark/70 mt-2 font-quicksand">
+    Descubre negocios locales y productos únicos en TukiShop 
+  </p>
+</div>
+
       <div className="max-w-6xl mx-auto my-10 px-5 grid grid-cols-1 sm:grid-cols-2 gap-5 sm:space-y-10">
   {stores.map((store, index) => (
     <div key={store.id}>
