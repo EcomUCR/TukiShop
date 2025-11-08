@@ -5,15 +5,15 @@ import Footer from "../../../components/layout/Footer";
 
 export default function AboutUs() {
   const teamMember = [
-    { name: "Raul", role: "Designer & Full-Stack Developer", image: "https://res.cloudinary.com/dpbghs8ep/image/upload/v1762568208/raulgoto_f5e1lx.png" },
-    { name: "John", role: "Full-Stack Developer", image: "https://res.cloudinary.com/dpbghs8ep/image/upload/v1762562046/johnfoto_kxxi9o.png" },
+    { name: "Raul", role: "Designer & Full-Stack Developer", image: "https://res.cloudinary.com/dpbghs8ep/image/upload/v1762578745/RaulRecortefoto_hgcjlb.png" },
+    { name: "John", role: "Full-Stack Developer", image: "https://res.cloudinary.com/dpbghs8ep/image/upload/v1762579265/johnfoto_qwa4xc.png" },
     { name: "Kristen", role: "Designer & Front-End Developer", image: "https://res.cloudinary.com/dpbghs8ep/image/upload/v1762569159/kris2Kfoto_pdzhwo.png" },
-    { name: "Andres", role: "Full-Stack Developer", image: "https://res.cloudinary.com/dpbghs8ep/image/upload/v1762560900/nhpfoto_lvt9mj.png" },
+    { name: "Andres", role: "Full-Stack Developer", image: "https://res.cloudinary.com/dpbghs8ep/image/upload/v1762578753/andresfoto-removebg-preview_aav7ni.png" },
     { name: "Alejandro", role: "Quality Assurance", image: "https://res.cloudinary.com/dpbghs8ep/image/upload/v1762560451/AlejandroFoto_pqtukx.png" },
   ];
 
   return (
-    <div className="min-h-screen flex flex-col bg-main-dark  ">
+    <div className="min-h-screen flex flex-col  ">
       <NavBar />
 
       {/* Hero Section */}
@@ -28,8 +28,8 @@ export default function AboutUs() {
             Conoce a <span className="font-fugaz">TukiShop</span>
           </h1>
           <p className="max-w-2xl mx-auto text-lg text-white/90 leading-relaxed mb-8">
-            Creemos que cada tienda local y cada emprendedor tiene una historia que contar.  
-            En <span className="font-semibold text-white">TukiShop</span> unimos tecnología, diseño y pasión  
+            Creemos que cada tienda local y cada emprendedor tiene una historia que contar.
+            En <span className="font-semibold text-white">TukiShop</span> unimos tecnología, diseño y pasión
             para transformar esas historias en experiencias digitales memorables.
           </p>
           <motion.div
@@ -52,9 +52,9 @@ export default function AboutUs() {
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="max-w-3xl mx-auto text-white text-lg mb-12"
+          className="max-w-3xl mx-auto text-main-dark text-lg mb-12"
         >
-          Creemos en el poder del comercio digital, pero sobre todo en el valor humano detrás de cada producto.  
+          Creemos en el poder del comercio digital, pero sobre todo en el valor humano detrás de cada producto.
           Estas son las tres fuerzas que impulsan nuestro camino día a día:
         </motion.p>
 
@@ -66,10 +66,10 @@ export default function AboutUs() {
             className="bg-white/20 shadow-md rounded-2xl p-8 border border-gray-100"
           >
             <IconTarget className="w-10 h-10 text-main mx-auto mb-4" />
-            <h3 className="text-xl font-semibold mb-2 text-white">
+            <h3 className="text-xl font-semibold mb-2 text-main-dark ">
               Nuestra Misión
             </h3>
-            <p className="text-white">
+            <p className="text-main-dark">
               Simplificar el comercio digital y ayudar a las pequeñas tiendas a
               crecer en el mundo online con herramientas accesibles y efectivas.
             </p>
@@ -82,10 +82,10 @@ export default function AboutUs() {
             className="bg-white/20 shadow-md rounded-2xl p-8 border border-gray-100"
           >
             <IconHeart className="w-10 h-10 text-contrast-main mx-auto mb-4" />
-            <h3 className="text-xl font-semibold mb-2 text-white">
+            <h3 className="text-xl font-semibold mb-2 text-main-dark">
               Nuestra Visión
             </h3>
-            <p className="text-white">
+            <p className="text-main-dark">
               Convertirnos en la plataforma favorita de venta en línea para
               emprendedores, destacando por confianza, diseño y cercanía.
             </p>
@@ -98,10 +98,10 @@ export default function AboutUs() {
             className="bg-white/20 shadow-md rounded-2xl p-8 border border-gray-100"
           >
             <IconUsers className="w-10 h-10 text-contrast-secondary mx-auto mb-4" />
-            <h3 className="text-xl font-semibold mb-2 text-white">
+            <h3 className="text-xl font-semibold mb-2 text-main-dark">
               Lo que Nos Mueve
             </h3>
-            <p className="text-white">
+            <p className="text-main-dark">
               La innovación, la colaboración y la pasión por ofrecer experiencias
               digitales memorables tanto para tiendas como para compradores.
             </p>
@@ -110,24 +110,25 @@ export default function AboutUs() {
       </section>
 
       {/* Team Section */}
-      <section className="bg-main-dark pt-10 pb-20 px-6 md:px-16 font-quicksand">
+      <section className="pt-10 pb-20 px-6 md:px-16 font-quicksand">
         <motion.h2
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           transition={{ duration: 0.5 }}
-          className="text-5xl font-bold text-center mb-6 text-white"
+          className="text-5xl font-bold text-center text-main-dark"
         >
           Nuestro Equipo
         </motion.h2>
+        <div className="my-5 w-40 h-1 max-w-full mx-auto rounded-full bg-gradient-to-r from-main via-contrast-secondary to-contrast-main"></div>
 
         <motion.p
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="text-center text-white/80 max-w-2xl mx-auto mb-16 text-lg leading-relaxed"
+          className="text-center text-main-dark/80 max-w-2xl mx-auto mb-16 text-lg leading-relaxed"
         >
-          Somos un grupo de soñadores, programadores, diseñadores y creadores  
-          que compartimos una misma meta: construir una experiencia de compra  
+          Somos un grupo de soñadores, programadores, diseñadores y creadores
+          que compartimos una misma meta: construir una experiencia de compra
           que conecte personas reales con marcas auténticas.
         </motion.p>
 
@@ -139,16 +140,15 @@ export default function AboutUs() {
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ delay: i * 0.1 }}
               className={`border-3 relative flex flex-col items-center justify-end w-56 h-[28rem] rounded-[3rem] overflow-hidden shadow-lg text-center group transition-all duration-500 hover:scale-[1.03] 
-                ${
-                  i === 0
-                    ? "bg-gradient-to-r from-main to-contrast-secondary"
-                    : i === 1
+                ${i === 0
+                  ? "bg-gradient-to-r from-main to-contrast-secondary"
+                  : i === 1
                     ? "bg-gradient-to-r from-contrast-secondary to-contrast-main"
                     : i === 2
-                    ? "bg-contrast-main"
-                    : i === 3
-                    ? "bg-gradient-to-l from-contrast-secondary to-contrast-main"
-                    : "bg-gradient-to-l from-main to-contrast-secondary"
+                      ? "bg-contrast-main"
+                      : i === 3
+                        ? "bg-gradient-to-l from-contrast-secondary to-contrast-main"
+                        : "bg-gradient-to-l from-main to-contrast-secondary"
                 }`}
             >
               <img
