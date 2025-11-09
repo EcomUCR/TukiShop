@@ -49,10 +49,20 @@ export default function ShareComponent({
         });
         break;
       case "whatsapp":
-        if (!shareUrl) return;
-        const mensaje = `Mirá esto en TukiShop: ${shareUrl}`;
-        window.open(`https://wa.me/?text=${encodeURIComponent(mensaje)}`, "_blank");
+        if (navigator.share) {
+          navigator
+            .share({
+              title: "TukiShop",
+              text: "Mirá este producto que me gustó:",
+              url: shareUrl,
+            })
+            .catch((err) => console.warn("Error al compartir:", err));
+        } else {
+          const mensaje = `Mirá esto en TukiShop: ${shareUrl}`;
+          window.open(`https://wa.me/?text=${encodeURIComponent(mensaje)}`, "_blank");
+        }
         break;
+
       case "facebook":
         window.open(
           `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`,
