@@ -7,7 +7,7 @@ import { useAuth } from "../../../../hooks/context/AuthContext";
 export default function LoginForm() {
   const { login } = useAuth();
   const [loading, setLoading] = useState(false);
-  const [loginField, setLoginField] = useState(""); 
+  const [loginField, setLoginField] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
@@ -16,7 +16,7 @@ export default function LoginForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
-    setLoading(true); 
+    setLoading(true);
 
     const loginInput = loginField.trim().toLowerCase();
 
@@ -39,7 +39,7 @@ export default function LoginForm() {
         setError("No se pudo conectar con el servidor. Intenta nuevamente.");
       }
     } finally {
-      setLoading(false); 
+      setLoading(false);
     }
   };
 
@@ -65,25 +65,36 @@ export default function LoginForm() {
 
           {/* 🔒 Campo de contraseña con ícono sin alterar diseño */}
           <div className="relative w-full sm:w-[65%]">
-            <input
-              className="border-2 border-contrast-secondary text-contrast-secondary rounded-full px-4 py-3 w-full font-quicksand pr-10"
-              placeholder="Contraseña"
-              type={showPassword ? "text" : "password"}
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-            <button
-              type="button"
-              onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-4 top-4 text-contrast-secondary"
-            >
-              {showPassword ? (
-                <IconEye size={20} />
-              ) : (
-                <IconEyeClosed size={20} />
-              )}
-            </button>
+            {/* 🔒 Campo de contraseña compatible con iPhone */}
+            <div className="relative w-full sm:w-[65%]">
+              <input
+                className="border-2 border-contrast-secondary text-contrast-secondary rounded-full px-4 py-3 w-full font-quicksand pr-10 
+             h-[48px] leading-[1.2] focus:outline-none focus:ring-0 bg-transparent"
+                placeholder="Contraseña"
+                type="text"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                autoCorrect="off"
+                autoCapitalize="off"
+                spellCheck={false}
+                style={{
+                  WebkitTextSecurity: showPassword ? "none" : "disc",
+                  WebkitAppearance: "none",
+                } as React.CSSProperties}
+              />
+
+
+
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-4 top-4 text-contrast-secondary"
+              >
+                {showPassword ? <IconEye size={20} /> : <IconEyeClosed size={20} />}
+              </button>
+            </div>
+
           </div>
 
           <button
