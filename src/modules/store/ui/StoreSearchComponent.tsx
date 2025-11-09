@@ -3,7 +3,6 @@ import { useParams, useSearchParams } from "react-router-dom";
 import ProductCard from "../../../components/data-display/ProductCard";
 import { useProducts } from "../infrastructure/useProducts";
 import type { Product } from "../infrastructure/useProducts";
-import audifonos from "../../../img/audifonos.png";
 import { SkeletonProduct } from "../../../components/ui/AllSkeletons";
 
 export default function StoreSearchComponent() {
@@ -48,7 +47,7 @@ export default function StoreSearchComponent() {
               title={prod.name}
               price={prod.price}
               discountPrice={prod.discount_price}
-              img={prod.image_1_url || audifonos}
+              img={prod.image_1_url || "https://res.cloudinary.com/dpbghs8ep/image/upload/v1761412207/imagenNoSubida_dymbb7.png"}
               edit={"NONE"}
             />
           ))}

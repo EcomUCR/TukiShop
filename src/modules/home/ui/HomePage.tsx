@@ -6,7 +6,6 @@ import {
   SkeletonCategory,
   SkeletonShortBanner,
 } from "../../../components/ui/AllSkeletons";
-import audifonos from "../../../img/resources/audifonos.jpg";
 import FeaturedProductsSlider from "../../../components/data-display/FeaturedProductsSlider";
 import { useEffect, useState, useRef } from "react";
 import { useProducts } from "../../store/infrastructure/useProducts";
@@ -200,7 +199,7 @@ export default function HomePage() {
                   price: prod.price,
                   discountPrice: prod.discount_price,
                   rating: 0,
-                  img: prod.image_1_url || audifonos,
+                  img: prod.image_1_url || "https://res.cloudinary.com/dpbghs8ep/image/upload/v1761412207/imagenNoSubida_dymbb7.png",
                 }))}
               />
 
@@ -261,7 +260,7 @@ export default function HomePage() {
                         ? prod.discount_price
                         : undefined
                     }
-                    img={prod.image_1_url || audifonos}
+                    img={prod.image_1_url || "https://res.cloudinary.com/dpbghs8ep/image/upload/v1761412207/imagenNoSubida_dymbb7.png"}
                     edit="NONE"
                   />
                 ))}
@@ -281,7 +280,7 @@ export default function HomePage() {
                         ? prod.discount_price
                         : undefined
                     }
-                    img={prod.image_1_url || audifonos}
+                    img={prod.image_1_url || "https://res.cloudinary.com/dpbghs8ep/image/upload/v1761412207/imagenNoSubida_dymbb7.png"}
                     edit="NONE"
                   />
                 ))}
@@ -398,7 +397,7 @@ export default function HomePage() {
                       ? prod.discount_price
                       : undefined
                   }
-                  img={prod.image_1_url || audifonos}
+                  img={prod.image_1_url || "https://res.cloudinary.com/dpbghs8ep/image/upload/v1761412207/imagenNoSubida_dymbb7.png"}
                   edit={"NONE"}
                 />
               ))}

@@ -110,6 +110,35 @@ export function Chatbot() {
       lastNavigatedLink.current = null;
     }
   }, [visible]);
+
+  useEffect(() => {
+    if (visible && messages.length === 0) {
+      setTimeout(() => {
+        setInput(""); // limpia input por si acaso
+        // Agrega mensaje del bot
+        const welcomeMessage = {
+          role: "bot" as const,
+          content:
+            "¡Hola! 👋 Soy TukiBot, tu asistente virtual. ¿En qué puedo ayudarte hoy?",
+        };
+        // Añadirlo manualmente a la lista de mensajes
+        // (usando el contexto actual del chatbot)
+        const event = new Event("addWelcomeMessage");
+        (event as any).data = welcomeMessage;
+        window.dispatchEvent(event);
+      }, 500);
+    }
+  }, [visible]);
+  // 🔹 Auto-scroll al último mensaje cuando se abre el chat
+  useEffect(() => {
+    if (visible && messagesEndRef.current) {
+      // Espera un poco a que renderice el DOM
+      setTimeout(() => {
+        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+      }, 300);
+    }
+  }, [visible]);
+
   if (!user) return null;
 
   return (

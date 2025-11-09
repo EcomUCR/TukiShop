@@ -29,7 +29,6 @@ import {
   IconBrandStackshare,
   IconDots,
 } from "@tabler/icons-react";
-import bg from "../../img/Home.png";
 import {
   useProducts,
   type Category,
@@ -119,7 +118,7 @@ export default function CategorySlider({ onLoaded }: CategorySliderProps) {
       <CarouselContent>
         {categories.map((category) => {
           const IconComponent = categoryIcons[category.name] || IconDots;
-          const img = categoryImages[category.name] || bg; // 👈 usa imagen única o fallback
+          const img = categoryImages[category.name];
           return (
             <CarouselItem
               className="basis-[38%] sm:basis-[22%] flex justify-center items-center pl-0 my-8 transition-transform duration-300 hover:scale-105"

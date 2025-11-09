@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import Footer from "../../../components/layout/Footer";
 import NavBar from "../../../components/layout/NavBar";
-import audifonos from "../../../img/resources/audifonos.jpg";
 import ShoppingForm from "../../../components/forms/ShoppingForm";
 import StarRatingComponent from "../../../components/ui/StarRatingComponent";
 import ButtonComponent from "../../../components/ui/ButtonComponent";
@@ -511,7 +510,7 @@ export default function ProductPage() {
                         price: prod.price,
                         discountPrice: prod.discount_price,
                         rating: 0,
-                        img: prod.image_1_url || audifonos,
+                        img: prod.image_1_url || "https://res.cloudinary.com/dpbghs8ep/image/upload/v1761412207/imagenNoSubida_dymbb7.png",
                       }))}
                     />
                   ) : (

@@ -11,7 +11,6 @@ import { SkeletonPersonalProduct } from "../../../../components/ui/AllSkeletons"
 import { useProducts, type Product } from "../../infrastructure/useProducts";
 import { useAuth } from "../../../../hooks/context/AuthContext";
 import { getStoreByUser } from "../../infrastructure/storeService";
-import audifonos from "../../../../img/resources/audifonos.jpg";
 import FeaturedProductCard from "../../../../components/data-display/FeaturedProductCard";
 
 interface Store {
@@ -151,7 +150,7 @@ export default function StoreProductsList() {
                       title={product.name}
                       price={product.price}
                       discountPrice={product.discount_price || undefined}
-                      img={product.image_1_url ? product.image_1_url : audifonos}
+                      img={product.image_1_url ? product.image_1_url : "https://res.cloudinary.com/dpbghs8ep/image/upload/v1761412207/imagenNoSubida_dymbb7.png"}
                       edit="EDIT"
                       id={product.id ?? 0}
                     />

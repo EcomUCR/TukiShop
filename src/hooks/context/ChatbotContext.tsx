@@ -31,7 +31,10 @@ export interface Message {
   link?: string;
   navigate?: boolean;
   social?: "facebook" | "instagram" | "tiktok" | "x" | "whatsapp";
-  socials?: { social: "facebook" | "instagram" | "tiktok" | "x" | "whatsapp"; link: string }[];
+  socials?: {
+    social: "facebook" | "instagram" | "tiktok" | "x" | "whatsapp";
+    link: string;
+  }[];
   showButton?: boolean;
 }
 
@@ -107,7 +110,10 @@ export function ChatbotProvider({ children }: { children: ReactNode }) {
     stores?: Store[],
     navigate?: boolean,
     social?: "facebook" | "instagram" | "tiktok" | "x",
-    socials?: { social: "facebook" | "instagram" | "tiktok" | "x"; link: string }[],
+    socials?: {
+      social: "facebook" | "instagram" | "tiktok" | "x";
+      link: string;
+    }[],
     showButton?: boolean // ✅
   ) => {
     let index = 0;
@@ -142,6 +148,16 @@ export function ChatbotProvider({ children }: { children: ReactNode }) {
 
   // 🎛️ Alternar visibilidad
   const toggleVisible = () => setVisible((v) => !v);
+  useEffect(() => {
+    const handleAddWelcome = (event: any) => {
+      const message = event.data;
+      setMessages((prev) => [...prev, message]);
+    };
+
+    window.addEventListener("addWelcomeMessage", handleAddWelcome);
+    return () =>
+      window.removeEventListener("addWelcomeMessage", handleAddWelcome);
+  }, []);
 
   return (
     <ChatbotContext.Provider
