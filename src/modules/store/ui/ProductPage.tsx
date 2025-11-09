@@ -526,7 +526,7 @@ export default function ProductPage() {
                 <section className="mx-4 sm:mx-10 my-6 sm:my-10">
                   <div className="flex justify-between items-center">
                     <h2 className="text-lg sm:text-2xl font-semibold font-quicksand">
-                      Explorar
+                      Productos Similares
                     </h2>
                     <div className="flex items-center gap-1 text-sm sm:text-base">
                       <a
