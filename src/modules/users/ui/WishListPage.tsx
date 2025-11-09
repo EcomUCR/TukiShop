@@ -142,8 +142,8 @@ export default function WishListPage() {
             <button
               onClick={toggleVisibility}
               className={`text-sm px-4 py-2 rounded-full border font-semibold transition-all duration-300 ${wishlist.is_public
-                  ? "bg-green-100 border-green-400 text-green-700 hover:bg-green-200"
-                  : "bg-red-100 border-red-400 text-red-700 hover:bg-red-200"
+                ? "bg-green-100 border-green-400 text-green-700 hover:bg-green-200"
+                : "bg-red-100 border-red-400 text-red-700 hover:bg-red-200"
                 }`}
             >
               {wishlist.is_public
@@ -203,6 +203,8 @@ export default function WishListPage() {
 
             <div className="flex flex-col sm:flex-row gap-4 mt-2 w-full sm:w-auto items-center justify-center border-contrast-secondary border-2 py-2 px-10 sm:py-3 rounded-full">
               <ShareComponent
+                type="wishlist"
+                titleText={`Wishlist de ${wishlist.user?.username}` || "Wishlist"}
                 positionClass="absolute right-3 top-25"
                 shareUrl={`${window.location.origin}/wishlist/public/${wishlist.slug}`}
               />
