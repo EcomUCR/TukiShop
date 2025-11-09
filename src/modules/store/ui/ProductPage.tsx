@@ -405,7 +405,7 @@ export default function ProductPage() {
                         <div className="relative">
                           <ShareComponent
                             positionClass="absolute right-30 top-25"
-                            shareUrl={""}
+                            shareUrl={`${window.location.origin}/product/${product.id}`}
                           />
                         </div>
                       </div>
@@ -477,8 +477,7 @@ export default function ProductPage() {
                           <div className="relative">
                             <ShareComponent
                               positionClass="absolute right-21.5 top-25"
-                              shareUrl={""}
-                            />
+                              shareUrl={`${window.location.origin}/product/${product.id}`} />
                           </div>
                         </div>
                       </div>

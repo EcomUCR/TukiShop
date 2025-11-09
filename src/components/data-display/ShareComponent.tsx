@@ -26,6 +26,18 @@ export default function ShareComponent({
   const handleShare = (platform: string) => {
     const encodedUrl = encodeURIComponent(shareUrl);
 
+    // Si el dispositivo soporta compartir nativo
+    if (navigator.share && platform === "link") {
+      navigator
+        .share({
+          title: "TukiShop",
+          text: "Mirá este enlace:",
+          url: shareUrl,
+        })
+        .catch((err) => console.warn("Error al compartir:", err));
+      setIsModalOpen(false);
+      return;
+    }
     switch (platform) {
       case "link":
         navigator.clipboard.writeText(shareUrl);
@@ -37,7 +49,9 @@ export default function ShareComponent({
         });
         break;
       case "whatsapp":
-        window.open(`https://wa.me/?text=${encodedUrl}`, "_blank");
+        if (!shareUrl) return;
+        const mensaje = `Mirá esto en TukiShop: ${shareUrl}`;
+        window.open(`https://wa.me/?text=${encodeURIComponent(mensaje)}`, "_blank");
         break;
       case "facebook":
         window.open(
@@ -48,7 +62,7 @@ export default function ShareComponent({
       case "instagram":
         showAlert({
           type: "info",
-          message:"Instagram no permite compartir enlaces directamente desde el navegador",
+          message: "Instagram no permite compartir enlaces directamente desde el navegador",
           title: "Compartir en Instagram",
           confirmText: "Ok",
         }
@@ -57,7 +71,7 @@ export default function ShareComponent({
       case "tiktok":
         showAlert({
           type: "info",
-          message:"TikTok no permite compartir desde el navegador. Usa la app móvil ",
+          message: "TikTok no permite compartir desde el navegador. Usa la app móvil ",
           title: "Compartir en TikTok",
           confirmText: "Ok",
         }
@@ -89,49 +103,43 @@ export default function ShareComponent({
       <div className={positionClass}>
         <ul className="flex gap-3">
           <li
-            className={`relative bottom-10 left-27 bg-main hover:bg-sky-500 p-2 rounded-full text-white transform transition-all duration-300 shadow-md delay-0 ${
-              isModalOpen ? "scale-100" : "scale-0"
-            }`}
+            className={`relative bottom-10 left-27 bg-main hover:bg-sky-500 p-2 rounded-full text-white transform transition-all duration-300 shadow-md delay-0 ${isModalOpen ? "scale-100" : "scale-0"
+              }`}
             onClick={() => handleShare("link")}
           >
             <IconLink />
           </li>
           <li
-            className={`relative bottom-10 left-27 bg-main hover:bg-green-600 p-2 rounded-full text-white transform transition-all duration-300 shadow-md delay-50 ${
-              isModalOpen ? "scale-100" : "scale-0"
-            }`}
+            className={`relative bottom-10 left-27 bg-main hover:bg-green-600 p-2 rounded-full text-white transform transition-all duration-300 shadow-md delay-50 ${isModalOpen ? "scale-100" : "scale-0"
+              }`}
             onClick={() => handleShare("whatsapp")}
           >
             <IconBrandWhatsapp />
           </li>
           <li
-            className={`relative bottom-10 left-27 bg-main hover:bg-blue-600 p-2 rounded-full text-white transform transition-all duration-300 shadow-md delay-100 ${
-              isModalOpen ? "scale-100" : "scale-0"
-            }`}
+            className={`relative bottom-10 left-27 bg-main hover:bg-blue-600 p-2 rounded-full text-white transform transition-all duration-300 shadow-md delay-100 ${isModalOpen ? "scale-100" : "scale-0"
+              }`}
             onClick={() => handleShare("facebook")}
           >
             <IconBrandFacebook />
           </li>
           <li
-            className={`relative bottom-10 left-27 bg-main hover:bg-orange-500 p-2 rounded-full text-white transform transition-all duration-300 shadow-md delay-150 ${
-              isModalOpen ? "scale-100" : "scale-0"
-            }`}
+            className={`relative bottom-10 left-27 bg-main hover:bg-orange-500 p-2 rounded-full text-white transform transition-all duration-300 shadow-md delay-150 ${isModalOpen ? "scale-100" : "scale-0"
+              }`}
             onClick={() => handleShare("instagram")}
           >
             <IconBrandInstagram />
           </li>
           <li
-            className={`relative bottom-10 left-27 bg-main hover:bg-rose-500 p-2 rounded-full text-white transform transition-all duration-300 shadow-md delay-200 ${
-              isModalOpen ? "scale-100" : "scale-0"
-            }`}
+            className={`relative bottom-10 left-27 bg-main hover:bg-rose-500 p-2 rounded-full text-white transform transition-all duration-300 shadow-md delay-200 ${isModalOpen ? "scale-100" : "scale-0"
+              }`}
             onClick={() => handleShare("tiktok")}
           >
             <IconBrandTiktok />
           </li>
           <li
-            className={`relative bottom-10 left-27 bg-main hover:bg-black p-2 rounded-full text-white transform transition-all duration-300 shadow-md delay-250 ${
-              isModalOpen ? "scale-100" : "scale-0"
-            }`}
+            className={`relative bottom-10 left-27 bg-main hover:bg-black p-2 rounded-full text-white transform transition-all duration-300 shadow-md delay-250 ${isModalOpen ? "scale-100" : "scale-0"
+              }`}
             onClick={() => handleShare("x")}
           >
             <IconBrandX />
