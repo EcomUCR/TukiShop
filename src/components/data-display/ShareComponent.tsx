@@ -39,7 +39,7 @@ export default function ShareComponent({
       case "whatsapp":
         const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
 
-        const message = `Oye, mira esto de TukiShop 👀: ${shareUrl}`;
+        const message = `Oye, mira esto de TukiShop: ${shareUrl}`;
         const encodedMessage = encodeURIComponent(message);
 
         const url = isIOS
@@ -53,7 +53,6 @@ export default function ShareComponent({
           window.open(url, "_blank");
         }
         break;
-
 
       case "facebook":
         window.open(
