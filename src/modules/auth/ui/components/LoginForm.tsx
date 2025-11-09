@@ -63,8 +63,6 @@ export default function LoginForm() {
             required
           />
 
-          {/* 🔒 Campo de contraseña con ícono sin alterar diseño */}
-          <div className="relative w-full sm:w-[65%]">
             {/* 🔒 Campo de contraseña compatible con iPhone */}
             <div className="relative w-full sm:w-[65%]">
               <input
@@ -83,9 +81,6 @@ export default function LoginForm() {
                   WebkitAppearance: "none",
                 } as React.CSSProperties}
               />
-
-
-
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
@@ -94,9 +89,6 @@ export default function LoginForm() {
                 {showPassword ? <IconEye size={20} /> : <IconEyeClosed size={20} />}
               </button>
             </div>
-
-          </div>
-
           <button
             className={`relative overflow-hidden bg-contrast-secondary text-white rounded-full py-3 px-4 w-full sm:w-[30%] font-quicksand cursor-pointer
     transition-all duration-300 ease-in-out transform hover:scale-105 hover:shadow-lg 
