@@ -204,7 +204,6 @@ export default function WishListPage() {
             <div className="flex flex-col sm:flex-row gap-4 mt-2 w-full sm:w-auto items-center justify-center border-contrast-secondary border-2 py-2 px-10 sm:py-3 rounded-full">
               <ShareComponent
                 type="wishlist"
-                titleText={`Wishlist de ${wishlist.user?.username}` || "Wishlist"}
                 positionClass="absolute right-3 top-25"
                 shareUrl={`${window.location.origin}/wishlist/public/${wishlist.slug}`}
               />
