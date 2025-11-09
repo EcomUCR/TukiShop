@@ -39,9 +39,12 @@ export default function ShareComponent({
       case "whatsapp":
         const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
 
+        const message = `Oye, mira esto de TukiShop 👀: ${shareUrl}`;
+        const encodedMessage = encodeURIComponent(message);
+
         const url = isIOS
-          ? `whatsapp://send?text=${encodedUrl}`
-          : `https://wa.me/?text=${encodedUrl}`;
+          ? `whatsapp://send?text=${encodedMessage}`
+          : `https://wa.me/?text=${encodedMessage}`;
 
         // 🔹 En iOS conviene usar window.location.href, en otros window.open
         if (isIOS) {
@@ -50,6 +53,7 @@ export default function ShareComponent({
           window.open(url, "_blank");
         }
         break;
+
 
       case "facebook":
         window.open(
