@@ -1,7 +1,7 @@
 import type { JSX } from "react";
 
 interface ButtonProps{
-    text?:string;
+    text?:string | JSX.Element;
     style?:string;
     icon?:JSX.Element;
     iconStyle?:string;

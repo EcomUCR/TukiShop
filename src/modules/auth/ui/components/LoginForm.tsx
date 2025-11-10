@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { IconEye, IconEyeClosed } from "@tabler/icons-react";
 import logo from "../../../../img/TukiLogo.png";
 import { useAuth } from "../../../../hooks/context/AuthContext";
+import ButtonComponent from "../../../../components/ui/ButtonComponent";
 
 export default function LoginForm() {
   const { login } = useAuth();
@@ -63,45 +64,42 @@ export default function LoginForm() {
             required
           />
 
-            {/* 🔒 Campo de contraseña compatible con iPhone */}
-            <div className="relative w-full sm:w-[65%]">
-              <input
-                className="border-2 border-contrast-secondary text-contrast-secondary rounded-full px-4 py-3 w-full font-quicksand pr-10 
+          {/* 🔒 Campo de contraseña compatible con iPhone */}
+          <div className="relative w-full sm:w-[65%]">
+            <input
+              className="border-2 border-contrast-secondary text-contrast-secondary rounded-full px-4 py-3 w-full font-quicksand pr-10 
              h-[48px] leading-[1.2] focus:outline-none focus:ring-0 bg-transparent"
-                placeholder="Contraseña"
-                type="text"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                autoCorrect="off"
-                autoCapitalize="off"
-                spellCheck={false}
-                style={{
-                  WebkitTextSecurity: showPassword ? "none" : "disc",
-                  WebkitAppearance: "none",
-                } as React.CSSProperties}
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-4 top-4 text-contrast-secondary"
-              >
-                {showPassword ? <IconEye size={20} /> : <IconEyeClosed size={20} />}
-              </button>
-            </div>
-          <button
-            className={`relative overflow-hidden bg-contrast-secondary text-white rounded-full py-3 px-4 w-full sm:w-[30%] font-quicksand cursor-pointer
+              placeholder="Contraseña"
+              type="text"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              autoCorrect="off"
+              autoCapitalize="off"
+              spellCheck={false}
+              style={{
+                WebkitTextSecurity: showPassword ? "none" : "disc",
+                WebkitAppearance: "none",
+              } as React.CSSProperties}
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-4 top-4 text-contrast-secondary"
+            >
+              {showPassword ? <IconEye size={20} /> : <IconEyeClosed size={20} />}
+            </button>
+          </div>
+          <ButtonComponent
+            style={`relative overflow-hidden bg-contrast-secondary text-white rounded-full py-3 px-4 w-full sm:w-[30%] font-quicksand cursor-pointer
     transition-all duration-300 ease-in-out transform hover:scale-105 hover:shadow-lg 
     before:absolute before:inset-0 before:translate-x-[-100%] before:bg-gradient-to-r 
     before:from-[var(--color-contrast-main)] before:to-[var(--color-contrast-secondary)] 
     before:opacity-0 hover:before:translate-x-0 hover:before:opacity-100 before:transition-all before:duration-500`}
             type="submit"
             disabled={loading}
-          >
-            <span className="relative z-10">
-              {loading ? "Ingresando..." : "Iniciar sesión"}
-            </span>
-          </button>
+            text={<span className="relative z-10"> {loading ? "Ingresando..." : "Iniciar sesión"}</span>}
+          />
         </form>
 
         {error && <div className="text-red-500">{error}</div>}
