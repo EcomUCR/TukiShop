@@ -639,10 +639,10 @@ export default function StoreProductCRUDPage() {
 
                       try {
                         await updateProduct(Number(id), payload as any);
-                        alert("Producto archivado correctamente");
+                        showAlert({message: "Producto eliminado correctamente", type: "success", title: "Producto eliminado", confirmText: "Ok"});
                         window.history.back();
                       } catch {
-                        alert("No se pudo archivar el producto");
+                        showAlert({message: "No se pudo eliminar el producto", type: "error", title: "Error al eliminar", confirmText: "Ok"});
                       }
                     }}
                   />
