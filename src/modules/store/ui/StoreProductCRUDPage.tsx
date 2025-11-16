@@ -22,7 +22,7 @@ type ProductForm = Omit<
   | "image_2_url"
   | "image_3_url"
 > & {
-  price:number;
+  price: number;
   discount_price: number;
   images: (File | string | null)[];
   details: string;
@@ -171,8 +171,12 @@ export default function StoreProductCRUDPage() {
       return;
     }
 
-    // 🔹 Preparar payload
+    if (Number(form.price) === Number(form.discount_price)) {
+      form.discount_price = 0;
+    }
+
     const payload: ProductPayload = {
+
       image: form.images[0],
       store_id: storeId,
       price: Number(form.price),
@@ -365,7 +369,7 @@ export default function StoreProductCRUDPage() {
                 <input
                   type="text"
                   value={form.price}
-                  onChange={(e) => setForm({ ...form, price: Number(e.target.value)})}
+                  onChange={(e) => setForm({ ...form, price: Number(e.target.value) })}
                   placeholder="Precio"
                   className="bg-main-dark/20 rounded-2xl p-2 w-full"
                 />
