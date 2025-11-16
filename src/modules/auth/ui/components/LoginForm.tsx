@@ -91,15 +91,29 @@ export default function LoginForm() {
             </button>
           </div>
           <ButtonComponent
-            style={`relative overflow-hidden bg-contrast-secondary text-white rounded-full py-3 px-4 w-full sm:w-[30%] font-quicksand cursor-pointer
-    transition-all duration-300 ease-in-out transform hover:scale-105 hover:shadow-lg 
+            style={`relative overflow-hidden bg-contrast-secondary text-white rounded-full py-3 px-4 
+    w-full sm:w-[30%] font-quicksand cursor-pointer
+    transition-all duration-300 ease-in-out transform
+    ${loading
+                ? "scale-95 animate-pulse opacity-90 cursor-not-allowed"
+                : "hover:scale-105 hover:shadow-lg"
+              }
     before:absolute before:inset-0 before:translate-x-[-100%] before:bg-gradient-to-r 
     before:from-[var(--color-contrast-main)] before:to-[var(--color-contrast-secondary)] 
     before:opacity-0 hover:before:translate-x-0 hover:before:opacity-100 before:transition-all before:duration-500`}
+
             type="submit"
             disabled={loading}
-            text={<span className="relative z-10"> {loading ? "Ingresando..." : "Iniciar sesión"}</span>}
+            text={
+              <span className="relative z-10 flex items-center justify-center gap-2">
+                {loading && (
+                  <span className="w-5 h-5 border-2 border-white/40 border-t-white rounded-full animate-spin"></span>
+                )}
+                {loading ? "Ingresando..." : "Iniciar sesión"}
+              </span>
+            }
           />
+
         </form>
 
         {error && <div className="text-red-500">{error}</div>}
