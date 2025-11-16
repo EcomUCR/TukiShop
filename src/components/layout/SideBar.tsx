@@ -2,7 +2,7 @@ import {
     IconBox,
     IconBuildingStore,
     /*IconClipboardText,*/
-    IconFileCheck,
+    /*IconFileCheck,*/
     IconMailOpened,
     IconPackage,
     IconPhotoScan,
@@ -74,15 +74,14 @@ export default function SideBar({ type, onSelect, selected }: SideBarProps) {
                                         <IconBuildingStore size={18} />
                                         <span>Mis productos</span>
                                     </li>
-
-                                    <li
+                                   {/* <li
                                         className={`${baseItem} ${selected === "orderStatus" ? active : inactive
                                             }`}
                                         onClick={() => onSelect("orderStatus")}
                                     >
                                         <IconFileCheck size={18} />
                                         <span>Estado de pedidos</span>
-                                    </li>
+                                    </li>*/}
                                     <li
                                         className={`${baseItem} ${selected === "coupons" ? active : inactive
                                             }`}
