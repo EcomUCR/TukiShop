@@ -108,7 +108,7 @@ export default function StoreNavBar({
     <div className="font-quicksand w-full">
       <nav className="w-full h-20 bg-main-dark/20 text-main-dark px-10 flex justify-between items-center rounded-xl sm:px-10">
         {/* 🔹 Logo */}
-        <div className="sm:gap-4 w-1/3 flex items-center sm:w-1/3">
+        <div className="gap-10 sm:gap-4 w-1/3 flex items-center sm:w-1/3">
           {store?.user_id === user?.id && (
             <div className="relative">
               <label className="absolute bottom-1 right-1 z-100 bg-contrast-secondary hover:bg-main text-white p-1 rounded-full cursor-pointer transition-all duration-200 flex items-center justify-center">
@@ -130,10 +130,10 @@ export default function StoreNavBar({
             className="h-14 w-auto object-contain"
             onClick={() => handleViewChange("home")}
           />
-        </div>
-          <div className="w-full">
+          <div className="">
             <p className="text-center sm:text-left sm:text-base sm:font-bold">{store.name}</p>
           </div>
+        </div>
 
 
         {/* 🔹 Tabs (solo desktop) */}
