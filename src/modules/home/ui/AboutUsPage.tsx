@@ -58,7 +58,7 @@ export default function AboutUs() {
         </motion.p>
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 sm:gap-10">
-          {[ 
+          {[
             {
               icon: <IconTarget className="w-10 h-10 text-main mx-auto mb-4" />,
               title: "Nuestra Misión",
@@ -153,7 +153,6 @@ export default function AboutUs() {
           ))}
         </div>
       </section>
-
       <Footer />
     </div>
   );

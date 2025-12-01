@@ -89,8 +89,8 @@ export default function ContactPage() {
                             <p className="font-semibold text-main">Mensaje</p>
                             <span
                                 className={`text-sm ${charCount >= maxChars * 0.9
-                                        ? "text-red-500"
-                                        : "text-gray-500"
+                                    ? "text-red-500"
+                                    : "text-gray-500"
                                     }`}
                             >
                                 {charCount}/{maxChars}
@@ -120,11 +120,18 @@ export default function ContactPage() {
                         type="submit"
                         text={loading ? "Enviando..." : "Enviar mensaje"}
                         style={`text-white text-lg py-2 rounded-full w-full sm:w-1/2 mx-auto ${loading
-                                ? "bg-gray-400 cursor-not-allowed"
-                                : "bg-contrast-main hover:bg-contrast-secondary transition-all duration-300"
+                            ? "bg-gray-400 cursor-not-allowed"
+                            : "bg-contrast-main hover:bg-contrast-secondary transition-all duration-300"
                             }`}
                     />
                 </form>
+            </section>
+            <section className="pb-16 px-5 flex justify-center items-center">
+                <div className="w-full max-w-5xl rounded-[2.5rem] overflow-hidden shadow-xl border border-white/10 bg-main/10">
+                    <video autoPlay loop muted playsInline className="w-full h-full aspect-[16/9] object-cover">
+                        <source src="https://res.cloudinary.com/dpbghs8ep/video/upload/v1764549134/TukiVideoAbout_vrw0gr.webm" type="video/webm" />
+                    </video>
+                </div>
             </section>
 
             <Footer />

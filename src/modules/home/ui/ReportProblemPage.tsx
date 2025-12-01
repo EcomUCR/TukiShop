@@ -303,6 +303,13 @@ export default function ReportProblemPage() {
                         />
                     </form>
             </section>
+            <section className="pb-16 px-5 flex justify-center items-center">
+                <div className="w-full max-w-5xl rounded-[2.5rem] overflow-hidden shadow-xl border border-white/10 bg-main/10">
+                    <video autoPlay loop muted playsInline className="w-full h-full aspect-[16/9] object-cover">
+                        <source src="https://res.cloudinary.com/dpbghs8ep/video/upload/v1764549134/TukiVideoAbout_vrw0gr.webm" type="video/webm" />
+                    </video>
+                </div>
+            </section>
 
             <Footer />
         </div>
