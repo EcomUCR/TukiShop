@@ -123,35 +123,57 @@ export const SkeletonRatingSummary: React.FC<{ show?: boolean }> = ({
   </FadeWrapper>
 );
 export const SkeletonStoreBanner = ({
-  count = 3,
+  count = 6,
   show = true,
 }: {
   count?: number;
   show?: boolean;
 }) => (
   <FadeWrapper show={show}>
-    <div className="flex flex-col gap-6 md:gap-8 mx-4 md:mx-0">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 mx-4 md:mx-0">
       {Array.from({ length: count }).map((_, i) => (
         <div
           key={i}
-          className="relative w-full h-40 md:h-56 rounded-2xl overflow-hidden flex items-center justify-center bg-gray-300/60 shadow-md animate-pulse"
+          className="relative flex flex-col bg-white border border-gray-200 rounded-2xl shadow-md overflow-hidden w-full max-w-[30rem] mx-auto font-quicksand animate-pulse sm:w-[35rem] min-h-[25rem] sm:min-h-[26rem]"
         >
-          {/* Fondo simulado */}
-          <Skeleton className="absolute inset-0 w-full h-full bg-gray-400/70" />
+          {/* Banner superior */}
+          <div className="relative h-30 sm:h-28 md:h-40">
+            <Skeleton className="h-full w-full rounded-2xl m-2 bg-gray-400/70" />
+          </div>
 
-          {/* Contenedor glass */}
-          <div className="relative z-10 flex flex-col sm:flex-row items-center justify-center bg-white/20 backdrop-blur-md rounded-2xl border border-white/30 px-5 sm:px-10 py-4 sm:py-6 w-11/12">
-            <div className="flex items-center gap-3 sm:gap-5">
-              {/* Imagen circular */}
-              <Skeleton className="w-[60px] h-[60px] md:w-[80px] md:h-[80px] rounded-full bg-gray-400/70" />
-              <div className="flex flex-col gap-2">
-                <Skeleton className="w-[100px] h-[16px] md:w-[140px] md:h-[20px] rounded-md bg-gray-400/70" />
-                <Skeleton className="w-[80px] h-[12px] md:w-[100px] md:h-[14px] rounded-md bg-gray-400/70" />
-              </div>
+          {/* Logo circular superpuesto */}
+          <div className="absolute top-16 left-5 sm:top-25 sm:left-6">
+            <Skeleton className="w-25 h-25 sm:w-18 sm:h-18 md:w-30 md:h-30 rounded-full bg-gray-400/70 border-4 border-white" />
+          </div>
+
+          {/* Contenido */}
+          <div className="flex relative flex-col items-center pt-14 sm:pt-5 pb-6 px-4 text-center flex-1">
+            {/* Badge de categoría */}
+            <Skeleton className="absolute top-2 right-3 w-[80px] h-[20px] rounded-full bg-gray-400/70" />
+
+            {/* Nombre de la tienda */}
+            <Skeleton className="w-[60%] h-[24px] sm:h-[28px] mt-4 sm:mt-5 rounded-md bg-gray-400/70" />
+
+            {/* Estrellas de rating */}
+            <div className="flex gap-1 mt-1 sm:mt-2">
+              {Array.from({ length: 5 }).map((_, j) => (
+                <Skeleton
+                  key={j}
+                  className="w-[16px] h-[16px] rounded-full bg-gray-400/70"
+                />
+              ))}
             </div>
-            {/* Botón placeholder */}
-            <div className="absolute bottom-[-15px] sm:relative sm:right-0 mt-3 sm:mt-0">
-              <Skeleton className="w-[100px] h-[30px] md:w-[120px] md:h-[36px] rounded-full bg-gray-400/70" />
+
+            {/* Descripción */}
+            <div className="mt-3 w-full flex flex-col gap-1">
+              <Skeleton className="w-full h-[12px] rounded-md bg-gray-400/70" />
+              <Skeleton className="w-5/6 h-[12px] mx-auto rounded-md bg-gray-400/70" />
+              <Skeleton className="w-4/6 h-[12px] mx-auto rounded-md bg-gray-400/70" />
+            </div>
+
+            {/* Botón */}
+            <div className="mt-auto w-full sm:w-[80%]">
+              <Skeleton className="w-full h-[40px] sm:h-[48px] rounded-full bg-gray-400/70" />
             </div>
           </div>
         </div>
