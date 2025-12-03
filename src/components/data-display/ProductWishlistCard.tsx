@@ -99,7 +99,7 @@ export default function ProductWishlistCard({
           {/* ✅ Ocultar botones si es público */}
           {!isPublicMode && (
             <div className="flex gap-3 text-main">
-              {/* Añadir al carrito */}
+            {/*  Añadir al carrito 
               <button
                 onClick={() => onAddToCart?.(product)}
                 disabled={product.stock <= 0}
@@ -111,7 +111,7 @@ export default function ProductWishlistCard({
               >
                 <IconShoppingBag size={16} />
                 Añadir
-              </button>
+              </button>*/}
 
               {/* Eliminar */}
               <button
