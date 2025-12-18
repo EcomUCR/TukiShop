@@ -18,7 +18,7 @@ import BannerComponent from "../../../components/data-display/BannerComponent";
 import { useBanner } from "../../admin/infrastructure/useBanner";
 import BannerSelectModal from "./BannerSelectModal";
 import { useAuth } from "../../../hooks/context/AuthContext";
-
+import Snowfall from "react-snowfall";
 type AnyBanner = {
   id?: number;
   title?: string;
@@ -175,6 +175,7 @@ export default function HomePage() {
 
   return (
     <div>
+      <Snowfall color="#82c3d9" />
       <NavBar />
       <div className="mx-auto max-w-[80rem]">
         {/* 🔹 HEADER PRINCIPAL */}
